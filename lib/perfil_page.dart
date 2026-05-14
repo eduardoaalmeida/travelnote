@@ -121,7 +121,6 @@ class _PerfilPageState extends State<PerfilPage> {
                 ),
               ],
             ),
-            const Text('professor@email.com'),
             const SizedBox(height: 40),
             OutlinedButton.icon(
               onPressed: () => Navigator.pop(context),
