@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'criar_conta_page.dart';
+import 'recuperar_senha_page.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -191,7 +193,13 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             const SizedBox(height: 22),
                             GestureDetector(
-                              onTap: () {},
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const RecuperarSenhaPage()),
+                                );
+                              },
                               child: const Text(
                                 'Esqueceu sua senha?',
                                 style: TextStyle(
@@ -202,6 +210,7 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
+
                             const Spacer(),
                             const SizedBox(height: 20),
                             Image.asset(
