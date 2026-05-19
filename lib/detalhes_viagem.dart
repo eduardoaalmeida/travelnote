@@ -462,104 +462,206 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             ? 'Compromisso'
             : 'Anotação';
 
+    final labelTitulo = aba == 0 ? 'Título / Dia' : 'Título';
+    final labelSubtitulo = aba == 1 ? 'Data / Hora' : 'Detalhes';
+    final hintTitulo = aba == 0 ? 'Ex: Dia 10' : aba == 1 ? 'Ex: Reunião' : 'Ex: Local interessante';
+    final hintSubtitulo = aba == 0 ? 'Local e horário' : aba == 1 ? '10/06/2026 • 14:00' : 'Descrição completa';
+
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(ctx).viewInsets.bottom,
-            left: 18,
-            right: 18,
-            top: 18,
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${isNew ? 'Adicionar' : 'Editar'} $tipo',
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                left: 24,
+                right: 24,
+                top: 28,
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: titleController,
-                decoration: InputDecoration(
-                  labelText: aba == 0 ? 'Título / Dia' : 'Título',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: subtitleController,
-                minLines: 1,
-                maxLines: aba == 2 ? 6 : 1,
-                decoration: InputDecoration(
-                  labelText: aba == 1 ? 'Data / Hora' : 'Detalhes',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextButton(
-                    onPressed: () => Navigator.of(ctx).pop(),
-                    child: const Text('Cancelar'),
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE2E8F0),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
                   ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: () {
-                      final savedTitle = titleController.text.trim();
-                      final savedSubtitle = subtitleController.text.trim();
-                      Navigator.of(ctx).pop();
-
-                      setState(() {
-                        if (aba == 0) {
-                          if (isNew) {
-                            roteiroItems.add({'titulo': savedTitle, 'subtitulo': savedSubtitle});
-                          } else if (index != null) {
-                            roteiroItems[index] = {'titulo': savedTitle, 'subtitulo': savedSubtitle};
-                          }
-                        } else if (aba == 1) {
-                          if (isNew) {
-                            compromissosItems.add({'titulo': savedTitle, 'subtitulo': savedSubtitle});
-                          } else if (index != null) {
-                            compromissosItems[index] = {'titulo': savedTitle, 'subtitulo': savedSubtitle};
-                          }
-                        } else {
-                          if (isNew) {
-                            anotacoesItems.add({'titulo': savedTitle, 'subtitulo': savedSubtitle});
-                          } else if (index != null) {
-                            anotacoesItems[index] = {'titulo': savedTitle, 'subtitulo': savedSubtitle};
-                          }
-                        }
-                      });
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(isNew
-                              ? '$tipo criado: $savedTitle'
-                              : '$tipo atualizado: $savedTitle'),
+                  const SizedBox(height: 20),
+                  Text(
+                    '${isNew ? 'Adicionar' : 'Editar'} $tipo',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    isNew ? 'Crie um novo $tipo' : 'Atualize o $tipo',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF64748B),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  TextField(
+                    controller: titleController,
+                    decoration: InputDecoration(
+                      labelText: labelTitulo,
+                      hintText: hintTitulo,
+                      hintStyle: const TextStyle(color: Color(0xFFC7D2E0)),
+                      filled: true,
+                      fillColor: const Color(0xFFF8FAFC),
+                      prefixIcon: Icon(
+                        aba == 0 ? Icons.calendar_today_outlined : aba == 1 ? Icons.event_outlined : Icons.note_outlined,
+                        color: const Color(0xFF0284C7),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFF0284C7), width: 1.5),
+                      ),
+                      labelStyle: const TextStyle(color: Color(0xFF64748B)),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  TextField(
+                    controller: subtitleController,
+                    minLines: 1,
+                    maxLines: aba == 2 ? 6 : 1,
+                    decoration: InputDecoration(
+                      labelText: labelSubtitulo,
+                      hintText: hintSubtitulo,
+                      hintStyle: const TextStyle(color: Color(0xFFC7D2E0)),
+                      filled: true,
+                      fillColor: const Color(0xFFF8FAFC),
+                      prefixIcon: Icon(
+                        aba == 0 ? Icons.location_on_outlined : aba == 1 ? Icons.access_time_outlined : Icons.description_outlined,
+                        color: const Color(0xFF0284C7),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFF0284C7), width: 1.5),
+                      ),
+                      labelStyle: const TextStyle(color: Color(0xFF64748B)),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Cancelar',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Color(0xFF0F172A),
+                            ),
+                          ),
                         ),
-                      );
-                    },
-                    child: const Text('Salvar'),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            final savedTitle = titleController.text.trim();
+                            final savedSubtitle = subtitleController.text.trim();
+                            Navigator.of(ctx).pop();
+
+                            setState(() {
+                              if (aba == 0) {
+                                if (isNew) {
+                                  roteiroItems.add({'titulo': savedTitle, 'subtitulo': savedSubtitle});
+                                } else if (index != null) {
+                                  roteiroItems[index] = {'titulo': savedTitle, 'subtitulo': savedSubtitle};
+                                }
+                              } else if (aba == 1) {
+                                if (isNew) {
+                                  compromissosItems.add({'titulo': savedTitle, 'subtitulo': savedSubtitle});
+                                } else if (index != null) {
+                                  compromissosItems[index] = {'titulo': savedTitle, 'subtitulo': savedSubtitle};
+                                }
+                              } else {
+                                if (isNew) {
+                                  anotacoesItems.add({'titulo': savedTitle, 'subtitulo': savedSubtitle});
+                                } else if (index != null) {
+                                  anotacoesItems[index] = {'titulo': savedTitle, 'subtitulo': savedSubtitle};
+                                }
+                              }
+                            });
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(isNew
+                                    ? '$tipo criado: $savedTitle'
+                                    : '$tipo atualizado: $savedTitle'),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF0284C7),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            elevation: 4,
+                            shadowColor: const Color(0xFF0284C7).withOpacity(0.3),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Salvar',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 20),
                 ],
               ),
-              const SizedBox(height: 18),
-            ],
+            ),
           ),
         );
       },
@@ -862,7 +964,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                           );
                         }, 
 
-                        
+
                         borderRadius: BorderRadius.circular(12),
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 12),
@@ -1055,40 +1157,93 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(18),
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                        _openAdicionarViagem();
-                      },
-                      icon: const Icon(Icons.add),
-                      label: const Text('Adicionar'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0D9488),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                          _openAdicionarViagem();
+                        },
+                        icon: const Icon(Icons.add, size: 20),
+                        label: const Text(
+                          'Adicionar',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF0D9488),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          elevation: 4,
+                          shadowColor: const Color(0xFF0D9488).withOpacity(0.4),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                       ),
                     ),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                        _openExcluirViagem();
-                      },
-                      icon: const Icon(Icons.delete),
-                      label: const Text('Excluir'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEF4444),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.of(ctx).pop();
+                          _openExcluirViagem();
+                        },
+                        icon: const Icon(Icons.delete, size: 20),
+                        label: const Text(
+                          'Excluir',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFEF4444),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          elevation: 4,
+                          shadowColor: const Color(0xFFEF4444).withOpacity(0.4),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              ElevatedButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Fechar'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(
+                        color: Color(0xFFCBD5E1),
+                        width: 1.2,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'Fechar',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Color(0xFF0F172A),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 6),
             ],
           ),
         );
@@ -1105,128 +1260,261 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(ctx).viewInsets.bottom,
-            left: 18,
-            right: 18,
-            top: 18,
+        return Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Adicionar Nova Viagem',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                left: 24,
+                right: 24,
+                top: 28,
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: nomeController,
-                decoration: InputDecoration(
-                  labelText: 'Nome do País',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: TextField(
-                      controller: dataInicioController,
-                      decoration: InputDecoration(
-                        labelText: 'Dia Início',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      controller: dataFimController,
-                      decoration: InputDecoration(
-                        labelText: 'Dia Fim',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      controller: mesController,
-                      decoration: InputDecoration(
-                        labelText: 'Mês',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                  Center(
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE2E8F0),
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                   ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Adicionar Nova Viagem',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Preencha os dados para adicionar um novo destino',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF64748B),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  TextField(
+                    controller: nomeController,
+                    decoration: InputDecoration(
+                      labelText: 'Nome do País',
+                      hintText: 'Ex: Londres, Tóquio...',
+                      hintStyle: const TextStyle(color: Color(0xFFC7D2E0)),
+                      filled: true,
+                      fillColor: const Color(0xFFF8FAFC),
+                      prefixIcon: const Icon(
+                        Icons.location_on_outlined,
+                        color: Color(0xFF0284C7),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(color: Color(0xFF0284C7), width: 1.5),
+                      ),
+                      labelStyle: const TextStyle(color: Color(0xFF64748B)),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: dataInicioController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Dia Início',
+                            hintText: 'DD',
+                            hintStyle: const TextStyle(color: Color(0xFFC7D2E0)),
+                            filled: true,
+                            fillColor: const Color(0xFFF8FAFC),
+                            prefixIcon: const Icon(
+                              Icons.calendar_today_outlined,
+                              color: Color(0xFF0284C7),
+                              size: 18,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFF0284C7), width: 1.5),
+                            ),
+                            labelStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextField(
+                          controller: dataFimController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Dia Fim',
+                            hintText: 'DD',
+                            hintStyle: const TextStyle(color: Color(0xFFC7D2E0)),
+                            filled: true,
+                            fillColor: const Color(0xFFF8FAFC),
+                            prefixIcon: const Icon(
+                              Icons.calendar_today_outlined,
+                              color: Color(0xFF0284C7),
+                              size: 18,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFF0284C7), width: 1.5),
+                            ),
+                            labelStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextField(
+                          controller: mesController,
+                          decoration: InputDecoration(
+                            labelText: 'Mês',
+                            hintText: 'Jan, Fev...',
+                            hintStyle: const TextStyle(color: Color(0xFFC7D2E0)),
+                            filled: true,
+                            fillColor: const Color(0xFFF8FAFC),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFE2E8F0), width: 1.2),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFF0284C7), width: 1.5),
+                            ),
+                            labelStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 13),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 28),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Cancelar',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Color(0xFF0F172A),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            final nome = nomeController.text.trim();
+                            final inicio = dataInicioController.text.trim();
+                            final fim = dataFimController.text.trim();
+                            final mes = mesController.text.trim();
+
+                            if (nome.isEmpty || inicio.isEmpty || fim.isEmpty || mes.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Preencha todos os campos')),
+                              );
+                              return;
+                            }
+
+                            setState(() {
+                              viagens.add({
+                                'nome': nome,
+                                'dataInicio': inicio,
+                                'dataFim': fim,
+                                'mes': mes,
+                                'imagem': 'assets/images/paris.png',
+                                'roteiro': [],
+                                'compromissos': [],
+                                'anotacoes': [],
+                              });
+                              _carregarViagem(viagens.length - 1);
+                            });
+
+                            Navigator.of(ctx).pop();
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Viagem "$nome" adicionada')),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF0D9488),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            elevation: 4,
+                            shadowColor: const Color(0xFF0D9488).withOpacity(0.3),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Salvar',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
                 ],
               ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.of(ctx).pop(),
-                    child: const Text('Cancelar'),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: () {
-                      final nome = nomeController.text.trim();
-                      final inicio = dataInicioController.text.trim();
-                      final fim = dataFimController.text.trim();
-                      final mes = mesController.text.trim();
-
-                      if (nome.isEmpty || inicio.isEmpty || fim.isEmpty || mes.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Preencha todos os campos')),
-                        );
-                        return;
-                      }
-
-                      setState(() {
-                        viagens.add({
-                          'nome': nome,
-                          'dataInicio': inicio,
-                          'dataFim': fim,
-                          'mes': mes,
-                          'imagem': 'assets/images/paris.png',
-                          'roteiro': [],
-                          'compromissos': [],
-                          'anotacoes': [],
-                        });
-                        _carregarViagem(viagens.length - 1);
-                      });
-
-                      Navigator.of(ctx).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Viagem "$nome" adicionada')),
-                      );
-                    },
-                    child: const Text('Salvar'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 18),
-            ],
+            ),
           ),
         );
       },
