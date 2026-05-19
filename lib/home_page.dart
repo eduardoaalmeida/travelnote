@@ -1,296 +1,267 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'login_page.dart';
-import 'perfil_page.dart';
 import 'navbar.dart';
+import 'viagem_model.dart';       // ← modelo isolado
+import 'detalhes_viagem_page.dart';
 
-class Tarefa {
-  String titulo;
-  String descricao;
-  bool concluida;
-
-  Tarefa({required this.titulo, required this.descricao, this.concluida = false});
-
-  Map<String, dynamic> toMap() => {
-        'titulo': titulo,
-        'descricao': descricao,
-        'concluida': concluida,
-      };
-
-  factory Tarefa.fromMap(Map<String, dynamic> map) => Tarefa(
-        titulo: map['titulo'] as String,
-        descricao: map['descricao'] as String,
-        concluida: map['concluida'] as bool,
-      );
-}
-
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final List<Tarefa> _itens = [];
-  List<Tarefa> _itensFiltrados = [];
-  final TextEditingController _tituloController = TextEditingController();
-  final TextEditingController _descricaoController = TextEditingController();
-  final TextEditingController _buscaController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _carregarTarefas();
-    _buscaController.addListener(_filtrarTarefas);
-  }
-
-  @override
-  void dispose() {
-    _tituloController.dispose();
-    _descricaoController.dispose();
-    _buscaController.dispose();
-    super.dispose();
-  }
-
-  void _filtrarTarefas() {
-    final busca = _buscaController.text.toLowerCase();
-    setState(() {
-      _itensFiltrados =
-          _itens.where((t) => t.titulo.toLowerCase().contains(busca)).toList();
-    });
-  }
-
-  Future<void> _carregarTarefas() async {
-    final prefs = await SharedPreferences.getInstance();
-    final dados = prefs.getStringList('tarefas') ?? [];
-    setState(() {
-      _itens.clear();
-      _itens.addAll(dados.map((s) => Tarefa.fromMap(jsonDecode(s))));
-      _itensFiltrados = List.from(_itens);
-    });
-  }
-
-  Future<void> _salvarPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-      'tarefas',
-      _itens.map((t) => jsonEncode(t.toMap())).toList(),
-    );
-  }
-
-  void _salvarTarefa(int? indexReal) {
-    if (_tituloController.text.isEmpty) return;
-    final nova = Tarefa(
-      titulo: _tituloController.text,
-      descricao: _descricaoController.text,
-      concluida: indexReal != null ? _itens[indexReal].concluida : false,
-    );
-    setState(() {
-      if (indexReal == null) {
-        _itens.add(nova);
-      } else {
-        _itens[indexReal] = nova;
-      }
-      _filtrarSemSetState();
-    });
-    _tituloController.clear();
-    _descricaoController.clear();
-    _salvarPrefs();
-    Navigator.pop(context);
-  }
-
-  void _filtrarSemSetState() {
-    final busca = _buscaController.text.toLowerCase();
-    _itensFiltrados =
-        _itens.where((t) => t.titulo.toLowerCase().contains(busca)).toList();
-  }
-
-  void _excluirTarefa(int indexNaLista) {
-    final tarefa = _itensFiltrados[indexNaLista];
-    setState(() {
-      _itens.remove(tarefa);
-      _itensFiltrados.removeAt(indexNaLista);
-    });
-    _salvarPrefs();
-  }
-
-  void _toggleConcluida(int indexNaLista) {
-    final tarefa = _itensFiltrados[indexNaLista];
-    setState(() {
-      tarefa.concluida = !tarefa.concluida;
-    });
-  }
-
-  void _mostrarFormulario([int? indexNaLista]) {
-    int? indexReal;
-    if (indexNaLista != null) {
-      final tarefa = _itensFiltrados[indexNaLista];
-      indexReal = _itens.indexOf(tarefa);
-      _tituloController.text = tarefa.titulo;
-      _descricaoController.text = tarefa.descricao;
-    } else {
-      _tituloController.clear();
-      _descricaoController.clear();
-    }
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(indexNaLista == null ? 'Nova Tarefa' : 'Editar Tarefa'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _tituloController,
-              autofocus: true,
-              decoration: const InputDecoration(
-                labelText: 'Título',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _descricaoController,
-              decoration: const InputDecoration(
-                labelText: 'Descrição',
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              _tituloController.clear();
-              _descricaoController.clear();
-              Navigator.pop(context);
-            },
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () => _salvarTarefa(indexReal),
-            child: const Text('Salvar'),
-          ),
-        ],
-      ),
-    );
-  }
+  static final List<Viagem> _proximasViagens = [
+    Viagem(
+      destino: 'Paris',
+      periodo: '10 à 18 Jun',
+      imagemUrl:
+          'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&q=80',
+    ),
+    Viagem(
+      destino: 'Paris',
+      periodo: '10 à 18 Jun',
+      imagemUrl:
+          'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&q=80',
+    ),
+    Viagem(
+      destino: 'Paris',
+      periodo: '10 à 18 Jun',
+      imagemUrl:
+          'https://images.unsplash.com/photo-1541264941462-5f8f2f4b7491?w=400&q=80',
+    ),
+    Viagem(
+      destino: 'Paris',
+      periodo: '10 à 18 Jun',
+      imagemUrl:
+          'https://images.unsplash.com/photo-1520939817895-060bdaf4fe1b?w=400&q=80',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Sair do Sistema',
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-                (route) => false,
-              );
-            },
+      backgroundColor: const Color(0xFFF6F7FB),
+      body: Column(
+        children: [
+          // ── Header gradiente ────────────────────────────────────
+          Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF29C6E0), Color(0xFF1A9BBF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border:
+                                    Border.all(color: Colors.white, width: 2),
+                              ),
+                              child: const CircleAvatar(
+                                radius: 22,
+                                backgroundImage: NetworkImage(
+                                    'https://i.pravatar.cc/150?img=12'),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Olá, Eduardo!',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.notifications_none,
+                              color: Colors.white, size: 24),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 46,
+                      child: ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.add,
+                            color: Colors.white, size: 20),
+                        label: const Text(
+                          'Nova Viagem +',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF23D2B5),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // ── Lista de viagens ────────────────────────────────────
+          Expanded(
+            child: SingleChildScrollView(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Próximas Viagens',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF101828),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  ..._proximasViagens.map((v) => _ViagemCard(viagem: v)),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF23D2B5),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: const Text(
+                        'Viagens Anteriores',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
           ),
         ],
       ),
+      bottomNavigationBar: const NavBar(currentIndex: 1),
+    );
+  }
+}
 
-      drawer: Drawer(
-        child: ListView(
+class _ViagemCard extends StatelessWidget {
+  final Viagem viagem;
+  const _ViagemCard({required this.viagem});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => DetalhesViagemPage(viagem: viagem),
+        ),
+      ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Text(
-                'Menu',
-                style: TextStyle(color: Colors.white, fontSize: 24),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                viagem.imagemUrl,
+                width: 72,
+                height: 72,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 72,
+                  height: 72,
+                  color: Colors.grey.shade200,
+                  child: const Icon(Icons.image, color: Colors.grey),
+                ),
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Meu Perfil'),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (c) => const PerfilPage()),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    viagem.destino,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF101828),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on_outlined,
+                          size: 14, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(
+                        viagem.periodo,
+                        style: const TextStyle(
+                            fontSize: 13, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
+            if (viagem.confirmada)
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE6FAF5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.check_circle,
+                    color: Color(0xFF23D2B5), size: 22),
+              ),
           ],
         ),
       ),
-
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(15, 10, 15, 5),
-            child: TextField(
-              controller: _buscaController,
-              decoration: const InputDecoration(
-                labelText: 'Buscar tarefa...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-              ),
-            ),
-          ),
-          Expanded(
-            child: _itensFiltrados.isEmpty
-                ? const Center(child: Text('Nenhuma tarefa cadastrada.'))
-                : ListView.builder(
-                    itemCount: _itensFiltrados.length,
-                    itemBuilder: (context, index) {
-                      final tarefa = _itensFiltrados[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 15,
-                          vertical: 6,
-                        ),
-                        child: ListTile(
-                          leading: Checkbox(
-                            value: tarefa.concluida,
-                            onChanged: (_) => _toggleConcluida(index),
-                          ),
-                          title: Text(
-                            tarefa.titulo,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          subtitle: tarefa.descricao.isNotEmpty
-                              ? Text(tarefa.descricao)
-                              : null,
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.edit,
-                                  color: Colors.blue,
-                                ),
-                                onPressed: () => _mostrarFormulario(index),
-                              ),
-                              IconButton(
-                                icon: const Icon(
-                                  Icons.delete,
-                                  color: Colors.red,
-                                ),
-                                onPressed: () => _excluirTarefa(index),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _mostrarFormulario(),
-        child: const Icon(Icons.add),
-      ),
-
-      bottomNavigationBar: const NavBar(currentIndex: 1),
     );
   }
 }

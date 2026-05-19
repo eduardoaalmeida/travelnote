@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'editar_perfil_page.dart';
+import 'perfil_page.dart';
 import 'home_page.dart';
 import 'agenda_page.dart';
 import 'viagens_page.dart';
@@ -18,7 +18,7 @@ class NavBar extends StatelessWidget {
     Widget page;
     switch (index) {
       case 0:
-        page = const EditarPerfilPage();
+        page = const PerfilPage();
         break;
       case 1:
         page = const HomePage();

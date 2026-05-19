@@ -1,175 +1,273 @@
 import 'package:flutter/material.dart';
-
-import 'alterar_dados_page.dart';
-import 'configuracoes_page.dart';
-import 'politica_privacidade_page.dart';
-import 'login_page.dart';
-import 'viagens_page.dart';
-
 import 'navbar.dart';
+import 'detalhes_viagem_page.dart';
+import 'viagem_model.dart';
 
-class EditarPerfilPage extends StatelessWidget {
-  const EditarPerfilPage({super.key});
+// ── Modelo de Viagem ──────────────────────────────────────────────────────────
 
-  Widget _buildItem({
-    required BuildContext context,
-    required IconData icon,
-    required String texto,
-    required Widget? destino,
-    bool isLogout = false,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        if (destino != null) {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => destino));
-        } else if (isLogout) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => const LoginPage()),
-            (route) => false,
-          );
-        }
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFFEFF3F8),
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Icon(
-                icon,
-                color: isLogout ? const Color(0xFFE53935) : const Color(0xFF1A5276),
-                size: 24,
-              ),
-            ),
-            const SizedBox(width: 15),
-            Expanded(
-              child: Text(
-                texto,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isLogout ? const Color(0xFFE53935) : const Color(0xFF101828),
-                ),
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: Colors.grey[400],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+// ── Página Home ───────────────────────────────────────────────────────────────
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  static final List<Viagem> _proximasViagens = [
+    Viagem(
+      destino: 'Paris',
+      periodo: '10 à 18 Jun',
+      imagemUrl:
+          'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&q=80',
+    ),
+    Viagem(
+      destino: 'Paris',
+      periodo: '10 à 18 Jun',
+      imagemUrl:
+          'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&q=80',
+    ),
+    Viagem(
+      destino: 'Paris',
+      periodo: '10 à 18 Jun',
+      imagemUrl:
+          'https://images.unsplash.com/photo-1541264941462-5f8f2f4b7491?w=400&q=80',
+    ),
+    Viagem(
+      destino: 'Paris',
+      periodo: '10 à 18 Jun',
+      imagemUrl:
+          'https://images.unsplash.com/photo-1520939817895-060bdaf4fe1b?w=400&q=80',
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7FB),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF6F7FB),
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF101828)),
-          onPressed: () {
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context);
-            }
-          },
-        ),
-        title: const Text(
-          'Meu Perfil',
-          style: TextStyle(
-            color: Color(0xFF101828),
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: const Color(0xFFE0E5EC),
-                  width: 3,
+      body: Column(
+        children: [
+          // ── Header gradiente ────────────────────────────────────
+          Container(
+            width: double.infinity,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF29C6E0), Color(0xFF1A9BBF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+            ),
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 30),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                    color: Colors.white, width: 2),
+                              ),
+                              child: const CircleAvatar(
+                                radius: 22,
+                                backgroundImage: NetworkImage(
+                                    'https://i.pravatar.cc/150?img=12'),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Olá, Eduardo!',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.notifications_none,
+                              color: Colors.white, size: 24),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 46,
+                      child: ElevatedButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(Icons.add,
+                            color: Colors.white, size: 20),
+                        label: const Text(
+                          'Nova Viagem +',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF23D2B5),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              child: const CircleAvatar(
-                radius: 55,
-                backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=12'),
+            ),
+          ),
+
+          // ── Lista de viagens ────────────────────────────────────
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 20, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Próximas Viagens',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF101828),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  ..._proximasViagens
+                      .map((v) => _ViagemCard(viagem: v))
+                      .toList(),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF23D2B5),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                      ),
+                      child: const Text(
+                        'Viagens Anteriores',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
-            const SizedBox(height: 15),
-            const Text(
-              'Eduardo Andrade',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF101828),
+          ),
+        ],
+      ),
+      bottomNavigationBar: const NavBar(currentIndex: 1),
+    );
+  }
+}
+
+// ── Card individual de viagem ─────────────────────────────────────────────────
+class _ViagemCard extends StatelessWidget {
+  final Viagem viagem;
+  const _ViagemCard({required this.viagem});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => DetalhesViagemPage(viagem: viagem),
+        ),
+      ),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                viagem.imagemUrl,
+                width: 72,
+                height: 72,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 72,
+                  height: 72,
+                  color: Colors.grey.shade200,
+                  child: const Icon(Icons.image, color: Colors.grey),
+                ),
               ),
             ),
-            const SizedBox(height: 5),
-            const Text(
-              'eduardo@gmail.com',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF1A5276),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    viagem.destino,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF101828),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on_outlined,
+                          size: 14, color: Colors.grey),
+                      const SizedBox(width: 4),
+                      Text(
+                        viagem.periodo,
+                        style: const TextStyle(
+                            fontSize: 13, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 30),
-            _buildItem(
-              context: context,
-              icon: Icons.person_outline,
-              texto: 'Dados Pessoais',
-              destino: const AlterarDadosPage(),
-            ),
-            _buildItem(
-              context: context,
-              icon: Icons.map_outlined,
-              texto: 'Minhas Viagens',
-              destino: const ViagensPage(),
-            ),
-            _buildItem(
-              context: context,
-              icon: Icons.settings_outlined,
-              texto: 'Configurações',
-              destino: const ConfiguracoesPage(),
-            ),
-            _buildItem(
-              context: context,
-              icon: Icons.verified_user_outlined,
-              texto: 'Termos de Privacidade',
-              destino: const PoliticaPrivacidadePage(),
-            ),
-            _buildItem(
-              context: context,
-              icon: Icons.logout,
-              texto: 'Sair',
-              destino: null,
-              isLogout: true,
-            ),
+            if (viagem.confirmada)
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE6FAF5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.check_circle,
+                    color: Color(0xFF23D2B5), size: 22),
+              ),
           ],
         ),
       ),
-      bottomNavigationBar: const NavBar(currentIndex: 0),
     );
   }
 }
