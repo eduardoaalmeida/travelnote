@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'navbar.dart';
 
 class ViagensPage extends StatelessWidget {
   const ViagensPage({super.key});
@@ -25,7 +24,7 @@ class ViagensPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Minhas Viagens')),
 
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(20),
 
         child: Column(
@@ -38,7 +37,6 @@ class ViagensPage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: const NavBar(currentIndex: 3),
     );
   }
 }
