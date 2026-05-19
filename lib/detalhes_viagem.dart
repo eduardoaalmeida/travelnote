@@ -860,7 +860,9 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                             isNew: false,
                             index: i,
                           );
-                        },
+                        }, 
+
+                        
                         borderRadius: BorderRadius.circular(12),
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 12),
