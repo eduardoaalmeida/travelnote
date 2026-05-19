@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CadastrarViagemPage extends StatefulWidget {
   const CadastrarViagemPage({super.key});
@@ -206,6 +207,19 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
     );
   }
 
+  String _formatarOrcamento(String valor) {
+    final apenasNumeros = valor.replaceAll(RegExp(r'[^0-9]'), '');
+
+    if (apenasNumeros.isEmpty) {
+      return '';
+    }
+
+    final valorInteiro = int.parse(apenasNumeros);
+    final valorFormatado = (valorInteiro / 100).toStringAsFixed(2);
+
+    return valorFormatado.replaceAll('.', ',');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -355,6 +369,18 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
                 TextField(
                   controller: _orcamentoController,
                   keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    TextInputFormatter.withFunction((oldValue, newValue) {
+                      final formatted = _formatarOrcamento(newValue.text);
+                      return TextEditingValue(
+                        text: formatted,
+                        selection: TextSelection.collapsed(
+                          offset: formatted.length,
+                        ),
+                      );
+                    }),
+                  ],
                   decoration: _buildInputDecoration(
                     hintText: '0,00',
                     prefixIcon: const Icon(
