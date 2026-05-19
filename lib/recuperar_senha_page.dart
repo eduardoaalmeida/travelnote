@@ -178,7 +178,7 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF2DD4BF).withOpacity(0.2),
+                                    color: const Color(0xFF2DD4BF).withValues(alpha: 0.2),
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
                                   ),
