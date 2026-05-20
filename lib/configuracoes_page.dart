@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'bottom_nav_bar.dart';
-import 'home_page.dart';
-import 'agenda_page.dart';
-import 'viagens_page.dart';
+import 'navbar.dart';
 import 'perfil_page.dart';
 import 'politica_privacidade_page.dart';
 import 'login_page.dart';
@@ -63,29 +60,6 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   bool _notificacoesAtivas = true;
   bool _modoNoturno = false;
 
-  void _onNavTap(BuildContext context, int index) {
-    if (index == 3) return;
-
-    Widget destination;
-    switch (index) {
-      case 0:
-        destination = const HomePage();
-        break;
-      case 1:
-        destination = const AgendaPage();
-        break;
-      case 2:
-        destination = const ViagensPage();
-        break;
-      default:
-        return;
-    }
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => destination),
-    );
-  }
 
   Future<void> _selecionarOpcao<T>(
     BuildContext context,
@@ -243,10 +217,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 3,
-        onTap: (index) => _onNavTap(context, index),
-      ),
+      bottomNavigationBar: const NavBar(currentIndex: 0),
     );
   }
 }

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'agenda_page.dart';
 import 'alterar_dados_page.dart';
-import 'bottom_nav_bar.dart';
+import 'navbar.dart';
 import 'configuracoes_page.dart';
-import 'home_page.dart';
 import 'login_page.dart';
 import 'politica_privacidade_page.dart';
 import 'viagens_page.dart';
@@ -153,29 +151,6 @@ class _PerfilPageState extends State<PerfilPage> {
     );
   }
 
-  void _onNavTap(int index) {
-    if (index == 3) return;
-
-    Widget destination;
-    switch (index) {
-      case 0:
-        destination = const HomePage();
-        break;
-      case 1:
-        destination = const AgendaPage();
-        break;
-      case 2:
-        destination = const ViagensPage();
-        break;
-      default:
-        return;
-    }
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => destination),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -284,7 +259,7 @@ class _PerfilPageState extends State<PerfilPage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(currentIndex: 3, onTap: _onNavTap),
+      bottomNavigationBar: const NavBar(currentIndex: 0),
     );
   }
 }

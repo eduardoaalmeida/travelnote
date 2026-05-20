@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'bottom_nav_bar.dart';
-import 'home_page.dart';
-import 'viagens_page.dart';
-import 'perfil_page.dart';
+import 'navbar.dart';
 
 class AgendaPage extends StatefulWidget {
   const AgendaPage({super.key});
@@ -50,29 +47,6 @@ class _AgendaPageState extends State<AgendaPage> {
     );
   }
 
-  void _onNavTap(BuildContext context, int index) {
-    if (index == 1) return;
-
-    Widget destination;
-    switch (index) {
-      case 0:
-        destination = const HomePage();
-        break;
-      case 2:
-        destination = const ViagensPage();
-        break;
-      case 3:
-        destination = const PerfilPage();
-        break;
-      default:
-        return;
-    }
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => destination),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,10 +130,7 @@ class _AgendaPageState extends State<AgendaPage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: 1,
-        onTap: (index) => _onNavTap(context, index),
-      ),
+      bottomNavigationBar: const NavBar(currentIndex: 2),
     );
   }
 }

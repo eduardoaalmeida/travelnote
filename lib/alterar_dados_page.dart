@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'login_page.dart';
+import 'alterar_senha_page.dart';
 
 class AlterarDadosPage extends StatelessWidget {
   const AlterarDadosPage({super.key});
@@ -205,7 +206,14 @@ class AlterarDadosPage extends StatelessWidget {
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AlterarSenhaPage(),
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF23D2B5),
                       foregroundColor: Colors.white,
