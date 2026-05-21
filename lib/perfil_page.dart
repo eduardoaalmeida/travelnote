@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'alterar_dados_page.dart';
+import 'home_page.dart';
 import 'navbar.dart';
 import 'configuracoes_page.dart';
 import 'login_page.dart';
@@ -151,13 +152,19 @@ class _PerfilPageState extends State<PerfilPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7FB),
       appBar: AppBar(
-        leading: const BackButton(color: Colors.black),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const HomePage()),
+            (route) => false,
+          ),
+        ),
         title: const Text(
           'Meu Perfil',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
