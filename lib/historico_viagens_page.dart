@@ -1,54 +1,8 @@
 import 'package:flutter/material.dart';
+import 'viagem_model.dart';
+import 'viagens_page.dart';
 
-// ─────────────────────────────────────────────
-// MODELO
-// ─────────────────────────────────────────────
-class GastoViagem {
-  final String destino;
-  final String pais;
-  final double valor;
-  final String periodo;
-  final String imagemUrl;
 
-  const GastoViagem({
-    required this.destino,
-    required this.pais,
-    required this.valor,
-    required this.periodo,
-    required this.imagemUrl,
-  });
-}
-
-// ─────────────────────────────────────────────
-// DADOS MOCKADOS
-// ─────────────────────────────────────────────
-const _gastosMock = [
-  GastoViagem(
-    destino: 'Paris',
-    pais: 'França',
-    valor: 5000,
-    periodo: 'JUNHO 2026',
-    imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
-  ),
-  GastoViagem(
-    destino: 'Paris',
-    pais: 'França',
-    valor: 3250,
-    periodo: 'JUNHO 2026',
-    imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
-  ),
-  GastoViagem(
-    destino: 'Paris',
-    pais: 'França',
-    valor: 6750,
-    periodo: 'JUNHO 2026',
-    imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
-  ),
-];
-
-// ─────────────────────────────────────────────
-// PÁGINA
-// ─────────────────────────────────────────────
 class HistoricoViagensPage extends StatefulWidget {
   const HistoricoViagensPage({super.key});
 
@@ -57,21 +11,33 @@ class HistoricoViagensPage extends StatefulWidget {
 }
 
 class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
-  final List<GastoViagem> _gastos = List.from(_gastosMock);
-  String _anoSelecionado = '2025';
+  // Reutiliza a lista de viagens já definida em viagens_page.dart
+  final List<Viagem> _viagens = List.from(viagensMock);
+  String _anoSelecionado = '2026';
   final List<String> _anos = ['2024', '2025', '2026'];
 
-  double get _totalInvestido =>
-      _gastos.fold(0, (soma, g) => soma + g.valor);
+  double get _totalInvestido => _viagens.fold(
+      0, (soma, v) => soma + (double.tryParse(v.orcamento.replaceAll('.', '').replaceAll(',', '.')) ?? 0));
+
+  int get _totalViagens => _viagens.length;
 
   String _formatarReal(double valor) {
-    final partes = valor.toStringAsFixed(0).split('');
-    final resultado = StringBuffer();
-    for (int i = 0; i < partes.length; i++) {
-      if (i > 0 && (partes.length - i) % 3 == 0) resultado.write('.');
-      resultado.write(partes[i]);
+    // Formata 15000 → R$ 15.000
+    final s = valor.toStringAsFixed(0);
+    final buffer = StringBuffer();
+    for (int i = 0; i < s.length; i++) {
+      if (i > 0 && (s.length - i) % 3 == 0) buffer.write('.');
+      buffer.write(s[i]);
     }
-    return 'R\$ ${resultado.toString()}';
+    return 'R\$ ${buffer.toString()}';
+  }
+
+  // Navega para ViagensPage abrindo direto o formulário da viagem selecionada
+  void _verDetalhes(int index) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ViagensPage()),
+    );
   }
 
   @override
@@ -88,7 +54,6 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Logo icon mockado
             Container(
               width: 32,
               height: 32,
@@ -131,7 +96,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Historico de Gastos',
+              'Histórico de Gastos',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -149,7 +114,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
+                    color: Colors.black.withValues(alpha: 0.06),
                     blurRadius: 10,
                     offset: const Offset(0, 3),
                   ),
@@ -160,7 +125,6 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Selector de ano
                       GestureDetector(
                         onTap: _mostrarSeletorAno,
                         child: Container(
@@ -194,6 +158,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                   const SizedBox(height: 20),
                   Row(
                     children: [
+                      // Total de viagens
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,7 +177,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: '${_gastos.length}\n',
+                                    text: '$_totalViagens\n',
                                     style: const TextStyle(
                                       fontSize: 36,
                                       fontWeight: FontWeight.w800,
@@ -240,6 +205,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                         color: Colors.grey.shade200,
                         margin: const EdgeInsets.symmetric(horizontal: 16),
                       ),
+                      // Investimento total
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -257,7 +223,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                             Text(
                               _formatarReal(_totalInvestido),
                               style: const TextStyle(
-                                fontSize: 28,
+                                fontSize: 26,
                                 fontWeight: FontWeight.w800,
                                 color: Color(0xFF1E83DB),
                                 height: 1.1,
@@ -273,7 +239,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
             ),
             const SizedBox(height: 24),
 
-            // ── Lista de gastos ────────────────────────
+            // ── Lista de gastos ───────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -286,9 +252,10 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    // navegar para lista completa
-                  },
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ViagensPage()),
+                  ),
                   child: const Text(
                     'Ver todas',
                     style: TextStyle(
@@ -302,15 +269,22 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
             ),
             const SizedBox(height: 12),
 
-            ..._gastos.map((g) => _buildCardGasto(g)),
+            ...List.generate(
+              _viagens.length,
+              (index) => _buildCardGasto(_viagens[index], index),
+            ),
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
+      // Sem bottomNavigationBar aqui — fica centralizado no bottom_nav_bar.dart
     );
   }
 
-  Widget _buildCardGasto(GastoViagem gasto) {
+  Widget _buildCardGasto(Viagem viagem, int index) {
+    final valor = double.tryParse(
+            viagem.orcamento.replaceAll('.', '').replaceAll(',', '.')) ??
+        0;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
@@ -319,7 +293,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -330,11 +304,11 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
             child: Image.network(
-              gasto.imagemUrl,
+              viagem.imagemUrl,
               width: 68,
               height: 68,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
+              errorBuilder: (_, _, _) => Container(
                 width: 68,
                 height: 68,
                 color: Colors.grey.shade200,
@@ -348,7 +322,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${gasto.destino}, ${gasto.pais}',
+                  viagem.destino,
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 15,
@@ -357,16 +331,16 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  _formatarReal(gasto.valor),
+                  _formatarReal(valor),
                   style: const TextStyle(
                     fontWeight: FontWeight.w800,
-                    fontSize: 17,
+                    fontSize: 16,
                     color: Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  gasto.periodo,
+                  _mesAno(viagem.dataInicio),
                   style: TextStyle(
                     fontSize: 11,
                     color: Colors.grey.shade500,
@@ -377,14 +351,14 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
             ),
           ),
           ElevatedButton(
-            onPressed: () {
-              // navegar para detalhes da viagem
-            },
+            // Navega para ViagensPage ao clicar em "Ver Detalhes"
+            onPressed: () => _verDetalhes(index),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF1BCE8A),
               foregroundColor: Colors.white,
               elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -416,36 +390,34 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
               style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
             ),
             const SizedBox(height: 16),
-            ..._anos.map((ano) => ListTile(
-                  title: Text(ano),
-                  trailing: ano == _anoSelecionado
-                      ? const Icon(Icons.check, color: Color(0xFF1E83DB))
-                      : null,
-                  onTap: () {
-                    setState(() => _anoSelecionado = ano);
-                    Navigator.pop(context);
-                  },
-                )),
+            ..._anos.map(
+              (ano) => ListTile(
+                title: Text(ano),
+                trailing: ano == _anoSelecionado
+                    ? const Icon(Icons.check, color: Color(0xFF1E83DB))
+                    : null,
+                onTap: () {
+                  setState(() => _anoSelecionado = ano);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBottomNav() {
-    return BottomNavigationBar(
-      currentIndex: 1,
-      selectedItemColor: const Color(0xFF1E83DB),
-      unselectedItemColor: Colors.grey,
-      showUnselectedLabels: true,
-      type: BottomNavigationBarType.fixed,
-      elevation: 8,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Perfil'),
-        BottomNavigationBarItem(icon: Icon(Icons.dashboard_outlined), label: 'Dashboard'),
-        BottomNavigationBarItem(icon: Icon(Icons.calendar_today_outlined), label: 'Agenda'),
-        BottomNavigationBarItem(icon: Icon(Icons.flight_outlined), label: 'Viagens'),
-      ],
-    );
+  String _mesAno(String data) {
+    // "10/06/2026" → "JUNHO 2026"
+    if (data.length < 10) return data;
+    final p = data.split('/');
+    if (p.length < 3) return data;
+    const meses = [
+      '', 'JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO',
+      'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'
+    ];
+    final mes = int.tryParse(p[1]) ?? 0;
+    return '${mes >= 1 && mes <= 12 ? meses[mes] : p[1]} ${p[2]}';
   }
 }

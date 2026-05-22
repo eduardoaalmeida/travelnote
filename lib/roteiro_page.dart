@@ -1,6 +1,30 @@
 import 'package:flutter/material.dart';
 import 'navbar.dart';
 
+// ─────────────────────────────────────────────
+// MODELO LOCAL
+// ─────────────────────────────────────────────
+class LocalRoteiro {
+  String numero;
+  String nome;
+  String endereco;
+  String data;
+  String horario;
+  bool concluido;
+
+  LocalRoteiro({
+    required this.numero,
+    required this.nome,
+    required this.endereco,
+    required this.data,
+    required this.horario,
+    this.concluido = false,
+  });
+}
+
+// ─────────────────────────────────────────────
+// PÁGINA
+// ─────────────────────────────────────────────
 class RoteiroPage extends StatefulWidget {
   const RoteiroPage({super.key});
 
@@ -9,244 +33,238 @@ class RoteiroPage extends StatefulWidget {
 }
 
 class _RoteiroPageState extends State<RoteiroPage> {
-  final List<Map<String, dynamic>> _locais = [
-    {
-      'numero': '01',
-      'nome': 'Visita a Torre Eiffel',
-      'data': '10/06/2026',
-      'horario': '09:30HRS',
-      'distancia': null,
-      'concluido': true,
-    },
-    {
-      'numero': '02',
-      'nome': 'Museu do Louvre',
-      'data': '10/06/2026',
-      'horario': '11:30HRS',
-      'distancia': '4 KM DE DISTANCIA',
-      'concluido': true,
-    },
-    {
-      'numero': '03',
-      'nome': 'Catedral de Notre-Dame',
-      'data': '10/06/2026',
-      'horario': '13:30HRS',
-      'distancia': '2.3 KM DE DISTANCIA',
-      'concluido': true,
-    },
-    {
-      'numero': '04',
-      'nome': 'Jardim de Luxemburgo',
-      'data': '10/06/2026',
-      'horario': '14:00HRS',
-      'distancia': '6 KM DE DISTANCIA',
-      'concluido': true,
-    },
-    {
-      'numero': '05',
-      'nome': 'Arco do Triunfo',
-      'data': '10/06/2026',
-      'horario': '16:40HRS',
-      'distancia': '1.3 KM DE DISTANCIA',
-      'concluido': false,
-    },
+  final List<LocalRoteiro> _locais = [
+    LocalRoteiro(
+      numero: '01',
+      nome: 'Visita a Torre Eiffel',
+      endereco: 'Champ de Mars, Paris',
+      data: '10/06/2026',
+      horario: '09:30hrs',
+      concluido: true,
+    ),
+    LocalRoteiro(
+      numero: '02',
+      nome: 'Museu do Louvre',
+      endereco: 'Rue de Rivoli, Paris',
+      data: '10/06/2026',
+      horario: '11:30hrs',
+      concluido: true,
+    ),
+    LocalRoteiro(
+      numero: '03',
+      nome: 'Catedral de Notre-Dame',
+      endereco: '6 Parvis Notre-Dame, Paris',
+      data: '10/06/2026',
+      horario: '13:30hrs',
+      concluido: true,
+    ),
+    LocalRoteiro(
+      numero: '04',
+      nome: 'Jardim de Luxemburgo',
+      endereco: 'Rue de Médicis, Paris',
+      data: '10/06/2026',
+      horario: '14:00hrs',
+      concluido: true,
+    ),
+    LocalRoteiro(
+      numero: '05',
+      nome: 'Arco do Triunfo',
+      endereco: 'Place Charles de Gaulle, Paris',
+      data: '10/06/2026',
+      horario: '16:40hrs',
+      concluido: false,
+    ),
   ];
 
-  void _editarLocal(int index) {
-    final nomeController =
-        TextEditingController(text: _locais[index]['nome']);
-    final horarioController =
-        TextEditingController(text: _locais[index]['horario']);
-    final distanciaController =
-        TextEditingController(text: _locais[index]['distancia'] ?? '');
+  // ── Abre modal de CADASTRO (novo local) ──────────────
+  void _abrirCadastro() {
+    final tituloCtrl = TextEditingController();
+    final enderecoCtrl = TextEditingController();
+    final dataCtrl = TextEditingController(text: '10/06/2026');
+    final horarioCtrl = TextEditingController(text: '09:30hrs');
 
-    showModalBottomSheet(
+    _mostrarModal(
+      titulo: 'Cadastro de Local',
+      tituloCtrl: tituloCtrl,
+      enderecoCtrl: enderecoCtrl,
+      dataCtrl: dataCtrl,
+      horarioCtrl: horarioCtrl,
+      botaoLabel: 'Cadastrar Local',
+      onSalvar: () {
+        if (tituloCtrl.text.trim().isEmpty) return;
+        setState(() {
+          final numero = (_locais.length + 1).toString().padLeft(2, '0');
+          _locais.add(LocalRoteiro(
+            numero: numero,
+            nome: tituloCtrl.text.trim(),
+            endereco: enderecoCtrl.text.trim(),
+            data: dataCtrl.text.trim(),
+            horario: horarioCtrl.text.trim(),
+            concluido: false,
+          ));
+        });
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  // ── Abre modal de EDIÇÃO (local existente) ───────────
+  void _abrirEdicao(int index) {
+    final local = _locais[index];
+    final tituloCtrl = TextEditingController(text: local.nome);
+    final enderecoCtrl = TextEditingController(text: local.endereco);
+    final dataCtrl = TextEditingController(text: local.data);
+    final horarioCtrl = TextEditingController(text: local.horario);
+
+    _mostrarModal(
+      titulo: 'Editar Local',
+      tituloCtrl: tituloCtrl,
+      enderecoCtrl: enderecoCtrl,
+      dataCtrl: dataCtrl,
+      horarioCtrl: horarioCtrl,
+      botaoLabel: 'Salvar Alterações',
+      onSalvar: () {
+        setState(() {
+          _locais[index]
+            ..nome = tituloCtrl.text.trim()
+            ..endereco = enderecoCtrl.text.trim()
+            ..data = dataCtrl.text.trim()
+            ..horario = horarioCtrl.text.trim();
+        });
+        Navigator.pop(context);
+      },
+    );
+  }
+
+  // ── Modal compartilhado — popup centralizado ─────────
+  void _mostrarModal({
+    required String titulo,
+    required TextEditingController tituloCtrl,
+    required TextEditingController enderecoCtrl,
+    required TextEditingController dataCtrl,
+    required TextEditingController horarioCtrl,
+    required String botaoLabel,
+    required VoidCallback onSalvar,
+  }) {
+    showDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (_) => Padding(
-        padding: EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 24,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Editar Local',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF101828),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: nomeController,
-              decoration: InputDecoration(
-                labelText: 'Nome do Local',
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: horarioController,
-              decoration: InputDecoration(
-                labelText: 'Horário',
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: distanciaController,
-              decoration: InputDecoration(
-                labelText: 'Distância',
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    _locais[index]['nome'] = nomeController.text;
-                    _locais[index]['horario'] = horarioController.text;
-                    _locais[index]['distancia'] =
-                        distanciaController.text.isEmpty
-                            ? null
-                            : distanciaController.text;
-                  });
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF23D2B5),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+      barrierDismissible: true,
+      builder: (_) => Dialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Título do modal
+                Center(
+                  child: Text(
+                    titulo,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF101828),
+                    ),
+                  ),
                 ),
-                child: const Text(
-                  'Salvar',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                const SizedBox(height: 20),
+
+                // Campo: Título da Visita
+                _labelModal('📍 TÍTULO DA VISITA'),
+                _campoModal(
+                  controller: tituloCtrl,
+                  hint: 'Ex: Visita à Torre Eiffel',
+                  icone: Icons.location_on_outlined,
                 ),
-              ),
+                const SizedBox(height: 14),
+
+                // Campo: Endereço
+                _labelModal('🗺️ ENDEREÇO'),
+                _campoModal(
+                  controller: enderecoCtrl,
+                  hint: 'Ex: Champ de Mars, Paris',
+                  icone: Icons.map_outlined,
+                ),
+                const SizedBox(height: 14),
+
+                // Campos: Data e Horário lado a lado
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _labelModal('📅 DATA'),
+                          _campoModalData(dataCtrl),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _labelModal('⏰ HORÁRIO'),
+                          _campoModalHorario(horarioCtrl),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+
+                // Botão de ação
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: onSalvar,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF23D2B5),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      botaoLabel,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  void _adicionarLocal() {
-    final nomeController = TextEditingController();
-    final horarioController = TextEditingController();
-    final distanciaController = TextEditingController();
-
-    showModalBottomSheet(
+  // ── Selecionar data via DatePicker ───────────────────
+  Future<void> _selecionarData(TextEditingController ctrl) async {
+    final picked = await showDatePicker(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (_) => Padding(
-        padding: EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 24,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      initialDate: DateTime(2026, 6, 10),
+      firstDate: DateTime(2024),
+      lastDate: DateTime(2030),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(primary: Color(0xFF23D2B5)),
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Adicionar Local',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF101828),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: nomeController,
-              decoration: InputDecoration(
-                labelText: 'Nome do Local',
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: horarioController,
-              decoration: InputDecoration(
-                labelText: 'Horário',
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: distanciaController,
-              decoration: InputDecoration(
-                labelText: 'Distância (opcional)',
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10)),
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (nomeController.text.isEmpty) return;
-                  setState(() {
-                    final numero = (_locais.length + 1)
-                        .toString()
-                        .padLeft(2, '0');
-                    _locais.add({
-                      'numero': numero,
-                      'nome': nomeController.text,
-                      'data': '10/06/2026',
-                      'horario': horarioController.text,
-                      'distancia': distanciaController.text.isEmpty
-                          ? null
-                          : distanciaController.text,
-                      'concluido': false,
-                    });
-                  });
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF23D2B5),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                ),
-                child: const Text(
-                  'Adicionar',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ],
-        ),
+        child: child!,
       ),
     );
+    if (picked != null) {
+      ctrl.text =
+          '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
+    }
   }
 
   @override
@@ -263,7 +281,20 @@ class _RoteiroPageState extends State<RoteiroPage> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset('assets/images/icon.png', height: 36),
+            // Tenta carregar o asset; se não existir, mostra ícone
+            Image.asset(
+              'assets/images/icon.png',
+              height: 36,
+              errorBuilder: (_, __, ___) => Container(
+                width: 36,
+                height: 36,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF23D2B5),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.flight, color: Colors.white, size: 20),
+              ),
+            ),
             const SizedBox(width: 8),
             RichText(
               text: const TextSpan(
@@ -306,7 +337,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
             ),
             const SizedBox(height: 18),
 
-            // Lista de locais
+            // ── Lista de locais ──────────────────────
             ..._locais.asMap().entries.map((entry) {
               final i = entry.key;
               final local = entry.value;
@@ -317,6 +348,13 @@ class _RoteiroPageState extends State<RoteiroPage> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
@@ -330,7 +368,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        local['numero'],
+                        local.numero,
                         style: const TextStyle(
                           color: Color(0xFF23D2B5),
                           fontWeight: FontWeight.bold,
@@ -346,7 +384,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            local['nome'],
+                            local.nome,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
@@ -355,14 +393,14 @@ class _RoteiroPageState extends State<RoteiroPage> {
                           ),
                           const SizedBox(height: 3),
                           Text(
-                            '${local['data']} • ${local['horario']}',
+                            '${local.data} • ${local.horario}',
                             style: const TextStyle(
                                 fontSize: 11, color: Colors.grey),
                           ),
-                          if (local['distancia'] != null) ...[
+                          if (local.endereco.isNotEmpty) ...[
                             const SizedBox(height: 2),
                             Text(
-                              local['distancia'],
+                              local.endereco,
                               style: const TextStyle(
                                   fontSize: 11, color: Colors.grey),
                             ),
@@ -371,21 +409,17 @@ class _RoteiroPageState extends State<RoteiroPage> {
                       ),
                     ),
 
-                    // Ações
+                    // Ações: check + editar
                     Row(
                       children: [
                         GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _locais[i]['concluido'] =
-                                  !_locais[i]['concluido'];
-                            });
-                          },
+                          onTap: () => setState(
+                              () => _locais[i].concluido = !_locais[i].concluido),
                           child: Icon(
-                            local['concluido']
+                            local.concluido
                                 ? Icons.check_circle
                                 : Icons.check_circle_outline,
-                            color: local['concluido']
+                            color: local.concluido
                                 ? const Color(0xFF23D2B5)
                                 : Colors.grey.shade300,
                             size: 22,
@@ -393,7 +427,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
                         ),
                         const SizedBox(width: 10),
                         GestureDetector(
-                          onTap: () => _editarLocal(i),
+                          onTap: () => _abrirEdicao(i),
                           child: const Icon(Icons.edit_outlined,
                               size: 20, color: Colors.grey),
                         ),
@@ -406,9 +440,9 @@ class _RoteiroPageState extends State<RoteiroPage> {
 
             const SizedBox(height: 12),
 
-            // Botão Adicionar Local
+            // ── Botão Adicionar Local ────────────────
             GestureDetector(
-              onTap: _adicionarLocal,
+              onTap: _abrirCadastro,
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -416,6 +450,13 @@ class _RoteiroPageState extends State<RoteiroPage> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: const Text(
                   'Adicionar Local +',
@@ -430,7 +471,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
 
             const SizedBox(height: 12),
 
-            // Botão Verificar Rotas
+            // ── Botão Verificar Rotas ────────────────
             GestureDetector(
               onTap: () {},
               child: Container(
@@ -440,6 +481,13 @@ class _RoteiroPageState extends State<RoteiroPage> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: const Text(
                   'Verificar Rotas',
@@ -454,7 +502,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
 
             const SizedBox(height: 24),
 
-            // Ilustração
+            // ── Ilustração ───────────────────────────
             Center(
               child: Image.asset(
                 'assets/images/imagem_roteiro.png',
@@ -471,4 +519,75 @@ class _RoteiroPageState extends State<RoteiroPage> {
       bottomNavigationBar: const NavBar(currentIndex: 3),
     );
   }
+
+  // ── Helpers do modal ─────────────────────────────────
+  Widget _labelModal(String texto) => Padding(
+        padding: const EdgeInsets.only(bottom: 6),
+        child: Text(
+          texto,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade500,
+            letterSpacing: 0.5,
+          ),
+        ),
+      );
+
+  InputDecoration _decoModal({required String hint, IconData? icone}) =>
+      InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+        prefixIcon: icone != null
+            ? Icon(icone, color: Colors.grey.shade400, size: 20)
+            : null,
+        filled: true,
+        fillColor: const Color(0xFFF7F8FA),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 13, horizontal: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Colors.grey.shade200),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Colors.grey.shade200),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide:
+              const BorderSide(color: Color(0xFF23D2B5), width: 1.5),
+        ),
+      );
+
+  Widget _campoModal({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icone,
+  }) =>
+      TextField(
+        controller: controller,
+        style: const TextStyle(fontSize: 14),
+        decoration: _decoModal(hint: hint, icone: icone),
+      );
+
+  Widget _campoModalData(TextEditingController ctrl) => TextField(
+        controller: ctrl,
+        readOnly: true,
+        onTap: () => _selecionarData(ctrl),
+        style: const TextStyle(fontSize: 13),
+        decoration: _decoModal(
+          hint: 'dd/mm/aaaa',
+          icone: Icons.calendar_today_outlined,
+        ),
+      );
+
+  Widget _campoModalHorario(TextEditingController ctrl) => TextField(
+        controller: ctrl,
+        style: const TextStyle(fontSize: 13),
+        decoration: _decoModal(
+          hint: '00:00hrs',
+          icone: Icons.access_time_outlined,
+        ),
+      );
 }
