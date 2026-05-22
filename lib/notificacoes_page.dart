@@ -1,136 +1,156 @@
 import 'package:flutter/material.dart';
+import 'viagens_page.dart';       // para navegar ao tocar em notificação de viagem
+import 'historico_viagens_page.dart'; // para navegar ao tocar em notificação de orçamento
 
 // ─────────────────────────────────────────────
 // MODELO
 // ─────────────────────────────────────────────
-class Viagem {
-  String destino;
-  String dataInicio;
-  String dataFim;
-  String orcamento;
-  String anotacoes;
-  String imagemUrl;
+enum TipoNotificacao {
+  contagemRegressiva,
+  orcamentoExcedido,
+  eventoAgendado,
+  localMarcado,
+  viagemCompartilhada,
+}
 
-  Viagem({
-    required this.destino,
-    required this.dataInicio,
-    required this.dataFim,
-    required this.orcamento,
-    required this.anotacoes,
-    required this.imagemUrl,
+class Notificacao {
+  final TipoNotificacao tipo;
+  final String titulo;
+  final String descricao;
+  final String tempo;
+  bool lida;
+
+  Notificacao({
+    required this.tipo,
+    required this.titulo,
+    required this.descricao,
+    required this.tempo,
+    this.lida = false,
   });
 }
 
 // ─────────────────────────────────────────────
 // DADOS MOCKADOS
 // ─────────────────────────────────────────────
-final List<Viagem> viagensMock = [
-  Viagem(
-    destino: 'Paris',
-    dataInicio: '10/06/2026',
-    dataFim: '18/06/2026',
-    orcamento: '5.000',
-    anotacoes: 'Visitar o museu local, jantar no restaurante indicado...',
-    imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
+final List<Notificacao> _notificacoesMock = [
+  Notificacao(
+    tipo: TipoNotificacao.contagemRegressiva,
+    titulo: 'Contagem regressiva',
+    descricao: 'Paris começa em 5 dias',
+    tempo: 'Agora mesmo',
+    lida: false,
   ),
-  Viagem(
-    destino: 'Paris',
-    dataInicio: '10/06/2026',
-    dataFim: '18/06/2026',
-    orcamento: '3.250',
-    anotacoes: 'Segunda viagem a Paris, foco em museus.',
-    imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
+  Notificacao(
+    tipo: TipoNotificacao.orcamentoExcedido,
+    titulo: 'Orçamento excedido',
+    descricao: 'Passou R\$ 320 do previsto.',
+    tempo: 'Há 10 min',
+    lida: false,
   ),
-  Viagem(
-    destino: 'Paris',
-    dataInicio: '10/06/2026',
-    dataFim: '18/06/2026',
-    orcamento: '6.750',
-    anotacoes: 'Terceira viagem, passeio de barco no Sena.',
-    imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
+  Notificacao(
+    tipo: TipoNotificacao.eventoAgendado,
+    titulo: 'Evento agendado',
+    descricao: 'Jantar com Amigos amanhã 18:30',
+    tempo: 'Há 1 hora',
+    lida: false,
+  ),
+  Notificacao(
+    tipo: TipoNotificacao.localMarcado,
+    titulo: 'Local marcado',
+    descricao: 'Torre Eiffel visitada!',
+    tempo: 'Há 2 horas',
+    lida: true,
+  ),
+  Notificacao(
+    tipo: TipoNotificacao.viagemCompartilhada,
+    titulo: 'Viagem compartilhada',
+    descricao: 'Maria aceitou o convite.',
+    tempo: 'Há 3 horas',
+    lida: true,
   ),
 ];
 
 // ─────────────────────────────────────────────
-// PÁGINA PRINCIPAL
+// PÁGINA
 // ─────────────────────────────────────────────
-class ViagensPage extends StatefulWidget {
-  const ViagensPage({super.key});
+class NotificacoesPage extends StatefulWidget {
+  const NotificacoesPage({super.key});
 
   @override
-  State<ViagensPage> createState() => _ViagensPageState();
+  State<NotificacoesPage> createState() => _NotificacoesPageState();
 }
 
-class _ViagensPageState extends State<ViagensPage> {
-  final List<Viagem> _viagens = List.from(viagensMock);
-  int? _expandidoIndex; // qual card está expandido com formulário
+class _NotificacoesPageState extends State<NotificacoesPage> {
+  final List<Notificacao> _notificacoes = List.from(_notificacoesMock);
 
-  // Controllers do formulário
-  final _destinoController = TextEditingController();
-  final _inicioController = TextEditingController();
-  final _fimController = TextEditingController();
-  final _orcamentoController = TextEditingController();
-  final _anotacoesController = TextEditingController();
+  int get _novasCount => _notificacoes.where((n) => !n.lida).length;
 
-  void _abrirFormulario(int index) {
-    final v = _viagens[index];
-    _destinoController.text = v.destino;
-    _inicioController.text = v.dataInicio;
-    _fimController.text = v.dataFim;
-    _orcamentoController.text = v.orcamento;
-    _anotacoesController.text = v.anotacoes;
-    setState(() => _expandidoIndex = index);
-  }
-
-  void _fecharFormulario() {
-    setState(() => _expandidoIndex = null);
-  }
-
-  void _salvarViagem(int index) {
-    setState(() {
-      _viagens[index].destino = _destinoController.text;
-      _viagens[index].dataInicio = _inicioController.text;
-      _viagens[index].dataFim = _fimController.text;
-      _viagens[index].orcamento = _orcamentoController.text;
-      _viagens[index].anotacoes = _anotacoesController.text;
-      _expandidoIndex = null;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Viagem salva com sucesso!'),
-        backgroundColor: Color(0xFF1E83DB),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-  }
-
-  Future<void> _selecionarData(TextEditingController controller) async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2030),
-      builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.light(primary: Color(0xFF1E83DB)),
-        ),
-        child: child!,
-      ),
-    );
-    if (picked != null) {
-      controller.text =
-          '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
+  // Configurações visuais por tipo de notificação
+  _ConfigNotificacao _config(TipoNotificacao tipo) {
+    switch (tipo) {
+      case TipoNotificacao.contagemRegressiva:
+        return _ConfigNotificacao(
+          icone: Icons.timer_outlined,
+          corFundo: const Color(0xFFE0F7F0),
+          corIcone: const Color(0xFF1BCE8A),
+        );
+      case TipoNotificacao.orcamentoExcedido:
+        return _ConfigNotificacao(
+          icone: Icons.warning_amber_rounded,
+          corFundo: const Color(0xFFFFF0F0),
+          corIcone: const Color(0xFFE53935),
+        );
+      case TipoNotificacao.eventoAgendado:
+        return _ConfigNotificacao(
+          icone: Icons.calendar_today_outlined,
+          corFundo: const Color(0xFFFFF8E1),
+          corIcone: const Color(0xFFFFA726),
+        );
+      case TipoNotificacao.localMarcado:
+        return _ConfigNotificacao(
+          icone: Icons.check_circle_outline,
+          corFundo: const Color(0xFFF3F4F6),
+          corIcone: const Color(0xFF9E9E9E),
+        );
+      case TipoNotificacao.viagemCompartilhada:
+        return _ConfigNotificacao(
+          icone: Icons.person_add_outlined,
+          corFundo: const Color(0xFFF3F4F6),
+          corIcone: const Color(0xFF9E9E9E),
+        );
     }
   }
 
-  @override
-  void dispose() {
-    _destinoController.dispose();
-    _inicioController.dispose();
-    _fimController.dispose();
-    _orcamentoController.dispose();
-    _anotacoesController.dispose();
-    super.dispose();
+  // Navega para a tela certa dependendo do tipo de notificação
+  void _aoTocar(Notificacao notificacao) {
+    // Marca como lida
+    setState(() => notificacao.lida = true);
+
+    switch (notificacao.tipo) {
+      case TipoNotificacao.contagemRegressiva:
+      case TipoNotificacao.eventoAgendado:
+      case TipoNotificacao.localMarcado:
+      case TipoNotificacao.viagemCompartilhada:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const ViagensPage()),
+        );
+        break;
+      case TipoNotificacao.orcamentoExcedido:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const HistoricoViagensPage()),
+        );
+        break;
+    }
+  }
+
+  void _marcarTodasLidas() {
+    setState(() {
+      for (final n in _notificacoes) {
+        n.lida = true;
+      }
+    });
   }
 
   @override
@@ -144,335 +164,173 @@ class _ViagensPageState extends State<ViagensPage> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1E83DB)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Suas Viagens',
-          style: TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-          ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Notificações',
+              style: TextStyle(
+                color: Colors.black87,
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+              ),
+            ),
+            if (_novasCount > 0) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1BCE8A),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '$_novasCount novas',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
         centerTitle: true,
-      ),
-      body: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        itemCount: _viagens.length,
-        itemBuilder: (context, index) {
-          final viagem = _viagens[index];
-          final expandido = _expandidoIndex == index;
-
-          return AnimatedSize(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: expandido
-                  ? _buildFormulario(index)
-                  : _buildCardViagem(viagem, index),
-            ),
-          );
-        },
-      ),
-      bottomNavigationBar: _buildBottomNav(),
-    );
-  }
-
-  // ── Card compacto ──────────────────────────────────
-  Widget _buildCardViagem(Viagem viagem, int index) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(12),
-      onTap: () => _abrirFormulario(index),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                viagem.imagemUrl,
-                width: 72,
-                height: 72,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  width: 72,
-                  height: 72,
-                  color: Colors.grey.shade200,
-                  child: const Icon(Icons.image, color: Colors.grey),
+        actions: [
+          if (_novasCount > 0)
+            TextButton(
+              onPressed: _marcarTodasLidas,
+              child: const Text(
+                'Marcar lidas',
+                style: TextStyle(
+                  color: Color(0xFF1E83DB),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
-            const SizedBox(width: 14),
+        ],
+      ),
+      body: _notificacoes.isEmpty
+          ? const Center(
+              child: Text(
+                'Nenhuma notificação.',
+                style: TextStyle(color: Colors.grey),
+              ),
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16, vertical: 12),
+              itemCount: _notificacoes.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                final notif = _notificacoes[index];
+                final config = _config(notif.tipo);
+                return _buildCardNotificacao(notif, config);
+              },
+            ),
+      // Sem bottomNavigationBar aqui — fica centralizado no bottom_nav_bar.dart
+    );
+  }
+
+  Widget _buildCardNotificacao(
+      Notificacao notif, _ConfigNotificacao config) {
+    return GestureDetector(
+      onTap: () => _aoTocar(notif),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          // Destaque visual para não lidas
+          color: notif.lida ? Colors.white : const Color(0xFFF0FAF6),
+          borderRadius: BorderRadius.circular(14),
+          border: notif.lida
+              ? null
+              : Border.all(color: const Color(0xFFD0F0E4), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Ícone colorido
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: config.corFundo,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(config.icone, color: config.corIcone, size: 22),
+            ),
+            const SizedBox(width: 12),
+            // Texto
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    viagem.destino,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
+                    notif.titulo,
+                    style: TextStyle(
+                      fontWeight: notif.lida
+                          ? FontWeight.w500
+                          : FontWeight.w700,
+                      fontSize: 14,
                       color: Colors.black87,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 3),
                   Text(
-                    '${viagem.dataInicio.substring(0, 5)} à ${viagem.dataFim.substring(0, 5)} ${viagem.dataFim.substring(6)}',
+                    notif.descricao,
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.grey.shade600,
                     ),
                   ),
+                  const SizedBox(height: 6),
+                  Text(
+                    notif.tempo,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
                 ],
               ),
             ),
-            Icon(Icons.more_horiz, color: Colors.grey.shade400),
+            // Bolinha verde para não lidas
+            if (!notif.lida)
+              Container(
+                width: 8,
+                height: 8,
+                margin: const EdgeInsets.only(top: 4),
+                decoration: const BoxDecoration(
+                  color: Color(0xFF1BCE8A),
+                  shape: BoxShape.circle,
+                ),
+              ),
           ],
         ),
       ),
     );
   }
+}
 
-  // ── Formulário expandido ───────────────────────────
-  Widget _buildFormulario(int index) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header com foto
-          Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  _viagens[index].imagemUrl,
-                  width: 64,
-                  height: 64,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
-                    width: 64,
-                    height: 64,
-                    color: Colors.grey.shade200,
-                    child: const Icon(Icons.image),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  _viagens[index].destino,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.close, color: Colors.grey),
-                onPressed: _fecharFormulario,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Divider(height: 1),
-          const SizedBox(height: 16),
+// ── Helper interno ─────────────────────────────────
+class _ConfigNotificacao {
+  final IconData icone;
+  final Color corFundo;
+  final Color corIcone;
 
-          // Campo Destino
-          _label('DESTINO'),
-          _campoTexto(
-            controller: _destinoController,
-            hintText: 'Ex: Paris',
-            prefixIcon: Icons.location_on_outlined,
-          ),
-          const SizedBox(height: 12),
-
-          // Datas
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _label('INÍCIO'),
-                    _campoData(_inicioController),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _label('FIM'),
-                    _campoData(_fimController),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-
-          // Orçamento
-          _label('ORÇAMENTO PREVISTO'),
-          _campoTexto(
-            controller: _orcamentoController,
-            hintText: '0,00',
-            prefixIcon: Icons.attach_money,
-            keyboardType: TextInputType.number,
-          ),
-          const SizedBox(height: 12),
-
-          // Anotações
-          _label('ANOTAÇÕES'),
-          TextField(
-            controller: _anotacoesController,
-            maxLines: 3,
-            decoration: InputDecoration(
-              hintText: 'Adicione notas sobre sua viagem...',
-              hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-              filled: true,
-              fillColor: const Color(0xFFF7F8FA),
-              contentPadding: const EdgeInsets.all(14),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey.shade200),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.grey.shade200),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: Color(0xFF1E83DB)),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Botão salvar
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1BCE8A),
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              onPressed: () => _salvarViagem(index),
-              child: const Text(
-                'Editar Viagem',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _label(String texto) => Padding(
-        padding: const EdgeInsets.only(bottom: 6),
-        child: Text(
-          texto,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey.shade500,
-            letterSpacing: 0.5,
-          ),
-        ),
-      );
-
-  Widget _campoTexto({
-    required TextEditingController controller,
-    required String hintText,
-    required IconData prefixIcon,
-    TextInputType keyboardType = TextInputType.text,
-  }) =>
-      TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-          prefixIcon: Icon(prefixIcon, color: Colors.grey.shade400, size: 20),
-          filled: true,
-          fillColor: const Color(0xFFF7F8FA),
-          contentPadding: const EdgeInsets.symmetric(vertical: 14),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade200),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade200),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFF1E83DB)),
-          ),
-        ),
-      );
-
-  Widget _campoData(TextEditingController controller) => TextField(
-        controller: controller,
-        readOnly: true,
-        onTap: () => _selecionarData(controller),
-        decoration: InputDecoration(
-          hintText: 'dd/mm/aaaa',
-          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-          prefixIcon: Icon(Icons.calendar_today_outlined,
-              color: Colors.grey.shade400, size: 18),
-          filled: true,
-          fillColor: const Color(0xFFF7F8FA),
-          contentPadding: const EdgeInsets.symmetric(vertical: 14),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade200),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.grey.shade200),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: const BorderSide(color: Color(0xFF1E83DB)),
-          ),
-        ),
-      );
-
-  Widget _buildBottomNav() {
-    return BottomNavigationBar(
-      currentIndex: 3,
-      selectedItemColor: const Color(0xFF1E83DB),
-      unselectedItemColor: Colors.grey,
-      showUnselectedLabels: true,
-      type: BottomNavigationBarType.fixed,
-      elevation: 8,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Perfil'),
-        BottomNavigationBarItem(icon: Icon(Icons.dashboard_outlined), label: 'Dashboard'),
-        BottomNavigationBarItem(icon: Icon(Icons.calendar_today_outlined), label: 'Agenda'),
-        BottomNavigationBarItem(icon: Icon(Icons.flight_outlined), label: 'Viagens'),
-      ],
-    );
-  }
+  const _ConfigNotificacao({
+    required this.icone,
+    required this.corFundo,
+    required this.corIcone,
+  });
 }
