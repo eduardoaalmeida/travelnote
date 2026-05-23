@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'navbar.dart';
-import 'detalhes_viagem_page.dart';
+import 'detalhes_viagem.dart';
 import 'viagem_model.dart';
 
 // ── Modelo de Viagem ──────────────────────────────────────────────────────────
@@ -199,7 +199,7 @@ class _ViagemCard extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => DetalhesViagemPage(viagem: viagem),
+          builder: (_) => const DetalhesViagemPage(),
         ),
       ),
       child: Container(

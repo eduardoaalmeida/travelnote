@@ -13,18 +13,29 @@ class AlterarDadosPage extends StatefulWidget {
 }
 
 class _AlterarDadosPageState extends State<AlterarDadosPage> {
-  final _cpfController = TextEditingController(text: '001.001.001-01');
-  final _telefoneController = TextEditingController(text: '(79) 99999-9999');
+  late final TextEditingController _cpfController;
+  late final TextEditingController _telefoneController;
 
-  final _cpfFormatter = MaskTextInputFormatter(
-    mask: '###.###.###-##',
-    filter: {'#': RegExp(r'[0-9]')},
-  );
+  late final MaskTextInputFormatter _cpfFormatter;
+  late final MaskTextInputFormatter _telefoneFormatter;
 
-  final _telefoneFormatter = MaskTextInputFormatter(
-    mask: '(##) #####-####',
-    filter: {'#': RegExp(r'[0-9]')},
-  );
+  @override
+  void initState() {
+    super.initState();
+    _cpfFormatter = MaskTextInputFormatter(
+      mask: '###.###.###-##',
+      filter: {'#': RegExp(r'[0-9]')},
+      initialText: '00100100101',
+    );
+    _cpfController = TextEditingController(text: _cpfFormatter.getMaskedText());
+
+    _telefoneFormatter = MaskTextInputFormatter(
+      mask: '(##) #####-####',
+      filter: {'#': RegExp(r'[0-9]')},
+      initialText: '79999999999',
+    );
+    _telefoneController = TextEditingController(text: _telefoneFormatter.getMaskedText());
+  }
 
   @override
   void dispose() {

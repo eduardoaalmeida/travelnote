@@ -585,16 +585,20 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
               onPressed: _openEditarItens,
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0F172A),
-                side: const BorderSide(color: Color(0xFFCBD5E1), width: 1.2),
+                backgroundColor: Colors.white,
+                side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.edit_outlined, size: 18),
+                  Icon(Icons.edit_outlined, size: 18, color: Color(0xFF0F172A)),
                   SizedBox(width: 8),
-                  Text('Editar', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text(
+                    'Editar',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A)),
+                  ),
                 ],
               ),
             ),
@@ -604,17 +608,21 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             child: OutlinedButton(
               onPressed: _openExcluirItens,
               style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFFEF4444),
-                side: const BorderSide(color: Color(0xFFFCA5A5), width: 1.2),
+                foregroundColor: const Color(0xFF0F172A),
+                backgroundColor: const Color(0xFFFEE2E2),
+                side: const BorderSide(color: Color(0xFFFCA5A5), width: 1.5),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Excluir', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text(
+                    'Excluir',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A)),
+                  ),
                   SizedBox(width: 8),
-                  Icon(Icons.delete_outline, size: 18),
+                  Icon(Icons.delete_outline, size: 18, color: Color(0xFF0F172A)),
                 ],
               ),
             ),
