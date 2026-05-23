@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+
 
 class RecuperarSenhaPage extends StatefulWidget {
   const RecuperarSenhaPage({super.key});
@@ -11,6 +13,12 @@ class RecuperarSenhaPage extends StatefulWidget {
 class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
   final _cpfController = TextEditingController();
   final _emailController = TextEditingController();
+
+  final _cpfFormatter = MaskTextInputFormatter(
+    mask: '###.###.###-##',
+    filter: {'#': RegExp(r'[0-9]')},
+  );
+
 
   @override
   void dispose() {
@@ -98,7 +106,7 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                             TextField(
                               controller: _cpfController,
                               keyboardType: TextInputType.number,
-                              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                              inputFormatters: [_cpfFormatter],
                               decoration: _decoration(
                                 'Digite seu CPF cadastrado',
                                 Icons.lock_outline,
@@ -146,11 +154,30 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                                       );
                                       return;
                                     }
+                                    if (_cpfController.text.length < 14) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Por favor, insira o CPF completo.'),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    final email = _emailController.text.trim();
+                                    final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+                                    if (!emailRegex.hasMatch(email)) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Por favor, insira um e-mail válido.'),
+                                        ),
+                                      );
+                                      return;
+                                    }
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text('Solicitação enviada com sucesso!'),
                                       ),
                                     );
+                                    Navigator.pop(context);
                                   },
                                   child: const Center(
                                     child: Text(
