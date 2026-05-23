@@ -121,31 +121,47 @@ class _PerfilPageState extends State<PerfilPage> {
     required IconData icon,
     required String titulo,
     required VoidCallback onTap,
-    Color iconColor = const Color(0xFF1F3A6A),
-    Color titleColor = Colors.black,
+    Color iconColor = const Color(0xFF1B4E88),
+    Color titleColor = const Color(0xFF0F172A),
+    Color? leadingBgColor,
   }) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: const Color(0xFFE8EEF8),
-            borderRadius: BorderRadius.circular(12),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.015),
+            blurRadius: 10,
+            spreadRadius: 2,
+            offset: const Offset(0, 4),
           ),
-          child: Icon(icon, color: iconColor),
+        ],
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        leading: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: leadingBgColor ?? iconColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Icon(icon, color: iconColor, size: 24),
         ),
         title: Text(
           titulo,
-          style: TextStyle(fontWeight: FontWeight.w600, color: titleColor),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: titleColor,
+          ),
         ),
-        trailing: const Icon(
-          Icons.arrow_forward_ios,
-          size: 18,
-          color: Colors.grey,
+        trailing: Icon(
+          Icons.chevron_right,
+          color: Colors.grey.shade400,
+          size: 24,
         ),
         onTap: onTap,
       ),
@@ -155,10 +171,10 @@ class _PerfilPageState extends State<PerfilPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7FB),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A), size: 24),
           onPressed: () => Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => const HomePage()),
@@ -167,49 +183,53 @@ class _PerfilPageState extends State<PerfilPage> {
         ),
         title: const Text(
           'Meu Perfil',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Color(0xFF0F172A),
+            fontWeight: FontWeight.w800,
+            fontSize: 20,
+          ),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFFF6F7FB),
+        backgroundColor: const Color(0xFFF8FAFC),
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: const Color(0xFFF6F7FB),
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFDDE3EE), width: 2),
+                border: Border.all(color: const Color(0xFFCBD5E1), width: 2.5),
               ),
               child: const CircleAvatar(
-                radius: 58,
+                radius: 56,
                 backgroundColor: Colors.white,
                 backgroundImage: AssetImage('assets/images/perfil.png'),
               ),
             ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  _nome,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            const SizedBox(height: 16),
+            Text(
+              _nome,
+              style: const TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
+                color: Color(0xFF0F172A),
+                letterSpacing: -0.5,
+              ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             const Text(
               'eduardo@gmail.com',
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF1B4E88),
+              ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 32),
             _itemPerfil(
               icon: Icons.person_outline,
               titulo: 'Dados Pessoais',
@@ -220,7 +240,6 @@ class _PerfilPageState extends State<PerfilPage> {
                 );
               },
             ),
-            const SizedBox(height: 12),
             _itemPerfil(
               icon: Icons.map_outlined,
               titulo: 'Minhas Viagens',
@@ -231,7 +250,6 @@ class _PerfilPageState extends State<PerfilPage> {
                 );
               },
             ),
-            const SizedBox(height: 12),
             _itemPerfil(
               icon: Icons.settings_outlined,
               titulo: 'Configurações',
@@ -242,9 +260,8 @@ class _PerfilPageState extends State<PerfilPage> {
                 );
               },
             ),
-            const SizedBox(height: 12),
             _itemPerfil(
-              icon: Icons.shield_outlined,
+              icon: Icons.verified_user_outlined,
               titulo: 'Termos de Privacidade',
               onTap: () {
                 Navigator.push(
@@ -255,12 +272,12 @@ class _PerfilPageState extends State<PerfilPage> {
                 );
               },
             ),
-            const SizedBox(height: 12),
             _itemPerfil(
               icon: Icons.logout,
               titulo: 'Sair',
-              iconColor: Colors.red,
-              titleColor: Colors.red,
+              iconColor: const Color(0xFFEF4444),
+              titleColor: const Color(0xFFEF4444),
+              leadingBgColor: const Color(0xFFFEE2E2),
               onTap: _confirmarSaida,
             ),
           ],
