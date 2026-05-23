@@ -225,12 +225,11 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
                 Row(
                   children: [
                     IconButton(
@@ -556,7 +555,6 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
             ),
           ),
         ),
-      ),
     );
   }
 }

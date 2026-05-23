@@ -13,7 +13,6 @@ import 'alterar_dados_page.dart';
 import 'editar_perfil_page.dart' hide HomePage; 
 import 'politica_privacidade_page.dart';
 import 'roteiro_page.dart';
-import 'detalhes_viagem_page.dart' hide DetalhesViagemPage; 
 import 'detalhes_viagem.dart';
 import 'cadastrar_viagem.dart';
 import 'viagens_page.dart';
