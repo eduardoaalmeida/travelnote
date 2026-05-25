@@ -272,7 +272,13 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
         const SizedBox(height: 18),
         ...List.generate(roteiroItems.length, (i) {
           final item = roteiroItems[i];
-          return _item((i + 1).toString().padLeft(2, '0'), item['titulo'] ?? '', item['subtitulo'] ?? '', index: i);
+          return _item(
+            (i + 1).toString().padLeft(2, '0'),
+            item['titulo'] ?? '',
+            item['subtitulo'] ?? '',
+            clicavel: false,
+            index: i,
+          );
         }),
         const SizedBox(height: 10),
         _botaoAdicionar('Adicionar Roteiro +'),
@@ -288,7 +294,13 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
         const SizedBox(height: 18),
         ...List.generate(compromissosItems.length, (i) {
           final item = compromissosItems[i];
-          return _item((i + 1).toString().padLeft(2, '0'), item['titulo'] ?? '', item['subtitulo'] ?? '', editar: true, index: i);
+          return _item(
+            (i + 1).toString().padLeft(2, '0'),
+            item['titulo'] ?? '',
+            item['subtitulo'] ?? '',
+            clicavel: false,
+            index: i,
+          );
         }),
         const SizedBox(height: 10),
         _botaoAdicionar('Adicionar Compromisso +'),
@@ -304,7 +316,13 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
         const SizedBox(height: 18),
         ...List.generate(anotacoesItems.length, (i) {
           final item = anotacoesItems[i];
-          return _item((i + 1).toString().padLeft(2, '0'), item['titulo'] ?? '', item['subtitulo'] ?? '', editar: true, index: i);
+          return _item(
+            (i + 1).toString().padLeft(2, '0'),
+            item['titulo'] ?? '',
+            item['subtitulo'] ?? '',
+            clicavel: false,
+            index: i,
+          );
         }),
         const SizedBox(height: 10),
         _botaoAdicionar('Adicionar Anotação +'),
@@ -312,9 +330,23 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
-  Widget _item(String numero, String titulo, String subtitulo, {bool editar = false, int? index}) {
+  Widget _item(
+    String numero,
+    String titulo,
+    String subtitulo, {
+    bool clicavel = true,
+    int? index,
+  }) {
     return InkWell(
-      onTap: () => _openEditor(aba: abaSelecionada, titulo: titulo, subtitulo: subtitulo, isNew: false, index: index),
+      onTap: clicavel
+          ? () => _openEditor(
+                aba: abaSelecionada,
+                titulo: titulo,
+                subtitulo: subtitulo,
+                isNew: false,
+                index: index,
+              )
+          : null,
       borderRadius: BorderRadius.circular(15),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
@@ -344,7 +376,10 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 ],
               ),
             ),
-            Icon(editar ? Icons.edit : Icons.chevron_right, size: 20, color: const Color(0xFF94A3B8)),
+            if (clicavel)
+              const Icon(Icons.chevron_right, size: 20, color: Color(0xFF94A3B8))
+            else
+              const SizedBox(width: 20),
           ],
         ),
       ),
@@ -582,7 +617,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
         children: [
           Expanded(
             child: OutlinedButton(
-              onPressed: _openEditarItens,
+              onPressed: null,
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0F172A),
                 backgroundColor: Colors.white,
@@ -708,99 +743,6 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                               ),
                             ),
                             const Icon(Icons.delete_outline, size: 18, color: Color(0xFFEF4444)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(18),
-              child: SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: Colors.grey.shade300),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: const Text('Fechar'),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _openEditarItens() {
-    final tipo = abaSelecionada == 0 ? 'Roteiro' : abaSelecionada == 1 ? 'Compromissos' : 'Anotações';
-    final itens = abaSelecionada == 0 ? roteiroItems : abaSelecionada == 1 ? compromissosItems : anotacoesItems;
-
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => Dialog(
-        insetPadding: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(18),
-              child: Text('✏️ Editar $tipo', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
-            Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: itens.length,
-                itemBuilder: (_, i) {
-                  final item = itens[i];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(ctx).pop();
-                        _openEditor(
-                          aba: abaSelecionada,
-                          titulo: item['titulo'] ?? '',
-                          subtitulo: item['subtitulo'] ?? '',
-                          isNew: false,
-                          index: i,
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF8FAFC),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 36, height: 36,
-                              decoration: const BoxDecoration(color: Color(0xFFE0F2FE), shape: BoxShape.circle),
-                              alignment: Alignment.center,
-                              child: Text((i + 1).toString().padLeft(2, '0'),
-                                  style: const TextStyle(color: Color(0xFF0284C7), fontWeight: FontWeight.bold, fontSize: 12)),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(item['titulo'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF0F172A))),
-                                  Text(item['subtitulo'] ?? '', maxLines: 1, overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontSize: 11, color: Color(0xFF64748B))),
-                                ],
-                              ),
-                            ),
-                            const Icon(Icons.edit, size: 18, color: Color(0xFF94A3B8)),
                           ],
                         ),
                       ),
