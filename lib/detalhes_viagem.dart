@@ -149,64 +149,63 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
   }
 
   Widget _cardViagem() {
-    return InkWell(
-      onTap: _openSelecionarViagem,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
-        ),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                viagens[viagemAtual]['imagem'] ?? 'assets/images/paris.png',
+    final content = Container(
+      margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset(
+              viagens[viagemAtual]['imagem'] ?? 'assets/images/paris.png',
+              width: 90,
+              height: 80,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
                 width: 90,
                 height: 80,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
-                  width: 90,
-                  height: 80,
-                  color: const Color(0xFFE0F2FE),
-                  child: const Icon(Icons.flight, color: Color(0xFF23D2B5), size: 36),
+                color: const Color(0xFFE0F2FE),
+                child: const Icon(Icons.flight, color: Color(0xFF23D2B5), size: 36),
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  nomeViagem,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: Color(0xFF0F172A),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    nomeViagem,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: Color(0xFF0F172A),
-                    ),
+                const SizedBox(height: 4),
+                Text(
+                  '$dataInicio à $dataFim $mesAno',
+                  style: const TextStyle(
+                    color: Color(0xFF64748B),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '$dataInicio à $dataFim $mesAno',
-                    style: const TextStyle(
-                      color: Color(0xFF64748B),
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const Icon(Icons.check_circle_rounded, color: Color(0xFF2DD4BF), size: 28),
-          ],
-        ),
+          ),
+          const Icon(Icons.check_circle_rounded, color: Color(0xFF2DD4BF), size: 28),
+        ],
       ),
     );
+
+    // Sempre retornar o conteúdo sem interação: clicar não abre modal
+    return content;
   }
 
   Widget _abas() {
@@ -771,121 +770,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
-  void _openSelecionarViagem() {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => Dialog(
-        insetPadding: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(18),
-              child: Text('✈️ Minhas Viagens', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ),
-            Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: viagens.length,
-                itemBuilder: (_, i) {
-                  final viagem = viagens[i];
-                  final selecionada = viagemAtual == i;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18),
-                    child: InkWell(
-                      onTap: () {
-                        setState(() => _carregarViagem(i));
-                        Navigator.of(ctx).pop();
-                      },
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: selecionada ? const Color(0xFFE0F2FE) : const Color(0xFFF8FAFC),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: selecionada ? const Color(0xFF23D2B5) : const Color(0xFFE2E8F0),
-                            width: 1.5,
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.asset(
-                                viagem['imagem'] ?? 'assets/images/paris.png',
-                                width: 60, height: 60, fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => Container(
-                                  width: 60, height: 60, color: const Color(0xFFE0F2FE),
-                                  child: const Icon(Icons.flight, color: Color(0xFF23D2B5)),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(viagem['nome'] ?? '',
-                                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14,
-                                          color: selecionada ? const Color(0xFF23D2B5) : const Color(0xFF0F172A))),
-                                  Text('${viagem['dataInicio']} à ${viagem['dataFim']} ${viagem['mes']}',
-                                      style: const TextStyle(fontSize: 12, color: Color(0xFF64748B))),
-                                ],
-                              ),
-                            ),
-                            if (selecionada) const Icon(Icons.check_circle, color: Color(0xFF23D2B5), size: 24),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () { Navigator.of(ctx).pop(); _openAdicionarViagem(); },
-                      icon: const Icon(Icons.add, size: 18),
-                      label: const Text('Adicionar', style: TextStyle(fontWeight: FontWeight.bold)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF23D2B5),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () { Navigator.of(ctx).pop(); _openExcluirViagem(); },
-                      icon: const Icon(Icons.delete, size: 18),
-                      label: const Text('Excluir', style: TextStyle(fontWeight: FontWeight.bold)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFEF4444),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  
 
   void _openAdicionarViagem() {
     final nomeController = TextEditingController();
