@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'navbar.dart';
 
-// ─────────────────────────────────────────────
-// MODELO LOCAL
-// ─────────────────────────────────────────────
+// ── Modelo ────────────────────────────────────────────────────────────────────
 class LocalRoteiro {
   String numero;
   String nome;
-  String endereco;
+  String distancia;
   String data;
   String horario;
   bool concluido;
@@ -15,16 +13,14 @@ class LocalRoteiro {
   LocalRoteiro({
     required this.numero,
     required this.nome,
-    required this.endereco,
+    this.distancia = '',
     required this.data,
     required this.horario,
     this.concluido = false,
   });
 }
 
-// ─────────────────────────────────────────────
-// PÁGINA
-// ─────────────────────────────────────────────
+// ── Página ────────────────────────────────────────────────────────────────────
 class RoteiroPage extends StatefulWidget {
   const RoteiroPage({super.key});
 
@@ -37,56 +33,56 @@ class _RoteiroPageState extends State<RoteiroPage> {
     LocalRoteiro(
       numero: '01',
       nome: 'Visita a Torre Eiffel',
-      endereco: 'Champ de Mars, Paris',
+      distancia: '',
       data: '10/06/2026',
-      horario: '09:30hrs',
+      horario: '09:30HRS',
       concluido: true,
     ),
     LocalRoteiro(
       numero: '02',
       nome: 'Museu do Louvre',
-      endereco: 'Rue de Rivoli, Paris',
+      distancia: '4 KM DE DISTANCIA',
       data: '10/06/2026',
-      horario: '11:30hrs',
+      horario: '11:30HRS',
       concluido: true,
     ),
     LocalRoteiro(
       numero: '03',
       nome: 'Catedral de Notre-Dame',
-      endereco: '6 Parvis Notre-Dame, Paris',
+      distancia: '2.3 KM DE DISTANCIA',
       data: '10/06/2026',
-      horario: '13:30hrs',
+      horario: '13:30HRS',
       concluido: true,
     ),
     LocalRoteiro(
       numero: '04',
       nome: 'Jardim de Luxemburgo',
-      endereco: 'Rue de Médicis, Paris',
+      distancia: '6 KM DE DISTANCIA',
       data: '10/06/2026',
-      horario: '14:00hrs',
+      horario: '14:00HRS',
       concluido: true,
     ),
     LocalRoteiro(
       numero: '05',
       nome: 'Arco do Triunfo',
-      endereco: 'Place Charles de Gaulle, Paris',
+      distancia: '1.3 KM DE DISTANCIA',
       data: '10/06/2026',
-      horario: '16:40hrs',
+      horario: '16:40HRS',
       concluido: false,
     ),
   ];
 
-  // ── Abre modal de CADASTRO (novo local) ──────────────
+  // ── Cadastro ──────────────────────────────────────────────────────────────
   void _abrirCadastro() {
-    final tituloCtrl = TextEditingController();
-    final enderecoCtrl = TextEditingController();
-    final dataCtrl = TextEditingController(text: '10/06/2026');
-    final horarioCtrl = TextEditingController(text: '09:30hrs');
+    final tituloCtrl   = TextEditingController();
+    final distanciaCtrl = TextEditingController();
+    final dataCtrl     = TextEditingController(text: '10/06/2026');
+    final horarioCtrl  = TextEditingController(text: '09:30HRS');
 
     _mostrarModal(
       titulo: 'Cadastro de Local',
       tituloCtrl: tituloCtrl,
-      enderecoCtrl: enderecoCtrl,
+      distanciaCtrl: distanciaCtrl,
       dataCtrl: dataCtrl,
       horarioCtrl: horarioCtrl,
       botaoLabel: 'Cadastrar Local',
@@ -97,10 +93,9 @@ class _RoteiroPageState extends State<RoteiroPage> {
           _locais.add(LocalRoteiro(
             numero: numero,
             nome: tituloCtrl.text.trim(),
-            endereco: enderecoCtrl.text.trim(),
+            distancia: distanciaCtrl.text.trim(),
             data: dataCtrl.text.trim(),
             horario: horarioCtrl.text.trim(),
-            concluido: false,
           ));
         });
         Navigator.pop(context);
@@ -108,39 +103,39 @@ class _RoteiroPageState extends State<RoteiroPage> {
     );
   }
 
-  // ── Abre modal de EDIÇÃO (local existente) ───────────
+  // ── Edição ────────────────────────────────────────────────────────────────
   void _abrirEdicao(int index) {
-    final local = _locais[index];
-    final tituloCtrl = TextEditingController(text: local.nome);
-    final enderecoCtrl = TextEditingController(text: local.endereco);
-    final dataCtrl = TextEditingController(text: local.data);
-    final horarioCtrl = TextEditingController(text: local.horario);
+    final local        = _locais[index];
+    final tituloCtrl   = TextEditingController(text: local.nome);
+    final distanciaCtrl = TextEditingController(text: local.distancia);
+    final dataCtrl     = TextEditingController(text: local.data);
+    final horarioCtrl  = TextEditingController(text: local.horario);
 
     _mostrarModal(
       titulo: 'Editar Local',
       tituloCtrl: tituloCtrl,
-      enderecoCtrl: enderecoCtrl,
+      distanciaCtrl: distanciaCtrl,
       dataCtrl: dataCtrl,
       horarioCtrl: horarioCtrl,
       botaoLabel: 'Salvar Alterações',
       onSalvar: () {
         setState(() {
           _locais[index]
-            ..nome = tituloCtrl.text.trim()
-            ..endereco = enderecoCtrl.text.trim()
-            ..data = dataCtrl.text.trim()
-            ..horario = horarioCtrl.text.trim();
+            ..nome      = tituloCtrl.text.trim()
+            ..distancia = distanciaCtrl.text.trim()
+            ..data      = dataCtrl.text.trim()
+            ..horario   = horarioCtrl.text.trim();
         });
         Navigator.pop(context);
       },
     );
   }
 
-  // ── Modal compartilhado — popup centralizado ─────────
+  // ── Modal compartilhado ───────────────────────────────────────────────────
   void _mostrarModal({
     required String titulo,
     required TextEditingController tituloCtrl,
-    required TextEditingController enderecoCtrl,
+    required TextEditingController distanciaCtrl,
     required TextEditingController dataCtrl,
     required TextEditingController horarioCtrl,
     required String botaoLabel,
@@ -150,8 +145,10 @@ class _RoteiroPageState extends State<RoteiroPage> {
       context: context,
       barrierDismissible: true,
       builder: (_) => Dialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        insetPadding:
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20)),
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
@@ -172,8 +169,8 @@ class _RoteiroPageState extends State<RoteiroPage> {
                 ),
                 const SizedBox(height: 20),
 
-                // Campo: Título da Visita
-                _labelModal('📍 TÍTULO DA VISITA'),
+                // Nome do local
+                _labelModal('TÍTULO DA VISITA'),
                 _campoModal(
                   controller: tituloCtrl,
                   hint: 'Ex: Visita à Torre Eiffel',
@@ -181,23 +178,23 @@ class _RoteiroPageState extends State<RoteiroPage> {
                 ),
                 const SizedBox(height: 14),
 
-                // Campo: Endereço
-                _labelModal('🗺️ ENDEREÇO'),
+                // Distância
+                _labelModal('DISTÂNCIA (opcional)'),
                 _campoModal(
-                  controller: enderecoCtrl,
-                  hint: 'Ex: Champ de Mars, Paris',
-                  icone: Icons.map_outlined,
+                  controller: distanciaCtrl,
+                  hint: 'Ex: 2.3 KM DE DISTANCIA',
+                  icone: Icons.straighten_outlined,
                 ),
                 const SizedBox(height: 14),
 
-                // Campos: Data e Horário lado a lado
+                // Data e Horário lado a lado
                 Row(
                   children: [
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _labelModal('📅 DATA'),
+                          _labelModal('DATA'),
                           _campoModalData(dataCtrl),
                         ],
                       ),
@@ -207,8 +204,12 @@ class _RoteiroPageState extends State<RoteiroPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _labelModal('⏰ HORÁRIO'),
-                          _campoModalHorario(horarioCtrl),
+                          _labelModal('HORÁRIO'),
+                          _campoModal(
+                            controller: horarioCtrl,
+                            hint: '09:30HRS',
+                            icone: Icons.access_time_outlined,
+                          ),
                         ],
                       ),
                     ),
@@ -216,7 +217,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // Botão de ação
+                // Botão salvar
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -227,16 +228,30 @@ class _RoteiroPageState extends State<RoteiroPage> {
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                          borderRadius: BorderRadius.circular(12)),
                     ),
                     child: Text(
                       botaoLabel,
                       style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
+                          fontSize: 15, fontWeight: FontWeight.w600),
                     ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+
+                // Botão cancelar
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Colors.grey.shade300),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('Cancelar',
+                        style: TextStyle(color: Color(0xFF64748B))),
                   ),
                 ),
               ],
@@ -247,7 +262,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
     );
   }
 
-  // ── Selecionar data via DatePicker ───────────────────
+  // ── DatePicker ────────────────────────────────────────────────────────────
   Future<void> _selecionarData(TextEditingController ctrl) async {
     final picked = await showDatePicker(
       context: context,
@@ -256,7 +271,8 @@ class _RoteiroPageState extends State<RoteiroPage> {
       lastDate: DateTime(2030),
       builder: (context, child) => Theme(
         data: Theme.of(context).copyWith(
-          colorScheme: const ColorScheme.light(primary: Color(0xFF23D2B5)),
+          colorScheme:
+              const ColorScheme.light(primary: Color(0xFF23D2B5)),
         ),
         child: child!,
       ),
@@ -267,6 +283,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
     }
   }
 
+  // ── Build ─────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -281,7 +298,6 @@ class _RoteiroPageState extends State<RoteiroPage> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Tenta carregar o asset; se não existir, mostra ícone
             Image.asset(
               'assets/images/icon.png',
               height: 36,
@@ -292,7 +308,8 @@ class _RoteiroPageState extends State<RoteiroPage> {
                   color: Color(0xFF23D2B5),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.flight, color: Colors.white, size: 20),
+                child: const Icon(Icons.flight,
+                    color: Colors.white, size: 20),
               ),
             ),
             const SizedBox(width: 8),
@@ -323,24 +340,27 @@ class _RoteiroPageState extends State<RoteiroPage> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ── Título ──────────────────────────────────────────
             const Text(
               'Visitas dia 10/06/26',
               style: TextStyle(
-                fontSize: 22,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF101828),
               ),
             ),
             const SizedBox(height: 18),
 
-            // ── Lista de locais ──────────────────────
+            // ── Lista de locais ──────────────────────────────────
             ..._locais.asMap().entries.map((entry) {
-              final i = entry.key;
+              final i     = entry.key;
               final local = entry.value;
+
               return Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.symmetric(
@@ -348,20 +368,14 @@ class _RoteiroPageState extends State<RoteiroPage> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
                 ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Número
+                    // ── Número — caixa arredondada teal ─────────
                     Container(
-                      width: 34,
-                      height: 34,
+                      width: 36,
+                      height: 36,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: const Color(0xFFE6FAF5),
@@ -378,7 +392,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
                     ),
                     const SizedBox(width: 12),
 
-                    // Info
+                    // ── Nome + data/horário + distância ─────────
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -397,10 +411,10 @@ class _RoteiroPageState extends State<RoteiroPage> {
                             style: const TextStyle(
                                 fontSize: 11, color: Colors.grey),
                           ),
-                          if (local.endereco.isNotEmpty) ...[
+                          if (local.distancia.isNotEmpty) ...[
                             const SizedBox(height: 2),
                             Text(
-                              local.endereco,
+                              local.distancia,
                               style: const TextStyle(
                                   fontSize: 11, color: Colors.grey),
                             ),
@@ -409,29 +423,27 @@ class _RoteiroPageState extends State<RoteiroPage> {
                       ),
                     ),
 
-                    // Ações: check + editar
-                    Row(
-                      children: [
-                        GestureDetector(
-                          onTap: () => setState(
-                              () => _locais[i].concluido = !_locais[i].concluido),
-                          child: Icon(
-                            local.concluido
-                                ? Icons.check_circle
-                                : Icons.check_circle_outline,
-                            color: local.concluido
-                                ? const Color(0xFF23D2B5)
-                                : Colors.grey.shade300,
-                            size: 22,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        GestureDetector(
-                          onTap: () => _abrirEdicao(i),
-                          child: const Icon(Icons.edit_outlined,
-                              size: 20, color: Colors.grey),
-                        ),
-                      ],
+                    // ── Check (toggle) ───────────────────────────
+                    GestureDetector(
+                      onTap: () => setState(
+                          () => _locais[i].concluido = !_locais[i].concluido),
+                      child: Icon(
+                        local.concluido
+                            ? Icons.check_circle
+                            : Icons.check_circle_outline,
+                        color: local.concluido
+                            ? const Color(0xFF23D2B5)
+                            : Colors.grey.shade300,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+
+                    // ── Lápis (editar) ───────────────────────────
+                    GestureDetector(
+                      onTap: () => _abrirEdicao(i),
+                      child: const Icon(Icons.edit_outlined,
+                          size: 20, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -440,7 +452,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
 
             const SizedBox(height: 12),
 
-            // ── Botão Adicionar Local ────────────────
+            // ── Botão Adicionar Local ────────────────────────────
             GestureDetector(
               onTap: _abrirCadastro,
               child: Container(
@@ -450,13 +462,6 @@ class _RoteiroPageState extends State<RoteiroPage> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
                 ),
                 child: const Text(
                   'Adicionar Local +',
@@ -471,7 +476,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
 
             const SizedBox(height: 12),
 
-            // ── Botão Verificar Rotas ────────────────
+            // ── Botão Verificar Rotas ────────────────────────────
             GestureDetector(
               onTap: () {},
               child: Container(
@@ -481,13 +486,6 @@ class _RoteiroPageState extends State<RoteiroPage> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(14),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
                 ),
                 child: const Text(
                   'Verificar Rotas',
@@ -502,7 +500,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
 
             const SizedBox(height: 24),
 
-            // ── Ilustração ───────────────────────────
+            // ── Ilustração ───────────────────────────────────────
             Center(
               child: Image.asset(
                 'assets/images/imagem_roteiro.png',
@@ -520,7 +518,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
     );
   }
 
-  // ── Helpers do modal ─────────────────────────────────
+  // ── Helpers do modal ──────────────────────────────────────────────────────
   Widget _labelModal(String texto) => Padding(
         padding: const EdgeInsets.only(bottom: 6),
         child: Text(
@@ -534,12 +532,14 @@ class _RoteiroPageState extends State<RoteiroPage> {
         ),
       );
 
-  InputDecoration _decoModal({required String hint, IconData? icone}) =>
+  InputDecoration _decoModal(
+          {required String hint, IconData? icone}) =>
       InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+        hintStyle:
+            TextStyle(color: Colors.grey.shade400, fontSize: 14),
         prefixIcon: icone != null
-            ? Icon(icone, color: Colors.grey.shade400, size: 20)
+            ? Icon(icone, color: const Color(0xFF23D2B5), size: 20)
             : null,
         filled: true,
         fillColor: const Color(0xFFF7F8FA),
@@ -579,15 +579,6 @@ class _RoteiroPageState extends State<RoteiroPage> {
         decoration: _decoModal(
           hint: 'dd/mm/aaaa',
           icone: Icons.calendar_today_outlined,
-        ),
-      );
-
-  Widget _campoModalHorario(TextEditingController ctrl) => TextField(
-        controller: ctrl,
-        style: const TextStyle(fontSize: 13),
-        decoration: _decoModal(
-          hint: '00:00hrs',
-          icone: Icons.access_time_outlined,
         ),
       );
 }
