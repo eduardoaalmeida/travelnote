@@ -3,6 +3,7 @@ import 'navbar.dart';
 import 'viagem_model.dart';
 import 'detalhes_viagem.dart';
 import 'cadastrar_viagem.dart';
+import 'notificacoes_page.dart'; // <-- Importe o arquivo da tela de notificações aqui
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -83,11 +84,23 @@ class HomePage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const Icon(
-                        Icons.notifications_none,
-                        color: Colors.white,
-                        size: 28,
+                      // ── BOTÃO DE NOTIFICAÇÃO ADICIONADO AQUI ──────────
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const NotificacoesPage(),
+                            ),
+                          );
+                        },
+                        child: const Icon(
+                          Icons.notifications_none,
+                          color: Colors.white,
+                          size: 28,
+                        ),
                       ),
+                      // ──────────────────────────────────────────────────
                     ],
                   ),
                 ),

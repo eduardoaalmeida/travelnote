@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'viagem_model.dart';
 import 'historico_viagens_page.dart';
+import 'navbar.dart';
+import 'home_page.dart';
 
 // ─────────────────────────────────────────────
 // DADOS MOCKADOS 
@@ -12,22 +14,25 @@ final List<Viagem> viagensMock = [
     dataFim: '18/06/2026',
     orcamento: '5.000',
     anotacoes: 'Visitar o museu local, jantar no restaurante indicado...',
+    tipo: 'Lazer',
     imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
   ),
   Viagem(
-    destino: 'Paris',
-    dataInicio: '10/06/2026',
-    dataFim: '18/06/2026',
+    destino: 'Lisboa',
+    dataInicio: '12/08/2026',
+    dataFim: '19/08/2026',
     orcamento: '3.250',
-    anotacoes: 'Segunda viagem a Paris, foco em museus.',
+    anotacoes: 'Segunda viagem, foco em museus.',
+    tipo: 'Negócios',
     imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
   ),
   Viagem(
-    destino: 'Paris',
-    dataInicio: '10/06/2026',
-    dataFim: '18/06/2026',
+    destino: 'Veneza',
+    dataInicio: '05/09/2026',
+    dataFim: '11/09/2026',
     orcamento: '6.750',
     anotacoes: 'Terceira viagem, passeio de barco no Sena.',
+    tipo: 'Romântica',
     imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
   ),
 ];
@@ -43,13 +48,21 @@ class ViagensPage extends StatefulWidget {
 }
 
 class _ViagensPageState extends State<ViagensPage> {
-  final List<Viagem> _viagens = List.from(viagensMock);
+  // Alteração para permitir filtragem mantendo os dados originais intactos
+  List<Viagem> _viagens = List.from(viagensMock);
+  
   int? _expandidoIndex;
   int _filtroBotao = 0; // 0=Data, 1=Destino, 2=Tipo
   final _filtros = ['Data', 'Destino', 'Tipo'];
+  
+  // Variáveis do Filtro
   String _periodoInicio = '01/01/2026';
   String _periodoFim = '31/12/2026';
+  final _buscaDestinoController = TextEditingController();
+  String? _tipoSelecionado = 'Todos';
+  final List<String> _tiposDisponiveis = ['Todos', 'Lazer', 'Negócios', 'Romântica'];
 
+  // Controladores do Formulário de Edição
   final _destinoController = TextEditingController();
   final _inicioController = TextEditingController();
   final _fimController = TextEditingController();
@@ -58,6 +71,7 @@ class _ViagensPageState extends State<ViagensPage> {
 
   @override
   void dispose() {
+    _buscaDestinoController.dispose();
     _destinoController.dispose();
     _inicioController.dispose();
     _fimController.dispose();
@@ -65,6 +79,30 @@ class _ViagensPageState extends State<ViagensPage> {
     _anotacoesController.dispose();
     super.dispose();
   }
+
+  // ── LÓGICA DE FILTRAGEM ADICIONADA ──────────────────────────
+  void _aplicarFiltros() {
+    setState(() {
+      _expandidoIndex = null; // Fecha formulário aberto caso a lista mude
+      
+      _viagens = viagensMock.where((v) {
+        if (_filtroBotao == 0) {
+          // Mantém todas as viagens se estiver na aba de Data (Apenas visual por enquanto)
+          return true; 
+        } else if (_filtroBotao == 1) {
+          // Filtro por Destino (Texto digitado)
+          final busca = _buscaDestinoController.text.toLowerCase();
+          return v.destino.toLowerCase().contains(busca);
+        } else if (_filtroBotao == 2) {
+          // Filtro por Tipo (Select)
+          if (_tipoSelecionado == null || _tipoSelecionado == 'Todos') return true;
+          return v.tipo == _tipoSelecionado;
+        }
+        return true;
+      }).toList();
+    });
+  }
+  // ────────────────────────────────────────────────────────────
 
   void _abrirFormulario(int index) {
     final v = _viagens[index];
@@ -117,7 +155,6 @@ class _ViagensPageState extends State<ViagensPage> {
     }
   }
 
-  // Navega para a tela de duplicar
   void _abrirDuplicar(Viagem viagem) {
     Navigator.push(
       context,
@@ -125,7 +162,10 @@ class _ViagensPageState extends State<ViagensPage> {
         builder: (_) => DuplicarViagemPage(
           viagem: viagem,
           onDuplicar: (novaViagem) {
-            setState(() => _viagens.add(novaViagem));
+            setState(() {
+              viagensMock.add(novaViagem);
+              _aplicarFiltros(); // Atualiza a lista aplicando filtros
+            });
           },
         ),
       ),
@@ -141,7 +181,16 @@ class _ViagensPageState extends State<ViagensPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1E83DB)),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => const HomePage(),
+                transitionDuration: Duration.zero,
+                reverseTransitionDuration: Duration.zero,
+              ),
+            );
+          },
         ),
         title: const Text(
           'Suas Viagens',
@@ -168,7 +217,12 @@ class _ViagensPageState extends State<ViagensPage> {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: GestureDetector(
-                        onTap: () => setState(() => _filtroBotao = i),
+                        onTap: () {
+                          setState(() {
+                            _filtroBotao = i;
+                            _aplicarFiltros(); // Aplica o filtro da aba selecionada
+                          });
+                        },
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                           decoration: BoxDecoration(
@@ -193,7 +247,10 @@ class _ViagensPageState extends State<ViagensPage> {
                   }),
                 ),
                 const SizedBox(height: 12),
-                // Período
+                
+                // CONTEÚDO CONDICIONAL DE ACORDO COM A ABA ESCOLHIDA:
+                
+                // ABA 0: Período
                 if (_filtroBotao == 0) ...[
                   Text('Período', style: TextStyle(fontSize: 12, color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
                   const SizedBox(height: 8),
@@ -216,6 +273,52 @@ class _ViagensPageState extends State<ViagensPage> {
                     ],
                   ),
                 ],
+                
+                // ABA 1: Destino (Pesquisa)
+                if (_filtroBotao == 1) ...[
+                  Text('Pesquisar Destino', style: TextStyle(fontSize: 12, color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _buscaDestinoController,
+                    onChanged: (value) => _aplicarFiltros(),
+                    style: const TextStyle(fontSize: 14, color: Colors.black87),
+                    decoration: _inputDeco(hint: 'Digite o destino...', icon: Icons.search),
+                  ),
+                ],
+
+                // ABA 2: Tipo (Select)
+                if (_filtroBotao == 2) ...[
+                  Text('Selecione o Tipo', style: TextStyle(fontSize: 12, color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF7F8FA),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        value: _tipoSelecionado,
+                        icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey.shade500),
+                        items: _tiposDisponiveis.map((tipo) {
+                          return DropdownMenuItem(
+                            value: tipo,
+                            child: Text(tipo, style: const TextStyle(fontSize: 14, color: Colors.black87)),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            _tipoSelecionado = newValue;
+                            _aplicarFiltros();
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+                
                 const SizedBox(height: 12),
               ],
             ),
@@ -224,7 +327,7 @@ class _ViagensPageState extends State<ViagensPage> {
           // ── Lista de viagens ──────────────────────
           Expanded(
             child: _viagens.isEmpty
-                ? const Center(child: Text('Nenhuma viagem cadastrada.', style: TextStyle(color: Colors.grey)))
+                ? const Center(child: Text('Nenhuma viagem encontrada.', style: TextStyle(color: Colors.grey)))
                 : ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     itemCount: _viagens.length + 1, // +1 para o botão no final
@@ -273,6 +376,7 @@ class _ViagensPageState extends State<ViagensPage> {
           ),
         ],
       ),
+      bottomNavigationBar: const NavBar(currentIndex: 3),
     );
   }
 
@@ -311,7 +415,6 @@ class _ViagensPageState extends State<ViagensPage> {
                 ],
               ),
             ),
-            // Ícone de duplicar — navega para DuplicarViagemPage
             GestureDetector(
               onTap: () => _abrirDuplicar(viagem),
               child: Container(
@@ -545,6 +648,7 @@ class _DuplicarViagemPageState extends State<DuplicarViagemPage> {
       dataFim: _dataController.text, // backend calculará o fim real
       orcamento: widget.viagem.orcamento,
       anotacoes: _duplicarRoteiro ? widget.viagem.anotacoes : '',
+      tipo: widget.viagem.tipo,
     );
     widget.onDuplicar(novaViagem);
     Navigator.pop(context);

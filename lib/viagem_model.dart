@@ -22,6 +22,7 @@ class Viagem {
   String dataFim;
   String orcamento;
   String anotacoes;
+  String tipo;
 
   Viagem({
     required this.destino,
@@ -33,6 +34,7 @@ class Viagem {
     this.dataFim = '',
     this.orcamento = '',
     this.anotacoes = '',
+    this.tipo = 'Lazer',
   }) : periodo = periodo ?? _derivarPeriodo(dataInicio, dataFim);
 
   // Gera "10 Jun à 18 Jun" a partir das datas "10/06/2026" e "18/06/2026"

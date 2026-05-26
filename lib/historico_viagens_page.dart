@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'viagem_model.dart';
 import 'viagens_page.dart';
 
-
 class HistoricoViagensPage extends StatefulWidget {
   const HistoricoViagensPage({super.key});
 
@@ -40,6 +39,81 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
     );
   }
 
+  // ── FUNÇÃO NOVA: Abre o calendário completo ──
+  Future<void> _abrirCalendario() async {
+    final DateTime? dataSelecionada = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFF1E83DB), // Cor azul para combinar com sua tela
+              onPrimary: Colors.white,
+              onSurface: Colors.black87,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (dataSelecionada != null) {
+      setState(() {
+        _anoSelecionado = dataSelecionada.year.toString();
+      });
+    }
+  }
+
+  // ── FUNÇÃO EXISTENTE: Abre o seletor rápido inferior ──
+  void _mostrarSeletorAno() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Selecionar Ano',
+              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+            ),
+            const SizedBox(height: 16),
+            ..._anos.map(
+              (ano) => ListTile(
+                title: Text(ano),
+                trailing: ano == _anoSelecionado
+                    ? const Icon(Icons.check, color: Color(0xFF1E83DB))
+                    : null,
+                onTap: () {
+                  setState(() => _anoSelecionado = ano);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _mesAno(String data) {
+    if (data.length < 10) return data;
+    final p = data.split('/');
+    if (p.length < 3) return data;
+    const meses = [
+      '', 'JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO',
+      'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'
+    ];
+    final mes = int.tryParse(p[1]) ?? 0;
+    return '${mes >= 1 && mes <= 12 ? meses[mes] : p[1]} ${p[2]}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,14 +128,19 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 32,
+            // ── CORREÇÃO DA LOGO AQUI ──
+            Image.asset(
+              'assets/images/icon.png', // Busca a imagem oficial do projeto
               height: 32,
-              decoration: const BoxDecoration(
-                color: Color(0xFF1E83DB),
-                shape: BoxShape.circle,
+              errorBuilder: (_, __, ___) => Container( // Fallback caso a imagem não carregue
+                width: 32,
+                height: 32,
+                decoration: const BoxDecoration(
+                  color: Color(0xFF23D2B5), // Cor ciano padrão
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.flight, color: Colors.white, size: 18),
               ),
-              child: const Icon(Icons.flight, color: Colors.white, size: 18),
             ),
             const SizedBox(width: 8),
             RichText(
@@ -70,7 +149,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                   TextSpan(
                     text: 'Travel',
                     style: TextStyle(
-                      color: Color(0xFF1E83DB),
+                      color: Color(0xFF101828), // Cor escura para combinar com a identidade
                       fontWeight: FontWeight.w800,
                       fontSize: 20,
                     ),
@@ -78,7 +157,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                   TextSpan(
                     text: 'Note',
                     style: TextStyle(
-                      color: Colors.black87,
+                      color: Color(0xFF23D2B5), // Cor ciano padrão
                       fontWeight: FontWeight.w800,
                       fontSize: 20,
                     ),
@@ -114,7 +193,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
+                    color: Colors.black.withOpacity(0.06),
                     blurRadius: 10,
                     offset: const Offset(0, 3),
                   ),
@@ -151,14 +230,20 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                           ),
                         ),
                       ),
-                      Icon(Icons.calendar_month_outlined,
-                          color: Colors.grey.shade400, size: 20),
+                      // ── CORREÇÃO DO ÍCONE DE CALENDÁRIO ──
+                      GestureDetector(
+                        onTap: _abrirCalendario, // Agora abre o calendário completo!
+                        child: Icon(
+                          Icons.calendar_month_outlined,
+                          color: Colors.grey.shade400,
+                          size: 20,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 20),
                   Row(
                     children: [
-                      // Total de viagens
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,7 +290,6 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                         color: Colors.grey.shade200,
                         margin: const EdgeInsets.symmetric(horizontal: 16),
                       ),
-                      // Investimento total
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,7 +360,6 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
           ],
         ),
       ),
-      // Sem bottomNavigationBar aqui — fica centralizado no bottom_nav_bar.dart
     );
   }
 
@@ -293,7 +376,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -308,7 +391,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
               width: 68,
               height: 68,
               fit: BoxFit.cover,
-              errorBuilder: (_, _, _) => Container(
+              errorBuilder: (_, __, ___) => Container(
                 width: 68,
                 height: 68,
                 color: Colors.grey.shade200,
@@ -351,7 +434,6 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
             ),
           ),
           ElevatedButton(
-            // Navega para ViagensPage ao clicar em "Ver Detalhes"
             onPressed: () => _verDetalhes(index),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF1BCE8A),
@@ -372,52 +454,5 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
         ],
       ),
     );
-  }
-
-  void _mostrarSeletorAno() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Selecionar Ano',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-            ),
-            const SizedBox(height: 16),
-            ..._anos.map(
-              (ano) => ListTile(
-                title: Text(ano),
-                trailing: ano == _anoSelecionado
-                    ? const Icon(Icons.check, color: Color(0xFF1E83DB))
-                    : null,
-                onTap: () {
-                  setState(() => _anoSelecionado = ano);
-                  Navigator.pop(context);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _mesAno(String data) {
-    // "10/06/2026" → "JUNHO 2026"
-    if (data.length < 10) return data;
-    final p = data.split('/');
-    if (p.length < 3) return data;
-    const meses = [
-      '', 'JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO',
-      'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'
-    ];
-    final mes = int.tryParse(p[1]) ?? 0;
-    return '${mes >= 1 && mes <= 12 ? meses[mes] : p[1]} ${p[2]}';
   }
 }
