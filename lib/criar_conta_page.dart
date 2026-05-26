@@ -237,7 +237,69 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(12),
-                                  onTap: () {},
+                                  onTap: () {
+                                    if (_nomeController.text.trim().isEmpty ||
+                                        _cpfController.text.trim().isEmpty ||
+                                        _emailController.text.trim().isEmpty ||
+                                        _telefoneController.text.trim().isEmpty ||
+                                        _senhaController.text.trim().isEmpty ||
+                                        _confirmarSenhaController.text.trim().isEmpty) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Por favor, preencha todos os campos.'),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    final email = _emailController.text.trim();
+                                    final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+                                    if (!emailRegex.hasMatch(email)) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Por favor, insira um e-mail válido.'),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    if (_cpfController.text.length < 14) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Por favor, insira o CPF completo.'),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    if (_telefoneController.text.length < 15) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Por favor, insira o telefone completo.'),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    if (_senhaController.text != _confirmarSenhaController.text) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('As senhas não coincidem.'),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    if (!_aceitouTermos) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Você deve aceitar os Termos de Privacidade.'),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Cadastro realizado com sucesso!'),
+                                      ),
+                                    );
+                                    Navigator.pop(context);
+                                  },
                                   child: const Center(
                                     child: Text(
                                       'Cadastrar',

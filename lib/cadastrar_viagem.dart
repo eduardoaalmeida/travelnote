@@ -225,12 +225,11 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
                 Row(
                   children: [
                     IconButton(
@@ -498,7 +497,7 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF10B981).withOpacity(0.3),
+                        color: const Color(0xFF10B981).withValues(alpha: 0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -556,7 +555,6 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
             ),
           ),
         ),
-      ),
     );
   }
 }

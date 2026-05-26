@@ -131,11 +131,21 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                                 onPressed: () {
-                                  if (_emailController.text.isEmpty ||
+                                  if (_emailController.text.trim().isEmpty ||
                                       _senhaController.text.isEmpty) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       const SnackBar(
                                         content: Text('Preencha o e-mail e a senha.'),
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                  final email = _emailController.text.trim();
+                                  final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+                                  if (!emailRegex.hasMatch(email)) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Por favor, insira um e-mail válido.'),
                                       ),
                                     );
                                     return;

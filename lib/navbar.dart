@@ -50,9 +50,11 @@ class NavBar extends StatelessWidget {
       onTap: (index) => _onItemTapped(context, index),
 
       type: BottomNavigationBarType.fixed,
-
-      selectedItemColor: const Color(0xFF23D2B5),
-      unselectedItemColor: const Color(0xFFB0B9C6), // Match the light grayish-blue from the image
+      backgroundColor: Colors.white,
+      selectedItemColor: const Color(0xFF475569),
+      unselectedItemColor: const Color(0xFF94A3B8),
+      selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
+      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
 
       items: const [
         BottomNavigationBarItem(
