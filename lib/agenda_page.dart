@@ -9,6 +9,20 @@ class AgendaPage extends StatefulWidget {
   State<AgendaPage> createState() => _AgendaPageState();
 }
 
+class _AgendaEvent {
+  final String horario;
+  final String titulo;
+  final String endereco;
+  final Color cor;
+
+  _AgendaEvent({
+    required this.horario,
+    required this.titulo,
+    required this.endereco,
+    required this.cor,
+  });
+}
+
 class _AgendaPageState extends State<AgendaPage> {
   DateTime _focusedDay = DateTime.utc(
     DateTime.now().year,
@@ -21,7 +35,23 @@ class _AgendaPageState extends State<AgendaPage> {
     DateTime.now().day,
   );
 
-  Widget evento(Color cor, String horario, String titulo) {
+  final TextEditingController _tituloController = TextEditingController();
+  final TextEditingController _enderecoController = TextEditingController();
+  DateTime _novaData = DateTime.now();
+  TimeOfDay _novoHorario = const TimeOfDay(hour: 9, minute: 0);
+
+  final Map<DateTime, List<_AgendaEvent>> _events = {};
+
+  List<_AgendaEvent> _getEventsForDay(DateTime day) {
+    final normalized = DateTime(day.year, day.month, day.day);
+    return _events[normalized] ?? [];
+  }
+
+  DateTime _normalizeDate(DateTime date) {
+    return DateTime(date.year, date.month, date.day);
+  }
+
+  Widget evento(Color cor, String horario, String titulo, String endereco) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(15),
@@ -45,16 +75,30 @@ class _AgendaPageState extends State<AgendaPage> {
 
           const SizedBox(width: 15),
 
-          Text(horario),
+          Text(horario, style: const TextStyle(fontWeight: FontWeight.w600)),
 
           const SizedBox(width: 20),
 
-          Expanded(child: Text(titulo)),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  titulo,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(endereco, style: const TextStyle(color: Colors.grey)),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -144,20 +188,40 @@ class _AgendaPageState extends State<AgendaPage> {
 
             const SizedBox(height: 20),
 
-            evento(Colors.cyan, '10:00', 'Check-in do hotel'),
-
-            evento(Colors.green, '13:40', 'Almoço com Amigos'),
-
-            evento(Colors.orange, '19:30', 'Jantar de Negócios'),
-
-            const Spacer(),
+            Expanded(
+              child: _getEventsForDay(_selectedDay).isEmpty
+                  ? const Center(
+                      child: Text(
+                        'Nenhum evento agendado para este dia.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: _getEventsForDay(_selectedDay).length,
+                      itemBuilder: (context, index) {
+                        final eventoDia = _getEventsForDay(_selectedDay)[index];
+                        return evento(
+                          eventoDia.cor,
+                          eventoDia.horario,
+                          eventoDia.titulo,
+                          eventoDia.endereco,
+                        );
+                      },
+                    ),
+            ),
 
             SizedBox(
               width: double.infinity,
               height: 55,
 
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  final bool? added = await _showAddEventDialog(context);
+                  if (added == true) {
+                    setState(() {});
+                  }
+                },
 
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF23D2B5),
@@ -177,6 +241,157 @@ class _AgendaPageState extends State<AgendaPage> {
         ),
       ),
       bottomNavigationBar: const NavBar(currentIndex: 2),
+    );
+  }
+
+  @override
+  void dispose() {
+    _tituloController.dispose();
+    _enderecoController.dispose();
+    super.dispose();
+  }
+
+  Future<bool?> _showAddEventDialog(BuildContext context) async {
+    _tituloController.clear();
+    _enderecoController.clear();
+    _novaData = _selectedDay;
+    _novoHorario = const TimeOfDay(hour: 9, minute: 0);
+
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text('Cadastro de Local'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextField(
+                  controller: _tituloController,
+                  decoration: InputDecoration(
+                    labelText: 'Título da Visita',
+                    hintText: 'Título da visita',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _enderecoController,
+                  decoration: InputDecoration(
+                    labelText: 'Endereço',
+                    hintText: 'Endereço',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 14,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          final picked = await showDatePicker(
+                            context: dialogContext,
+                            initialDate: _novaData,
+                            firstDate: DateTime(2020),
+                            lastDate: DateTime(2030),
+                          );
+                          if (picked != null) {
+                            setState(() {
+                              _novaData = picked;
+                            });
+                          }
+                        },
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          side: const BorderSide(color: Colors.grey),
+                        ),
+                        child: Text(
+                          '${_novaData.day.toString().padLeft(2, '0')}/${_novaData.month.toString().padLeft(2, '0')}/${_novaData.year}',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () async {
+                          final picked = await showTimePicker(
+                            context: dialogContext,
+                            initialTime: _novoHorario,
+                          );
+                          if (picked != null) {
+                            setState(() {
+                              _novoHorario = picked;
+                            });
+                          }
+                        },
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          side: const BorderSide(color: Colors.grey),
+                        ),
+                        child: Text(_novoHorario.format(dialogContext)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(false);
+              },
+              child: const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final titulo = _tituloController.text.trim();
+                final endereco = _enderecoController.text.trim();
+                if (titulo.isEmpty) {
+                  return;
+                }
+
+                final normalizedDate = _normalizeDate(_novaData);
+                _events
+                    .putIfAbsent(normalizedDate, () => [])
+                    .add(
+                      _AgendaEvent(
+                        horario: _novoHorario.format(context),
+                        titulo: titulo,
+                        endereco: endereco,
+                        cor: Colors.cyan,
+                      ),
+                    );
+                Navigator.of(dialogContext).pop(true);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF23D2B5),
+              ),
+              child: const Text('Cadastrar Local'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
