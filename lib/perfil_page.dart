@@ -174,8 +174,11 @@ class _PerfilPageState extends State<PerfilPage> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A), size: 24),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Color(0xFF0F172A),
+            size: 24,
+          ),
           onPressed: () => Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => const HomePage()),
