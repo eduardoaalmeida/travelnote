@@ -125,47 +125,32 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1E83DB)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // ── CORREÇÃO DA LOGO AQUI ──
-            Image.asset(
-              'assets/images/icon.png', // Busca a imagem oficial do projeto
-              height: 32,
-              errorBuilder: (_, __, ___) => Container( // Fallback caso a imagem não carregue
-                width: 32,
-                height: 32,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF23D2B5), // Cor ciano padrão
-                  shape: BoxShape.circle,
+        title: Image.asset(
+          'assets/images/logo_completa.png',
+          height: 55,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => RichText(
+            text: const TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Travel',
+                  style: TextStyle(
+                    color: Color(0xFF101828),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
                 ),
-                child: const Icon(Icons.flight, color: Colors.white, size: 18),
-              ),
-            ),
-            const SizedBox(width: 8),
-            RichText(
-              text: const TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Travel',
-                    style: TextStyle(
-                      color: Color(0xFF101828), // Cor escura para combinar com a identidade
-                      fontWeight: FontWeight.w800,
-                      fontSize: 20,
-                    ),
+                TextSpan(
+                  text: 'Note',
+                  style: TextStyle(
+                    color: Color(0xFF23D2B5),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
-                  TextSpan(
-                    text: 'Note',
-                    style: TextStyle(
-                      color: Color(0xFF23D2B5), // Cor ciano padrão
-                      fontWeight: FontWeight.w800,
-                      fontSize: 20,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
         centerTitle: true,
       ),

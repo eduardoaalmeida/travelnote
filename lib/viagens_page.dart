@@ -32,7 +32,7 @@ final List<Viagem> viagensMock = [
     dataFim: '11/09/2026',
     orcamento: '6.750',
     anotacoes: 'Terceira viagem, passeio de barco no Sena.',
-    tipo: 'Romântica',
+    tipo: 'Lazer',
     imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
   ),
 ];
@@ -60,7 +60,7 @@ class _ViagensPageState extends State<ViagensPage> {
   String _periodoFim = '31/12/2026';
   final _buscaDestinoController = TextEditingController();
   String? _tipoSelecionado = 'Todos';
-  final List<String> _tiposDisponiveis = ['Todos', 'Lazer', 'Negócios', 'Romântica'];
+  final List<String> _tiposDisponiveis = ['Todos', 'Lazer', 'Trabalho', 'Família', 'Negócios'];
 
   // Controladores do Formulário de Edição
   final _destinoController = TextEditingController();
@@ -101,6 +101,21 @@ class _ViagensPageState extends State<ViagensPage> {
         return true;
       }).toList();
     });
+  }
+
+  IconData _getIconForTipo(String? tipo) {
+    switch (tipo) {
+      case 'Lazer':
+        return Icons.beach_access_outlined;
+      case 'Trabalho':
+        return Icons.laptop_chromebook_outlined;
+      case 'Família':
+        return Icons.people_outline;
+      case 'Negócios':
+        return Icons.business_center_outlined;
+      default:
+        return Icons.apps_outlined;
+    }
   }
   // ────────────────────────────────────────────────────────────
 
@@ -291,30 +306,49 @@ class _ViagensPageState extends State<ViagensPage> {
                   Text('Selecione o Tipo', style: TextStyle(fontSize: 12, color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF7F8FA),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.grey.shade200),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
                     ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        isExpanded: true,
-                        value: _tipoSelecionado,
-                        icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey.shade500),
-                        items: _tiposDisponiveis.map((tipo) {
-                          return DropdownMenuItem(
-                            value: tipo,
-                            child: Text(tipo, style: const TextStyle(fontSize: 14, color: Colors.black87)),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _tipoSelecionado = newValue;
-                            _aplicarFiltros();
-                          });
-                        },
-                      ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _getIconForTipo(_tipoSelecionado),
+                          color: const Color(0xFF0284C7),
+                          size: 22,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              isExpanded: true,
+                              value: _tipoSelecionado,
+                              dropdownColor: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFF64748B)),
+                              style: const TextStyle(
+                                color: Color(0xFF0F172A),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              items: _tiposDisponiveis.map((tipo) {
+                                return DropdownMenuItem(
+                                  value: tipo,
+                                  child: Text(tipo),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _tipoSelecionado = newValue;
+                                  _aplicarFiltros();
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

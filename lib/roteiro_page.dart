@@ -145,6 +145,8 @@ class _RoteiroPageState extends State<RoteiroPage> {
       context: context,
       barrierDismissible: true,
       builder: (_) => Dialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
         insetPadding:
             const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
         shape: RoundedRectangleBorder(
@@ -295,47 +297,32 @@ class _RoteiroPageState extends State<RoteiroPage> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF101828)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset(
-              'assets/images/icon.png',
-              height: 36,
-              errorBuilder: (_, __, ___) => Container(
-                width: 36,
-                height: 36,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF23D2B5),
-                  shape: BoxShape.circle,
+        title: Image.asset(
+          'assets/images/logo_completa.png',
+          height: 55,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => RichText(
+            text: const TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Travel',
+                  style: TextStyle(
+                    color: Color(0xFF101828),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
                 ),
-                child: const Icon(Icons.flight,
-                    color: Colors.white, size: 20),
-              ),
-            ),
-            const SizedBox(width: 8),
-            RichText(
-              text: const TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Travel',
-                    style: TextStyle(
-                      color: Color(0xFF101828),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
+                TextSpan(
+                  text: 'Note',
+                  style: TextStyle(
+                    color: Color(0xFF23D2B5),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
-                  TextSpan(
-                    text: 'Note',
-                    style: TextStyle(
-                      color: Color(0xFF23D2B5),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
         centerTitle: true,
       ),
@@ -357,95 +344,114 @@ class _RoteiroPageState extends State<RoteiroPage> {
             const SizedBox(height: 18),
 
             // ── Lista de locais ──────────────────────────────────
-            ..._locais.asMap().entries.map((entry) {
-              final i     = entry.key;
-              final local = entry.value;
-
-              return Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // ── Número — caixa arredondada teal ─────────
-                    Container(
-                      width: 36,
-                      height: 36,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFE6FAF5),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Text(
-                        local.numero,
-                        style: const TextStyle(
-                          color: Color(0xFF23D2B5),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
+            ...List.generate(_locais.length, (i) {
+              final local = _locais[i];
+              return GestureDetector(
+                onTap: () => _abrirEdicao(i),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: const Color(0xFFE2E8F0),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      // Número circular (meio azul)
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFE0F2FE),
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          local.numero,
+                          maxLines: 1,
+                          softWrap: false,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Color(0xFF0284C7),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
+                      const SizedBox(width: 14),
 
-                    // ── Nome + data/horário + distância ─────────
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            local.nome,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: Color(0xFF101828),
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          Text(
-                            '${local.data} • ${local.horario}',
-                            style: const TextStyle(
-                                fontSize: 11, color: Colors.grey),
-                          ),
-                          if (local.distancia.isNotEmpty) ...[
-                            const SizedBox(height: 2),
+                      // Detalhes da Visita (Título, Subtítulo, Distância)
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Text(
-                              local.distancia,
+                              local.nome,
                               style: const TextStyle(
-                                  fontSize: 11, color: Colors.grey),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Color(0xFF0F172A),
+                              ),
                             ),
+                            const SizedBox(height: 3),
+                            Text(
+                              '${local.data} • ${local.horario}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF64748B),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            if (local.distancia.isNotEmpty) ...[
+                              const SizedBox(height: 3),
+                              Text(
+                                local.distancia.toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Color(0xFF94A3B8),
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
                           ],
-                        ],
+                        ),
                       ),
-                    ),
 
-                    // ── Check (toggle) ───────────────────────────
-                    GestureDetector(
-                      onTap: () => setState(
-                          () => _locais[i].concluido = !_locais[i].concluido),
-                      child: Icon(
-                        local.concluido
-                            ? Icons.check_circle
-                            : Icons.check_circle_outline,
-                        color: local.concluido
-                            ? const Color(0xFF23D2B5)
-                            : Colors.grey.shade300,
-                        size: 22,
+                      // Checkbox para Concluir (toggles status)
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            local.concluido = !local.concluido;
+                          });
+                        },
+                        child: Icon(
+                          local.concluido
+                              ? Icons.check_circle
+                              : Icons.check_circle_outline,
+                          color: local.concluido
+                              ? const Color(0xFF23D2B5)
+                              : const Color(0xFFD0D5DD),
+                          size: 24,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
+                      const SizedBox(width: 6),
 
-                    // ── Lápis (editar) ───────────────────────────
-                    GestureDetector(
-                      onTap: () => _abrirEdicao(i),
-                      child: const Icon(Icons.edit_outlined,
-                          size: 20, color: Colors.grey),
-                    ),
-                  ],
+                      // Ícone Lápis (Edição)
+                      const Padding(
+                        padding: EdgeInsets.all(6),
+                        child: Icon(
+                          Icons.edit_outlined,
+                          size: 20,
+                          color: Color(0xFF94A3B8),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }),
@@ -503,7 +509,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
             // ── Ilustração ───────────────────────────────────────
             Center(
               child: Image.asset(
-                'assets/images/imagem_roteiro.png',
+                'assets/images/imagem_login.png',
                 height: 160,
                 fit: BoxFit.contain,
                 errorBuilder: (_, __, ___) => const SizedBox.shrink(),

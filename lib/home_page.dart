@@ -3,7 +3,8 @@ import 'navbar.dart';
 import 'viagem_model.dart';
 import 'detalhes_viagem.dart';
 import 'cadastrar_viagem.dart';
-import 'notificacoes_page.dart'; // <-- Importe o arquivo da tela de notificações aqui
+import 'notificacoes_page.dart';
+import 'viagens_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -166,7 +167,16 @@ class HomePage extends StatelessWidget {
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) => const ViagensPage(),
+                            transitionDuration: Duration.zero,
+                            reverseTransitionDuration: Duration.zero,
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF10B981),
                         foregroundColor: Colors.white,

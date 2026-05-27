@@ -372,7 +372,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     bool clicavel = true,
     int? index,
   }) {
-    return Container(
+    final cardContent = Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
@@ -419,7 +419,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             ),
           ),
 
-          // CORREÇÃO 3 — ícone lápis substituindo chevron; sempre clicável
+          // Ícone lápis sempre visível e clicável para edição
           GestureDetector(
             onTap: () => _openEditor(
               aba: abaSelecionada,
@@ -428,12 +428,39 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
               isNew: false,
               index: index,
             ),
-            child: const Icon(Icons.edit_outlined,
-                size: 20, color: Color(0xFF94A3B8)),
+            child: const Padding(
+              padding: EdgeInsets.all(6),
+              child: Icon(Icons.edit_outlined,
+                  size: 20, color: Color(0xFF94A3B8)),
+            ),
           ),
         ],
       ),
     );
+
+    return clicavel
+        ? GestureDetector(
+            onTap: () {
+              if (abaSelecionada == 0) {
+                // Para Roteiro: abre as visitas desse dia
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RoteiroPage()),
+                );
+              } else {
+                // Para Compromissos e Anotações: abre o editor direto
+                _openEditor(
+                  aba: abaSelecionada,
+                  titulo: titulo,
+                  subtitulo: subtitulo,
+                  isNew: false,
+                  index: index,
+                );
+              }
+            },
+            child: cardContent,
+          )
+        : cardContent;
   }
 
   // ── Botão "Adicionar X +" ─────────────────────────────────────────────────
@@ -520,7 +547,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
       context: context,
       barrierDismissible: true,
       builder: (ctx) => Dialog(
-        backgroundColor: const Color(0xFFF6F7F8),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
         insetPadding:
             const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
         shape:
@@ -793,7 +821,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     showDialog<void>(
       context: context,
       builder: (ctx) => Dialog(
-        backgroundColor: const Color(0xFFF6F7F8),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
         insetPadding: const EdgeInsets.all(16),
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -820,7 +849,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                         showDialog<void>(
                           context: ctx,
                           builder: (confirmCtx) => AlertDialog(
-                            backgroundColor: const Color(0xFFF6F7F8),
+                            backgroundColor: Colors.white,
+                            surfaceTintColor: Colors.transparent,
                             shape: RoundedRectangleBorder(
                                 borderRadius:
                                     BorderRadius.circular(16)),
@@ -935,7 +965,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     showDialog(
       context: context,
       builder: (ctx) => Dialog(
-        backgroundColor: const Color(0xFFF6F7F8),
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
         insetPadding:
             const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
         shape:
