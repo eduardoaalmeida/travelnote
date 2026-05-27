@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'navbar.dart';
-// classe principal 
+import 'roteiro_page.dart';
+
 class DetalhesViagemPage extends StatefulWidget {
   const DetalhesViagemPage({super.key});
 
@@ -34,11 +35,13 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
       'anotacoes': [
         {
           'titulo': 'Restaurante X',
-          'subtitulo': 'LOCALIZADO PRÓXIMO À TORRE\nEIFFEL. ÓTIMO RESTAURANTE E PREÇO\nBOM'
+          'subtitulo':
+              'LOCALIZADO PRÓXIMO À TORRE\nEIFFEL. ÓTIMO RESTAURANTE E PREÇO\nBOM'
         },
         {
           'titulo': 'Restaurante X',
-          'subtitulo': 'LOCALIZADO PRÓXIMO À TORRE\nEIFFEL. ÓTIMO RESTAURANTE E PREÇO\nBOM'
+          'subtitulo':
+              'LOCALIZADO PRÓXIMO À TORRE\nEIFFEL. ÓTIMO RESTAURANTE E PREÇO\nBOM'
         },
       ],
     },
@@ -68,13 +71,14 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
       );
     }
   }
- // Criação dos gatters
+
   String get nomeViagem => viagens[viagemAtual]['nome'] ?? 'Paris';
   String get dataInicio => viagens[viagemAtual]['dataInicio'] ?? '10';
   String get dataFim => viagens[viagemAtual]['dataFim'] ?? '13';
   String get mesAno => viagens[viagemAtual]['mes'] ?? 'Jun';
 
-  void _atualizarViagem(String nome, String inicio, String fim, String mes) {
+  void _atualizarViagem(
+      String nome, String inicio, String fim, String mes) {
     setState(() {
       viagens[viagemAtual]['nome'] = nome;
       viagens[viagemAtual]['dataInicio'] = inicio;
@@ -102,6 +106,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Cabeçalho com logo ────────────────────────────────────────────────────
   Widget _cabecalho() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 20, 18, 10),
@@ -148,6 +153,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Card da viagem ────────────────────────────────────────────────────────
   Widget _cardViagem() {
     final content = Container(
       margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
@@ -170,7 +176,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 width: 90,
                 height: 80,
                 color: const Color(0xFFE0F2FE),
-                child: const Icon(Icons.flight, color: Color(0xFF23D2B5), size: 36),
+                child: const Icon(Icons.flight,
+                    color: Color(0xFF23D2B5), size: 36),
               ),
             ),
           ),
@@ -199,7 +206,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
               ],
             ),
           ),
-          const Icon(Icons.check_circle_rounded, color: Color(0xFF2DD4BF), size: 28),
+          const Icon(Icons.check_circle_rounded,
+              color: Color(0xFF2DD4BF), size: 28),
         ],
       ),
     );
@@ -207,6 +215,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     return content;
   }
 
+  // ── Abas ──────────────────────────────────────────────────────────────────
   Widget _abas() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -221,8 +230,12 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 Text(
                   abas[index],
                   style: TextStyle(
-                    color: selecionada ? const Color(0xFF0D9488) : const Color(0xFF94A3B8),
-                    fontWeight: selecionada ? FontWeight.bold : FontWeight.w500,
+                    color: selecionada
+                        ? const Color(0xFF0D9488)
+                        : const Color(0xFF94A3B8),
+                    fontWeight: selecionada
+                        ? FontWeight.bold
+                        : FontWeight.w500,
                     fontSize: 15,
                   ),
                 ),
@@ -231,7 +244,9 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                   width: 35,
                   height: 3.5,
                   decoration: BoxDecoration(
-                    color: selecionada ? const Color(0xFF0D9488) : Colors.transparent,
+                    color: selecionada
+                        ? const Color(0xFF0D9488)
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -243,12 +258,14 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Conteúdo da aba selecionada ───────────────────────────────────────────
   Widget _conteudo() {
     if (abaSelecionada == 0) return _roteiro();
     if (abaSelecionada == 1) return _compromissos();
     return _anotacoes();
   }
 
+  // ── Aba Roteiro ───────────────────────────────────────────────────────────
   Widget _roteiro() {
     return ListView(
       padding: const EdgeInsets.all(18),
@@ -258,11 +275,17 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             children: [
               const TextSpan(
                 text: 'Roteiro ',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0F172A)),
               ),
               TextSpan(
                 text: '(${roteiroItems.length} dias)',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0D9488)),
+                style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0D9488)),
               ),
             ],
           ),
@@ -274,7 +297,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             (i + 1).toString().padLeft(2, '0'),
             item['titulo'] ?? '',
             item['subtitulo'] ?? '',
-            clicavel: false,
+            // CORREÇÃO 3 — ícone lápis visível e clique funcional
+            clicavel: true,
             index: i,
           );
         }),
@@ -284,11 +308,16 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Aba Compromissos ──────────────────────────────────────────────────────
   Widget _compromissos() {
     return ListView(
       padding: const EdgeInsets.all(18),
       children: [
-        const Text('Compromissos', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+        const Text('Compromissos',
+            style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A))),
         const SizedBox(height: 18),
         ...List.generate(compromissosItems.length, (i) {
           final item = compromissosItems[i];
@@ -296,7 +325,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             (i + 1).toString().padLeft(2, '0'),
             item['titulo'] ?? '',
             item['subtitulo'] ?? '',
-            clicavel: false,
+            // CORREÇÃO 3 — ícone lápis visível e clique funcional
+            clicavel: true,
             index: i,
           );
         }),
@@ -306,11 +336,16 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Aba Anotações ─────────────────────────────────────────────────────────
   Widget _anotacoes() {
     return ListView(
       padding: const EdgeInsets.all(18),
       children: [
-        const Text('Anotações', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+        const Text('Anotações',
+            style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A))),
         const SizedBox(height: 18),
         ...List.generate(anotacoesItems.length, (i) {
           final item = anotacoesItems[i];
@@ -318,7 +353,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             (i + 1).toString().padLeft(2, '0'),
             item['titulo'] ?? '',
             item['subtitulo'] ?? '',
-            clicavel: false,
+            // CORREÇÃO 3 — ícone lápis visível e clique funcional
+            clicavel: true,
             index: i,
           );
         }),
@@ -328,6 +364,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Item de lista — CORREÇÃO 3: lápis sempre visível e clicável ──────────
   Widget _item(
     String numero,
     String titulo,
@@ -335,50 +372,75 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     bool clicavel = true,
     int? index,
   }) {
-    return InkWell(
-      onTap: null,
-      borderRadius: BorderRadius.circular(15),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: const BoxDecoration(color: Color(0xFFE0F2FE), shape: BoxShape.circle),
-              alignment: Alignment.center,
-              child: Text(numero, style: const TextStyle(color: Color(0xFF0284C7), fontWeight: FontWeight.bold, fontSize: 14)),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+      ),
+      child: Row(
+        children: [
+          // Número circular
+          Container(
+            width: 40,
+            height: 40,
+            decoration: const BoxDecoration(
+                color: Color(0xFFE0F2FE), shape: BoxShape.circle),
+            alignment: Alignment.center,
+            child: Text(
+              numero,
+              style: const TextStyle(
+                  color: Color(0xFF0284C7),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(titulo, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A))),
-                  const SizedBox(height: 3),
-                  Text(subtitulo, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
-                ],
-              ),
+          ),
+          const SizedBox(width: 14),
+
+          // Título e subtítulo
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(titulo,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Color(0xFF0F172A))),
+                const SizedBox(height: 3),
+                Text(subtitulo,
+                    style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF64748B),
+                        fontWeight: FontWeight.w500)),
+              ],
             ),
-            if (clicavel)
-              const Icon(Icons.chevron_right, size: 20, color: Color(0xFF94A3B8))
-            else
-              const SizedBox(width: 20),
-          ],
-        ),
+          ),
+
+          // CORREÇÃO 3 — ícone lápis substituindo chevron; sempre clicável
+          GestureDetector(
+            onTap: () => _openEditor(
+              aba: abaSelecionada,
+              titulo: titulo,
+              subtitulo: subtitulo,
+              isNew: false,
+              index: index,
+            ),
+            child: const Icon(Icons.edit_outlined,
+                size: 20, color: Color(0xFF94A3B8)),
+          ),
+        ],
       ),
     );
   }
 
+  // ── Botão "Adicionar X +" ─────────────────────────────────────────────────
   Widget _botaoAdicionar(String texto) {
     return InkWell(
-      onTap: null,
+      onTap: () => _openEditor(
+          aba: abaSelecionada, titulo: '', subtitulo: '', isNew: true),
       borderRadius: BorderRadius.circular(25),
       child: Container(
         height: 52,
@@ -388,11 +450,260 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
           borderRadius: BorderRadius.circular(25),
           border: Border.all(color: const Color(0xFFCBD5E1), width: 1.2),
         ),
-        child: Text(texto, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A), fontSize: 15)),
+        child: Text(texto,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A),
+                fontSize: 15)),
       ),
     );
   }
 
+  // ── CORREÇÃO 1 — Modal fiel à foto: título, campos e botão corretos ───────
+  void _openEditor({
+    required int aba,
+    String? titulo,
+    String? subtitulo,
+    bool isNew = false,
+    int? index,
+  }) {
+    final titleController = TextEditingController(text: titulo ?? '');
+    final subtitleController = TextEditingController(text: subtitulo ?? '');
+
+    final configs = [
+      // Aba 0 — Roteiro
+      {
+        'tipo': 'Dia',
+        'labelTitulo': 'TÍTULO',
+        'labelSub': 'LOCAL E HORÁRIO',
+        'hintTitulo': 'Ex: Dia 10',
+        'hintSub': 'Ex: Torre Eiffel • 09:00',
+        'iconeTitulo': Icons.calendar_today_outlined,
+        'iconeSub': Icons.location_on_outlined,
+        'maxLinesSub': 1,
+      },
+      // Aba 1 — Compromissos
+      {
+        'tipo': 'Compromisso',
+        'labelTitulo': 'TÍTULO',
+        'labelSub': 'DATA E HORÁRIO',
+        'hintTitulo': isNew ? 'Título do Compromisso' : 'Jantar com Amigos',
+        'hintSub': 'Ex: 11/06/2026 • 19:30',
+        'iconeTitulo': Icons.location_on_outlined,
+        'iconeSub': Icons.access_time_outlined,
+        'maxLinesSub': 1,
+      },
+      // Aba 2 — Anotações
+      {
+        'tipo': 'Anotação',
+        'labelTitulo': 'TÍTULO',
+        'labelSub': 'DESCRIÇÃO',
+        'hintTitulo': 'Ex: Restaurante X',
+        'hintSub': 'Ex: Ótimo restaurante próximo à Torre Eiffel...',
+        'iconeTitulo': Icons.edit_note_outlined,
+        'iconeSub': Icons.description_outlined,
+        'maxLinesSub': 4,
+      },
+    ];
+
+    final c = configs[aba];
+    final tipo          = c['tipo'] as String;
+    final labelTitulo   = c['labelTitulo'] as String;
+    final labelSub      = c['labelSub'] as String;
+    final hintTitulo    = c['hintTitulo'] as String;
+    final hintSub       = c['hintSub'] as String;
+    final iconeTitulo   = c['iconeTitulo'] as IconData;
+    final iconeSub      = c['iconeSub'] as IconData;
+    final maxLinesSub   = c['maxLinesSub'] as int;
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => Dialog(
+        backgroundColor: const Color(0xFFF6F7F8),
+        insetPadding:
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Título do modal — "Cadastro de Compromisso" ou "Editar Compromisso"
+                Center(
+                  child: Text(
+                    isNew ? 'Cadastro de $tipo' : 'Editar $tipo',
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF0F172A),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
+                // Campo 1 — Título
+                _labelPopup(labelTitulo),
+                _campoPopup(
+                  controller: titleController,
+                  hint: hintTitulo,
+                  icone: iconeTitulo,
+                  maxLines: 1,
+                ),
+                const SizedBox(height: 14),
+
+                // Campo 2 — Data/Horário ou Descrição
+                // Para Compromissos: DATA e HORÁRIO lado a lado (igual à foto)
+                if (aba == 1) ...[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _labelPopup('DATA'),
+                            _campoPopup(
+                              controller: subtitleController,
+                              hint: '10/06/2026',
+                              icone: Icons.calendar_today_outlined,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _labelPopup('HORÁRIO'),
+                            _campoPopup(
+                              controller: TextEditingController(),
+                              hint: '09:30hrs',
+                              icone: Icons.access_time_outlined,
+                              maxLines: 1,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ] else ...[
+                  _labelPopup(labelSub),
+                  _campoPopup(
+                    controller: subtitleController,
+                    hint: hintSub,
+                    icone: iconeSub,
+                    maxLines: maxLinesSub,
+                  ),
+                ],
+
+                const SizedBox(height: 24),
+
+                // Botão principal — "Cadastrar Compromisso" ou "Editar Compromisso"
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final savedTitle = titleController.text.trim();
+                      final savedSub = subtitleController.text.trim();
+                      Navigator.of(ctx).pop();
+                      setState(() {
+                        final novoItem = {
+                          'titulo': savedTitle,
+                          'subtitulo': savedSub
+                        };
+                        if (aba == 0) {
+                          isNew
+                              ? roteiroItems.add(novoItem)
+                              : roteiroItems[index!] = novoItem;
+                        } else if (aba == 1) {
+                          isNew
+                              ? compromissosItems.add(novoItem)
+                              : compromissosItems[index!] = novoItem;
+                        } else {
+                          isNew
+                              ? anotacoesItems.add(novoItem)
+                              : anotacoesItems[index!] = novoItem;
+                        }
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF23D2B5),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: Text(
+                      isNew ? 'Cadastrar $tipo' : 'Editar $tipo',
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ── Helpers do popup ──────────────────────────────────────────────────────
+  Widget _labelPopup(String texto) => Padding(
+        padding: const EdgeInsets.only(bottom: 6),
+        child: Text(
+          texto,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade500,
+            letterSpacing: 0.5,
+          ),
+        ),
+      );
+
+  Widget _campoPopup({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icone,
+    int maxLines = 1,
+  }) =>
+      TextField(
+        controller: controller,
+        maxLines: maxLines,
+        style: const TextStyle(fontSize: 14, color: Color(0xFF0F172A)),
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+          prefixIcon: Icon(icone, color: const Color(0xFF23D2B5), size: 20),
+          filled: true,
+          fillColor: const Color(0xFFF8FAFC),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 13, horizontal: 14),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey.shade200),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.grey.shade200),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide:
+                const BorderSide(color: Color(0xFF23D2B5), width: 1.5),
+          ),
+        ),
+      );
+
+  // ── CORREÇÃO 2 — Botão Editar navega para RoteiroPage ────────────────────
   Widget _botoes() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(18, 5, 18, 20),
@@ -400,22 +711,32 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
         children: [
           Expanded(
             child: OutlinedButton(
-              onPressed: null,
+              // CORREÇÃO 2: era null, agora navega para RoteiroPage
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const RoteiroPage()),
+              ),
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0F172A),
                 backgroundColor: Colors.white,
-                side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                side: const BorderSide(
+                    color: Color(0xFFE2E8F0), width: 1.5),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.edit_outlined, size: 18, color: Color(0xFF0F172A)),
+                  Icon(Icons.edit_outlined,
+                      size: 18, color: Color(0xFF0F172A)),
                   SizedBox(width: 8),
                   Text(
                     'Editar',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A)),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Color(0xFF0F172A)),
                   ),
                 ],
               ),
@@ -424,12 +745,14 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
           const SizedBox(width: 16),
           Expanded(
             child: OutlinedButton(
-              onPressed: null,
+              onPressed: _openExcluirItens,
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0F172A),
                 backgroundColor: const Color(0xFFFEE2E2),
-                side: const BorderSide(color: Color(0xFFFCA5A5), width: 1.5),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                side: const BorderSide(
+                    color: Color(0xFFFCA5A5), width: 1.5),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               child: const Row(
@@ -437,15 +760,301 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 children: [
                   Text(
                     'Excluir',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A)),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Color(0xFF0F172A)),
                   ),
                   SizedBox(width: 8),
-                  Icon(Icons.delete_outline, size: 18, color: Color(0xFF0F172A)),
+                  Icon(Icons.delete_outline,
+                      size: 18, color: Color(0xFF0F172A)),
                 ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ── Dialog de exclusão de itens (original preservado) ─────────────────────
+  void _openExcluirItens() {
+    final tipo = abaSelecionada == 0
+        ? 'Roteiro'
+        : abaSelecionada == 1
+            ? 'Compromissos'
+            : 'Anotações';
+    final itens = abaSelecionada == 0
+        ? roteiroItems
+        : abaSelecionada == 1
+            ? compromissosItems
+            : anotacoesItems;
+
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: const Color(0xFFF6F7F8),
+        insetPadding: const EdgeInsets.all(16),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(18),
+              child: Text('🗑️ Excluir $tipo',
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
+            ),
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: itens.length,
+                itemBuilder: (_, i) {
+                  final item = itens[i];
+                  return Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 18),
+                    child: InkWell(
+                      onTap: () {
+                        showDialog<void>(
+                          context: ctx,
+                          builder: (confirmCtx) => AlertDialog(
+                            backgroundColor: const Color(0xFFF6F7F8),
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(16)),
+                            title: const Text('Confirmar exclusão'),
+                            content: Text(
+                                'Excluir "${item['titulo']}"?'),
+                            actions: [
+                              TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(confirmCtx).pop(),
+                                  child: const Text('Cancelar')),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(confirmCtx).pop();
+                                  Navigator.of(ctx).pop();
+                                  setState(
+                                      () => itens.removeAt(i));
+                                },
+                                child: const Text('Excluir',
+                                    style: TextStyle(
+                                        color: Color(0xFFEF4444))),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                              color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: const BoxDecoration(
+                                  color: Color(0xFFE0F2FE),
+                                  shape: BoxShape.circle),
+                              alignment: Alignment.center,
+                              child: Text(
+                                (i + 1).toString().padLeft(2, '0'),
+                                style: const TextStyle(
+                                    color: Color(0xFF0284C7),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Text(item['titulo'] ?? '',
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: Color(0xFF0F172A))),
+                                  Text(item['subtitulo'] ?? '',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                          fontSize: 11,
+                                          color: Color(0xFF64748B))),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.delete_outline,
+                                size: 18, color: Color(0xFFEF4444)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(18),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: Colors.grey.shade300),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Fechar'),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── CORREÇÃO 4 — Dialog de adicionar viagem (original preservado) ─────────
+  void _openAdicionarViagem() {
+    final nomeController = TextEditingController();
+    final dataInicioController = TextEditingController();
+    final dataFimController = TextEditingController();
+    final mesController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: const Color(0xFFF6F7F8),
+        insetPadding:
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Center(
+                    child: Text('✈️ Nova Viagem',
+                        style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF0F172A)))),
+                const SizedBox(height: 20),
+                _labelPopup('🌍 DESTINO'),
+                _campoPopup(
+                    controller: nomeController,
+                    hint: 'Ex: Paris, Londres...',
+                    icone: Icons.location_on_outlined),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _labelPopup('📅 DIA INÍCIO'),
+                            _campoPopup(
+                                controller: dataInicioController,
+                                hint: 'DD',
+                                icone: Icons.calendar_today_outlined),
+                          ]),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _labelPopup('📅 DIA FIM'),
+                            _campoPopup(
+                                controller: dataFimController,
+                                hint: 'DD',
+                                icone: Icons.calendar_today_outlined),
+                          ]),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _labelPopup('🗓️ MÊS'),
+                            _campoPopup(
+                                controller: mesController,
+                                hint: 'Jun',
+                                icone: Icons.date_range_outlined),
+                          ]),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      final nome = nomeController.text.trim();
+                      if (nome.isEmpty) return;
+                      setState(() {
+                        viagens.add({
+                          'nome': nome,
+                          'dataInicio':
+                              dataInicioController.text.trim(),
+                          'dataFim': dataFimController.text.trim(),
+                          'mes': mesController.text.trim(),
+                          'imagem': 'assets/images/paris.png',
+                          'roteiro': [],
+                          'compromissos': [],
+                          'anotacoes': [],
+                        });
+                        _carregarViagem(viagens.length - 1);
+                      });
+                      Navigator.of(ctx).pop();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF23D2B5),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('Adicionar Viagem',
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600)),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Colors.grey.shade300),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: const Text('Cancelar',
+                        style: TextStyle(color: Color(0xFF64748B))),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
