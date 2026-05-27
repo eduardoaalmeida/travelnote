@@ -302,8 +302,6 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             index: i,
           );
         }),
-        const SizedBox(height: 10),
-        _botaoAdicionar('Adicionar Roteiro +'),
       ],
     );
   }
