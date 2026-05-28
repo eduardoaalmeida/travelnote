@@ -2,12 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "TravelNote (Web - Porta 5000)",
+      "name": "TravelNote (Web - Porta 5001)",
       "request": "launch",
       "type": "dart",
       "args": [
         "--web-port",
-        "5000"
+        "5001"
       ]
     },
     {

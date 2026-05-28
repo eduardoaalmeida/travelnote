@@ -13,23 +13,11 @@ Aplicativo da Matéria de Dispositivos Móveis
 
 ---
 
-## 🚀 Como Executar o Web com Porta Fixa (Google Sign-In)
+## Como Executar o Web com Porta Fixa (Google Sign-In)
 
-Para que a autenticação com o **Google Sign-In** funcione corretamente no ambiente de testes (Web), o app precisa rodar em uma porta fixa (configurada como origem autorizada no Google Cloud Console). Definimos a porta **5000** como padrão.
+Para que a autenticação com o **Google Sign-In** funcione corretamente no navegador, o app precisa rodar em uma porta fixa (configurada como origem autorizada no Google Cloud Console). Definimos a porta **5001** como padrão.
 
-Você pode rodar nessa porta de três maneiras:
+### Para funcionar sempre rodar com o comando abaixo:
 
-### 1. Via VS Code (Recomendado)
-Ao abrir o projeto, vá na aba **Run and Debug** (Ctrl+Shift+D) e selecione a configuração:
-* **`TravelNote (Web - Porta 5000)`**
-
-### 2. Via Android Studio / IntelliJ
-Ao importar o projeto, o IDE carregará automaticamente a configuração compartilhada:
-* **`main.dart (Web Port 5000)`** no dropdown de execução.
-
-### 3. Via Terminal (CLI)
-Execute o comando abaixo na raiz do projeto:
-```bash
-flutter run -d chrome --web-port=5000
-```
+flutter run -d chrome --web-port=5001
 
