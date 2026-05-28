@@ -10,3 +10,26 @@ Aplicativo da Matéria de Dispositivos Móveis
 | **Adriano Fonseca** | • Alterar Dados e Senha <br> • Meu Perfil <br> • Tela de Configurações <br> • Agenda | • Alterar dados pessoais <br> • Mudar Idioma, País, Moeda <br> • Gerenciar conta <br> • Acessar notificações <br> • Trocar para modo noturno <br> • Sair da conta <br> • Visualizar termos e condições <br>
 | **Adham Ariel** | • Criar nova tela <br> • Detalhes da Viagem 4 <br> • Duplicar <br> • Detalhes da Viagem 7 | • Cadastrar visita, com título, endereço, data e hora <br> • Cadastrar anotação com título e descrição e Editar <br> • Duplicar viagem, alterar nome, data e seleção do que duplicar entre roteiro de dias e locais <br> 
 | **João Gabriel Costa Pinto de Mendonça** | •Modal editar e arquiva viagem <br> • historico de Viagem  <br> • controle de gastos <br> • notificações | • editar e arquivar viagem por meio de um formulario <br> • Ver historico de viagens <br> • Controlar os gastos do usuario por viagem <br> • visualizar notificações <br>
+
+---
+
+## 🚀 Como Executar o Web com Porta Fixa (Google Sign-In)
+
+Para que a autenticação com o **Google Sign-In** funcione corretamente no ambiente de testes (Web), o app precisa rodar em uma porta fixa (configurada como origem autorizada no Google Cloud Console). Definimos a porta **5000** como padrão.
+
+Você pode rodar nessa porta de três maneiras:
+
+### 1. Via VS Code (Recomendado)
+Ao abrir o projeto, vá na aba **Run and Debug** (Ctrl+Shift+D) e selecione a configuração:
+* **`TravelNote (Web - Porta 5000)`**
+
+### 2. Via Android Studio / IntelliJ
+Ao importar o projeto, o IDE carregará automaticamente a configuração compartilhada:
+* **`main.dart (Web Port 5000)`** no dropdown de execução.
+
+### 3. Via Terminal (CLI)
+Execute o comando abaixo na raiz do projeto:
+```bash
+flutter run -d chrome --web-port=5000
+```
+
