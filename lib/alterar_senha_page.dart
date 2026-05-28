@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'firebase_helper.dart';
 
 class AlterarSenhaPage extends StatefulWidget {
   const AlterarSenhaPage({super.key});
@@ -15,6 +16,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
   bool _senhaAtualVisivel = false;
   bool _novaSenhaVisivel = false;
   bool _confirmarSenhaVisivel = false;
+  bool _carregando = false;
 
   @override
   void dispose() {
@@ -127,84 +129,246 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                ),
                             ),
                             const SizedBox(height: 40),
-                            _label('Senha Atual'),
-                            TextField(
-                              controller: _senhaAtualController,
-                              obscureText: !_senhaAtualVisivel,
-                              decoration: _decoration(
-                                'Digite sua senha Atual',
-                                suffix: _eyeIcon(
-                                  _senhaAtualVisivel,
-                                  () => setState(() => _senhaAtualVisivel = !_senhaAtualVisivel),
+                            if (FirebaseHelper.isGoogleUser()) ...[
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(24.0),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            _label('Nova Senha'),
-                            TextField(
-                              controller: _novaSenhaController,
-                              obscureText: !_novaSenhaVisivel,
-                              decoration: _decoration(
-                                'Digite sua Nova Senha',
-                                suffix: _eyeIcon(
-                                  _novaSenhaVisivel,
-                                  () => setState(() => _novaSenhaVisivel = !_novaSenhaVisivel),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            _label('Confirmar Nova Senha'),
-                            TextField(
-                              controller: _confirmarSenhaController,
-                              obscureText: !_confirmarSenhaVisivel,
-                              decoration: _decoration(
-                                'Confirme a Nova Senha',
-                                suffix: _eyeIcon(
-                                  _confirmarSenhaVisivel,
-                                  () => setState(() => _confirmarSenhaVisivel = !_confirmarSenhaVisivel),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 40),
-                            Container(
-                              width: double.infinity,
-                              height: 56,
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFF2DD4BF), Color(0xFF10B981)],
-                                  begin: Alignment.centerLeft,
-                                  end: Alignment.centerRight,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFF2DD4BF).withValues(alpha: 0.2),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(12),
-                                  onTap: () {
-                                    // Ação de alterar senha
-                                  },
-                                  child: const Center(
-                                    child: Text(
-                                      'Alterar Senha',
-                                      style: TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        letterSpacing: 0.5,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(16),
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFFF1F5F9),
+                                        shape: BoxShape.circle,
                                       ),
+                                      child: const Icon(
+                                        Icons.vpn_key_outlined,
+                                        size: 40,
+                                        color: Color(0xFF1B4E88),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                    const Text(
+                                      'Login pelo Google',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF0F172A),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    const Text(
+                                      'Sua conta está conectada através do Google Sign-In. Portanto, você não possui uma senha local para alterar neste aplicativo.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFF475569),
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 24),
+                                    Container(
+                                      width: double.infinity,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          colors: [Color(0xFF2DD4BF), Color(0xFF10B981)],
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
+                                        ),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(12),
+                                          onTap: () => Navigator.pop(context),
+                                          child: const Center(
+                                            child: Text(
+                                              'Voltar',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ] else ...[
+                              _label('Senha Atual'),
+                              TextField(
+                                controller: _senhaAtualController,
+                                obscureText: !_senhaAtualVisivel,
+                                enabled: !_carregando,
+                                decoration: _decoration(
+                                  'Digite sua senha Atual',
+                                  suffix: _eyeIcon(
+                                    _senhaAtualVisivel,
+                                    () => setState(() => _senhaAtualVisivel = !_senhaAtualVisivel),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              _label('Nova Senha'),
+                              TextField(
+                                controller: _novaSenhaController,
+                                obscureText: !_novaSenhaVisivel,
+                                enabled: !_carregando,
+                                decoration: _decoration(
+                                  'Digite sua Nova Senha',
+                                  suffix: _eyeIcon(
+                                    _novaSenhaVisivel,
+                                    () => setState(() => _novaSenhaVisivel = !_novaSenhaVisivel),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              _label('Confirmar Nova Senha'),
+                              TextField(
+                                controller: _confirmarSenhaController,
+                                obscureText: !_confirmarSenhaVisivel,
+                                enabled: !_carregando,
+                                decoration: _decoration(
+                                  'Confirme a Nova Senha',
+                                  suffix: _eyeIcon(
+                                    _confirmarSenhaVisivel,
+                                    () => setState(() => _confirmarSenhaVisivel = !_confirmarSenhaVisivel),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 40),
+                              Container(
+                                width: double.infinity,
+                                height: 56,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF2DD4BF), Color(0xFF10B981)],
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFF2DD4BF).withValues(alpha: 0.2),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(12),
+                                    onTap: _carregando ? null : () async {
+                                      final senhaAtual = _senhaAtualController.text;
+                                      final novaSenha = _novaSenhaController.text;
+                                      final confirmarSenha = _confirmarSenhaController.text;
+
+                                      if (senhaAtual.isEmpty || novaSenha.isEmpty || confirmarSenha.isEmpty) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Por favor, preencha todos os campos.'),
+                                            backgroundColor: Colors.redAccent,
+                                          ),
+                                        );
+                                        return;
+                                      }
+
+                                      if (novaSenha != confirmarSenha) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('A nova senha e a confirmação não coincidem.'),
+                                            backgroundColor: Colors.redAccent,
+                                          ),
+                                        );
+                                        return;
+                                      }
+
+                                      if (novaSenha.length < 6) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('A nova senha deve conter pelo menos 6 caracteres.'),
+                                            backgroundColor: Colors.redAccent,
+                                          ),
+                                        );
+                                        return;
+                                      }
+
+                                      setState(() => _carregando = true);
+                                      try {
+                                        await FirebaseHelper.alterarSenha(
+                                          senhaAtual: senhaAtual,
+                                          novaSenha: novaSenha,
+                                        );
+
+                                        if (!mounted) return;
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Senha alterada com sucesso!'),
+                                            backgroundColor: Colors.green,
+                                          ),
+                                        );
+
+                                        _senhaAtualController.clear();
+                                        _novaSenhaController.clear();
+                                        _confirmarSenhaController.clear();
+
+                                        Navigator.pop(context);
+                                      } catch (e) {
+                                        if (!mounted) return;
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(FirebaseHelper.obterMensagemErro(e)),
+                                            backgroundColor: Colors.redAccent,
+                                          ),
+                                        );
+                                      } finally {
+                                        if (mounted) {
+                                          setState(() => _carregando = false);
+                                        }
+                                      }
+                                    },
+                                    child: Center(
+                                      child: _carregando
+                                          ? const SizedBox(
+                                              height: 22,
+                                              width: 22,
+                                              child: CircularProgressIndicator(
+                                                color: Colors.white,
+                                                strokeWidth: 2.5,
+                                              ),
+                                            )
+                                          : const Text(
+                                              'Alterar Senha',
+                                              style: TextStyle(
+                                                fontSize: 17,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                                letterSpacing: 0.5,
+                                              ),
+                                            ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
+                            ],
                             const Spacer(),
                             const SizedBox(height: 20),
                             Center(

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -134,7 +135,9 @@ class FirebaseHelper {
 
   // 5. Autenticação Nativa com Provedor Google (Google Sign-In)
   static Future<UserCredential?> loginGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+    final GoogleSignIn googleSignIn = GoogleSignIn(
+      clientId: kIsWeb ? '646131190495-f7pend804pig1mr7rtqotkmcus5n90er.apps.googleusercontent.com' : null,
+    );
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
     if (googleUser == null) {
@@ -240,6 +243,12 @@ class FirebaseHelper {
           return 'A senha digitada está incorreta.';
         case 'invalid-credential':
           return 'As credenciais de autenticação informadas estão incorretas, malformadas ou expiraram.';
+        case 'no-user':
+          return 'Nenhum usuário está autenticado no momento.';
+        case 'no-email':
+          return 'E-mail do usuário não foi encontrado.';
+        case 'requires-recent-login':
+          return 'Esta operação exige que você faça login novamente por segurança.';
         case 'email-already-in-use':
           return 'O e-mail informado já está sendo utilizado por outra conta.';
         case 'weak-password':
@@ -257,5 +266,61 @@ class FirebaseHelper {
       }
     }
     return e?.toString() ?? 'Ocorreu um erro inesperado.';
+  }
+ 
+  // Verifica se o usuário atual está logado com o Google
+  static bool isGoogleUser() {
+    final user = _auth.currentUser;
+    if (user == null) return false;
+    return user.providerData.any((info) => info.providerId == 'google.com');
+  }
+
+  // 9. Alterar a senha do usuário autenticado (reautenticação necessária)
+  static Future<void> alterarSenha({
+    required String senhaAtual,
+    required String novaSenha,
+  }) async {
+    final User? user = _auth.currentUser;
+    if (user == null) {
+      throw FirebaseAuthException(
+        code: 'no-user',
+        message: 'Nenhum usuário autenticado no momento.',
+      );
+    }
+
+    if (isGoogleUser()) {
+      throw FirebaseAuthException(
+        code: 'operation-not-allowed',
+        message: 'Contas conectadas pelo Google não possuem senha no aplicativo.',
+      );
+    }
+ 
+    if (user.email == null) {
+      throw FirebaseAuthException(
+        code: 'no-email',
+        message: 'E-mail do usuário não encontrado.',
+      );
+    }
+ 
+    // Reautenticar por segurança com a senha atual
+    final AuthCredential credential = EmailAuthProvider.credential(
+      email: user.email!,
+      password: senhaAtual,
+    );
+ 
+    try {
+      await user.reauthenticateWithCredential(credential);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'wrong-password' || e.code == 'invalid-credential') {
+        throw FirebaseAuthException(
+          code: 'wrong-password',
+          message: 'A senha atual informada está incorreta.',
+        );
+      }
+      rethrow;
+    }
+ 
+    // Atualizar a senha para o novo valor
+    await user.updatePassword(novaSenha);
   }
 }
