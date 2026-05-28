@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'viagem_model.dart';
 import 'viagens_page.dart';
 
@@ -10,15 +13,61 @@ class HistoricoViagensPage extends StatefulWidget {
 }
 
 class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
-  // Reutiliza a lista de viagens já definida em viagens_page.dart
-  final List<Viagem> _viagens = List.from(viagensMock);
+  List<Viagem> _viagens = [];
+  StreamSubscription<QuerySnapshot>? _subscription;
   String _anoSelecionado = '2026';
   final List<String> _anos = ['2024', '2025', '2026'];
 
-  double get _totalInvestido => _viagens.fold(
+  @override
+  void initState() {
+    super.initState();
+    final email = FirebaseAuth.instance.currentUser?.email ?? '';
+    _subscription = FirebaseFirestore.instance
+        .collection('viagens')
+        .where('criado_por', isEqualTo: email)
+        .snapshots()
+        .listen((snapshot) {
+      if (!mounted) return;
+      setState(() {
+        _viagens = snapshot.docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return Viagem(
+            id: doc.id,
+            destino: data['destino'] ?? '',
+            imagemUrl: data['imagemUrl'] ?? 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
+            dataInicio: data['dataInicio'] ?? '',
+            dataFim: data['dataFim'] ?? '',
+            orcamento: data['orcamento'] ?? '',
+            anotacoes: data['anotacoes'] ?? '',
+            tipo: data['tipo'] ?? 'Lazer',
+            confirmada: data['confirmada'] ?? true,
+          );
+        }).toList();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  List<Viagem> get _viagensFiltradas {
+    return _viagens.where((v) {
+      if (v.dataInicio.isEmpty) return false;
+      final parts = v.dataInicio.split('/');
+      if (parts.length == 3) {
+        return parts[2] == _anoSelecionado;
+      }
+      return false;
+    }).toList();
+  }
+
+  double get _totalInvestido => _viagensFiltradas.fold(
       0, (soma, v) => soma + (double.tryParse(v.orcamento.replaceAll('.', '').replaceAll(',', '.')) ?? 0));
 
-  int get _totalViagens => _viagens.length;
+  int get _totalViagens => _viagensFiltradas.length;
 
   String _formatarReal(double valor) {
     // Formata 15000 → R$ 15.000
@@ -338,10 +387,22 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
             ),
             const SizedBox(height: 12),
 
-            ...List.generate(
-              _viagens.length,
-              (index) => _buildCardGasto(_viagens[index], index),
-            ),
+            _viagensFiltradas.isEmpty
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32.0),
+                      child: Text(
+                        'Nenhuma viagem registrada neste ano.',
+                        style: TextStyle(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  )
+                : Column(
+                    children: List.generate(
+                      _viagensFiltradas.length,
+                      (index) => _buildCardGasto(_viagensFiltradas[index], index),
+                    ),
+                  ),
           ],
         ),
       ),

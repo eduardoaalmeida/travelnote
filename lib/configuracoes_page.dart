@@ -3,6 +3,7 @@ import 'navbar.dart';
 import 'perfil_page.dart';
 import 'politica_privacidade_page.dart';
 import 'login_page.dart';
+import 'firebase_helper.dart';
 
 class ConfiguracoesPage extends StatefulWidget {
   const ConfiguracoesPage({super.key});
@@ -234,7 +235,12 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                 _buildItem(
                   title: 'Sair da Conta',
                   trailingIcon: Icons.logout,
-                  onTap: () => _abrirLogin(context),
+                  onTap: () async {
+                    await FirebaseHelper.logout();
+                    if (mounted) {
+                      _abrirLogin(context);
+                    }
+                  },
                 ),
                 _buildItem(
                   title: 'Termos e Condições',

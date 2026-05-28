@@ -10,6 +10,7 @@
 // São opcionais para não quebrar quem cria Viagem sem eles.
 
 class Viagem {
+  String? id; // Guarda o ID único do documento no Firestore
   String destino;
   String imagemUrl;
   bool confirmada;
@@ -25,6 +26,7 @@ class Viagem {
   String tipo;
 
   Viagem({
+    this.id,
     required this.destino,
     required this.imagemUrl,
     this.confirmada = true,

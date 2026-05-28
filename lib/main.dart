@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'carregamento_page.dart';
 import 'login_page.dart';
@@ -19,7 +21,22 @@ import 'viagens_page.dart';
 import 'notificacoes_page.dart';
 import 'historico_viagens_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyACs4f_U0DH4qIy96obYnNbSyk5D1iGDQE",
+        authDomain: "travelnote-79d32.firebaseapp.com",
+        projectId: "travelnote-79d32",
+        storageBucket: "travelnote-79d32.firebasestorage.app",
+        messagingSenderId: "646131190495",
+        appId: "1:646131190495:web:1c14a114a8bd8ddfb6776a",
+      ),
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
   runApp(const MeuApp());
 }
 

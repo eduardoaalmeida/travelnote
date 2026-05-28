@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'firebase_helper.dart';
 import 'politica_privacidade_page.dart';
 
 class CriarContaPage extends StatefulWidget {
@@ -29,6 +30,7 @@ class _CriarContaPageState extends State<CriarContaPage> {
   bool _senhaVisivel = false;
   bool _confirmarSenhaVisivel = false;
   bool _aceitouTermos = false;
+  bool _carregando = false; // Controla o estado de salvamento
 
   @override
   void dispose() {
@@ -97,7 +99,7 @@ class _CriarContaPageState extends State<CriarContaPage> {
                           children: [
                             IconButton(
                               icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
-                              onPressed: () => Navigator.pop(context),
+                              onPressed: _carregando ? null : () => Navigator.pop(context),
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
                             ),
@@ -125,6 +127,7 @@ class _CriarContaPageState extends State<CriarContaPage> {
                               controller: _nomeController,
                               keyboardType: TextInputType.name,
                               textCapitalization: TextCapitalization.words,
+                              enabled: !_carregando,
                               decoration: _decoration('Nome Completo', Icons.person_outline),
                             ),
                             const SizedBox(height: 16),
@@ -132,12 +135,14 @@ class _CriarContaPageState extends State<CriarContaPage> {
                               controller: _cpfController,
                               keyboardType: TextInputType.number,
                               inputFormatters: [_cpfFormatter],
+                              enabled: !_carregando,
                               decoration: _decoration('CPF', Icons.lock_outline),
                             ),
                             const SizedBox(height: 16),
                             TextField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
+                              enabled: !_carregando,
                               decoration: _decoration('Email', Icons.email_outlined),
                             ),
                             const SizedBox(height: 16),
@@ -145,12 +150,14 @@ class _CriarContaPageState extends State<CriarContaPage> {
                               controller: _telefoneController,
                               keyboardType: TextInputType.phone,
                               inputFormatters: [_telefoneFormatter],
+                              enabled: !_carregando,
                               decoration: _decoration('Telefone', Icons.lock_outline),
                             ),
                             const SizedBox(height: 16),
                             TextField(
                               controller: _senhaController,
                               obscureText: !_senhaVisivel,
+                              enabled: !_carregando,
                               decoration: _decoration(
                                 'Senha',
                                 Icons.lock_outline,
@@ -164,6 +171,7 @@ class _CriarContaPageState extends State<CriarContaPage> {
                             TextField(
                               controller: _confirmarSenhaController,
                               obscureText: !_confirmarSenhaVisivel,
+                              enabled: !_carregando,
                               decoration: _decoration(
                                 'Confirme sua Senha',
                                 Icons.lock_outline,
@@ -181,7 +189,7 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                   width: 24,
                                   child: Checkbox(
                                     value: _aceitouTermos,
-                                    onChanged: (v) => setState(() => _aceitouTermos = v ?? false),
+                                    onChanged: _carregando ? null : (v) => setState(() => _aceitouTermos = v ?? false),
                                     activeColor: const Color(0xFF2DD4BF),
                                     side: BorderSide(color: Colors.grey.shade400, width: 1.5),
                                     shape: RoundedRectangleBorder(
@@ -195,7 +203,7 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                   style: TextStyle(fontSize: 15, color: Colors.black87),
                                 ),
                                 GestureDetector(
-                                  onTap: () {
+                                  onTap: _carregando ? null : () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -237,7 +245,7 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(12),
-                                  onTap: () {
+                                  onTap: _carregando ? null : () async {
                                     if (_nomeController.text.trim().isEmpty ||
                                         _cpfController.text.trim().isEmpty ||
                                         _emailController.text.trim().isEmpty ||
@@ -293,23 +301,57 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                       );
                                       return;
                                     }
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Cadastro realizado com sucesso!'),
-                                      ),
-                                    );
-                                    Navigator.pop(context);
+
+                                    setState(() => _carregando = true);
+                                    try {
+                                      await FirebaseHelper.registrarUsuario(
+                                        nome: _nomeController.text,
+                                        email: email,
+                                        cpf: _cpfController.text,
+                                        telefone: _telefoneController.text,
+                                        senha: _senhaController.text,
+                                        aceitouTermos: _aceitouTermos,
+                                      );
+
+                                      if (!mounted) return;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Cadastro realizado com sucesso!'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                      Navigator.pop(context);
+                                    } catch (e) {
+                                      if (!mounted) return;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(FirebaseHelper.obterMensagemErro(e)),
+                                          backgroundColor: Colors.redAccent,
+                                        ),
+                                      );
+                                    } finally {
+                                      if (mounted) setState(() => _carregando = false);
+                                    }
                                   },
-                                  child: const Center(
-                                    child: Text(
-                                      'Cadastrar',
-                                      style: TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
+                                  child: Center(
+                                    child: _carregando
+                                        ? const SizedBox(
+                                            height: 22,
+                                            width: 22,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2.5,
+                                            ),
+                                          )
+                                        : const Text(
+                                            'Cadastrar',
+                                            style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              letterSpacing: 0.5,
+                                            ),
+                                          ),
                                   ),
                                 ),
                               ),

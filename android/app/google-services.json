@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "646131190495",
+    "project_id": "travelnote-79d32",
+    "storage_bucket": "travelnote-79d32.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:646131190495:android:6afed9bf7bfa5570b6776a",
+        "android_client_info": {
+          "package_name": "com.example.travelnote"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADtlTcU2OxYHLAXaulG6nOXwpnB5O21-I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'firebase_helper.dart';
 import 'home_page.dart';
 import 'criar_conta_page.dart';
 import 'recuperar_senha_page.dart';
-
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,12 +15,38 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
   bool _senhaVisivel = false;
+  bool _carregando = false; // Controla o estado de carregamento da tela
 
   @override
   void dispose() {
     _emailController.dispose();
     _senhaController.dispose();
     super.dispose();
+  }
+
+  // Efetua login usando o provedor nativo do Google
+  void _loginComGoogle() async {
+    setState(() => _carregando = true);
+    try {
+      final credencial = await FirebaseHelper.loginGoogle();
+      if (credencial != null) {
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(FirebaseHelper.obterMensagemErro(e)),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
   }
 
   @override
@@ -52,6 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                             TextField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
+                              enabled: !_carregando,
                               decoration: InputDecoration(
                                 hintText: 'Digite seu Email',
                                 hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
@@ -81,6 +108,7 @@ class _LoginPageState extends State<LoginPage> {
                             TextField(
                               controller: _senhaController,
                               obscureText: !_senhaVisivel,
+                              enabled: !_carregando,
                               decoration: InputDecoration(
                                 hintText: 'Digite sua Senha',
                                 hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
@@ -130,7 +158,7 @@ class _LoginPageState extends State<LoginPage> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                                onPressed: () {
+                                onPressed: _carregando ? null : () async {
                                   if (_emailController.text.trim().isEmpty ||
                                       _senhaController.text.isEmpty) {
                                     ScaffoldMessenger.of(context).showSnackBar(
@@ -150,20 +178,45 @@ class _LoginPageState extends State<LoginPage> {
                                     );
                                     return;
                                   }
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const HomePage()),
-                                  );
+
+                                  setState(() => _carregando = true);
+                                  try {
+                                    await FirebaseHelper.loginTradicional(email, _senhaController.text);
+                                    if (!mounted) return;
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => const HomePage()),
+                                    );
+                                   } catch (e) {
+                                    if (!mounted) return;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(FirebaseHelper.obterMensagemErro(e)),
+                                        backgroundColor: Colors.redAccent,
+                                      ),
+                                    );
+                                  } finally {
+                                    if (mounted) setState(() => _carregando = false);
+                                  }
                                 },
-                                child: const Text(
-                                  'Entrar',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.3,
-                                  ),
-                                ),
+                                child: _carregando
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Entrar',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                          letterSpacing: 0.3,
+                                        ),
+                                      ),
                               ),
                             ),
                             const SizedBox(height: 14),
@@ -182,7 +235,7 @@ class _LoginPageState extends State<LoginPage> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(10),
-                                  onTap: () => Navigator.push(
+                                  onTap: _carregando ? null : () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => const CriarContaPage()),
@@ -201,9 +254,38 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               ),
                             ),
+                            const SizedBox(height: 14),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 52,
+                              child: OutlinedButton.icon(
+                                icon: Image.network(
+                                  'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/480px-Google_%22G%22_logo.svg.png',
+                                  height: 22,
+                                  width: 22,
+                                  errorBuilder: (_, __, ___) => const Icon(Icons.g_mobiledata, color: Colors.red),
+                                ),
+                                label: const Text(
+                                  'Entrar com o Google',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  side: BorderSide(color: Colors.grey.shade300),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                onPressed: _carregando ? null : _loginComGoogle,
+                              ),
+                            ),
                             const SizedBox(height: 22),
                             GestureDetector(
-                              onTap: () {
+                              onTap: _carregando ? null : () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
