@@ -2,8 +2,8 @@
 
 Aplicativo da Matéria de Dispositivos Móveis
 
-| Integrante | Telas Desenvolvidas | Funcionalidades |
-|---|---|---|
+| Integrante | Telas Desenvolvidas | Funcionalidades | Link Video |
+|---|---|---|---|
 | **Eduardo Andrade** | • Tela de carregamento <br> • Tela de Login <br> • Tela de Cadastro <br> • Termos de Privacidade <br> <br> • Recuperar Senha | • Aplicativo abrir corretamente <br> • Realizar login <br> • Realizar cadastro <br> • Visualizar termos de privacidade <br> • Solicitar recuperação de senha | <br>
 | **Gabriel Carvalho** | • Cadastro de Nova Viagem <br> • Detalhes do Roteiro <br> • Detalhes dos Compromissos <br> • Detalhes de Anotacoes | • Conseguir cadastrar uma nova viagem <br> • listar detalhes do roteiro da viagem <br> • listar detalhes dos compromissos da viagem <br> • listar detalhes dos anotacoes da viagem <br>
 | **Isaac Meneses** | • Dashboard <br> • Detalhes de viagem <br> • Roteiro | • Exibir informações gerais sobre viagens <br> • listar detalhes da viagem <br> • Elaboração e visualização de roteiros de viagem |
