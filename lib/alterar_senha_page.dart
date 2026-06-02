@@ -17,6 +17,22 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
   bool _novaSenhaVisivel = false;
   bool _confirmarSenhaVisivel = false;
   bool _carregando = false;
+  bool? _isGoogleUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _verificarProvedor();
+  }
+
+  void _verificarProvedor() async {
+    final isGoogle = await AuxiliarFirebase.isGoogleUser();
+    if (mounted) {
+      setState(() {
+        _isGoogleUser = isGoogle;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -78,6 +94,17 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isGoogleUser == null) {
+      return const Scaffold(
+        backgroundColor: Color(0xFFF2F3F5),
+        body: Center(
+          child: CircularProgressIndicator(
+            color: Color(0xFF2DD4BF),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF2F3F5),
       body: SafeArea(
@@ -129,7 +156,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                ),
                             ),
                             const SizedBox(height: 40),
-                            if (AuxiliarFirebase.isGoogleUser()) ...[
+                            if (_isGoogleUser!) ...[
                               Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(24.0),
