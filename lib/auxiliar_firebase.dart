@@ -244,10 +244,11 @@ class AuxiliarFirebase {
     return e?.toString() ?? 'Ocorreu um erro inesperado.';
   }
  
-  static bool isGoogleUser() {
+  static Future<bool> isGoogleUser() async {
     final user = _auth.currentUser;
     if (user == null) return false;
-    return user.providerData.any((info) => info.providerId == 'google.com');
+    final tokenResult = await user.getIdTokenResult();
+    return tokenResult.signInProvider == 'google.com';
   }
 
   static Future<void> alterarSenha({
@@ -262,7 +263,7 @@ class AuxiliarFirebase {
       );
     }
 
-    if (isGoogleUser()) {
+    if (await isGoogleUser()) {
       throw FirebaseAuthException(
         code: 'operation-not-allowed',
         message: 'Contas conectadas pelo Google não possuem senha no aplicativo.',
