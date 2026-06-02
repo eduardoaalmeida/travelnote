@@ -1,41 +1,16 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'viagem_model.dart';
 import 'historico_viagens_page.dart';
 import 'navbar.dart';
 import 'home_page.dart';
 
 // ─────────────────────────────────────────────
-// DADOS MOCKADOS 
+// DADOS DILUÍDOS (Preenchidos em tempo real pelo Firestore)
 // ─────────────────────────────────────────────
-final List<Viagem> viagensMock = [
-  Viagem(
-    destino: 'Paris',
-    dataInicio: '10/06/2026',
-    dataFim: '18/06/2026',
-    orcamento: '5.000',
-    anotacoes: 'Visitar o museu local, jantar no restaurante indicado...',
-    tipo: 'Lazer',
-    imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
-  ),
-  Viagem(
-    destino: 'Lisboa',
-    dataInicio: '12/08/2026',
-    dataFim: '19/08/2026',
-    orcamento: '3.250',
-    anotacoes: 'Segunda viagem, foco em museus.',
-    tipo: 'Negócios',
-    imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
-  ),
-  Viagem(
-    destino: 'Veneza',
-    dataInicio: '05/09/2026',
-    dataFim: '11/09/2026',
-    orcamento: '6.750',
-    anotacoes: 'Terceira viagem, passeio de barco no Sena.',
-    tipo: 'Romântica',
-    imagemUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
-  ),
-];
+final List<Viagem> viagensMock = [];
 
 // ─────────────────────────────────────────────
 // TELA PRINCIPAL — SUAS VIAGENS
@@ -49,7 +24,8 @@ class ViagensPage extends StatefulWidget {
 
 class _ViagensPageState extends State<ViagensPage> {
   // Alteração para permitir filtragem mantendo os dados originais intactos
-  List<Viagem> _viagens = List.from(viagensMock);
+  List<Viagem> _viagens = [];
+  StreamSubscription<QuerySnapshot>? _subscription; // Escuta alterações na coleção
   
   int? _expandidoIndex;
   int _filtroBotao = 0; // 0=Data, 1=Destino, 2=Tipo
@@ -60,7 +36,7 @@ class _ViagensPageState extends State<ViagensPage> {
   String _periodoFim = '31/12/2026';
   final _buscaDestinoController = TextEditingController();
   String? _tipoSelecionado = 'Todos';
-  final List<String> _tiposDisponiveis = ['Todos', 'Lazer', 'Negócios', 'Romântica'];
+  final List<String> _tiposDisponiveis = ['Todos', 'Lazer', 'Trabalho', 'Família', 'Negócios'];
 
   // Controladores do Formulário de Edição
   final _destinoController = TextEditingController();
@@ -70,7 +46,40 @@ class _ViagensPageState extends State<ViagensPage> {
   final _anotacoesController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    final email = FirebaseAuth.instance.currentUser?.email ?? '';
+    // Conecta ao Firestore em tempo real filtrando pelo criador
+    _subscription = FirebaseFirestore.instance
+        .collection('viagens')
+        .where('criado_por', isEqualTo: email)
+        .snapshots()
+        .listen((snapshot) {
+      if (!mounted) return;
+      setState(() {
+        viagensMock.clear();
+        for (var doc in snapshot.docs) {
+          final data = doc.data() as Map<String, dynamic>;
+          viagensMock.add(Viagem(
+            id: doc.id,
+            destino: data['destino'] ?? '',
+            imagemUrl: data['imagemUrl'] ?? 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
+            dataInicio: data['dataInicio'] ?? '',
+            dataFim: data['dataFim'] ?? '',
+            orcamento: data['orcamento'] ?? '',
+            anotacoes: data['anotacoes'] ?? '',
+            tipo: data['tipo'] ?? 'Lazer',
+            confirmada: data['confirmada'] ?? true,
+          ));
+        }
+        _aplicarFiltros(); // Re-aplica a busca ou ordenação local
+      });
+    });
+  }
+
+  @override
   void dispose() {
+    _subscription?.cancel();
     _buscaDestinoController.dispose();
     _destinoController.dispose();
     _inicioController.dispose();
@@ -102,6 +111,21 @@ class _ViagensPageState extends State<ViagensPage> {
       }).toList();
     });
   }
+
+  IconData _getIconForTipo(String? tipo) {
+    switch (tipo) {
+      case 'Lazer':
+        return Icons.beach_access_outlined;
+      case 'Trabalho':
+        return Icons.laptop_chromebook_outlined;
+      case 'Família':
+        return Icons.people_outline;
+      case 'Negócios':
+        return Icons.business_center_outlined;
+      default:
+        return Icons.apps_outlined;
+    }
+  }
   // ────────────────────────────────────────────────────────────
 
   void _abrirFormulario(int index) {
@@ -116,24 +140,56 @@ class _ViagensPageState extends State<ViagensPage> {
 
   void _fecharFormulario() => setState(() => _expandidoIndex = null);
 
-  void _salvarViagem(int index) {
-    setState(() {
-      _viagens[index]
-        ..destino = _destinoController.text
-        ..dataInicio = _inicioController.text
-        ..dataFim = _fimController.text
-        ..orcamento = _orcamentoController.text
-        ..anotacoes = _anotacoesController.text;
-      _expandidoIndex = null;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Viagem salva com sucesso!'),
-        backgroundColor: Color(0xFF1E83DB),
-        behavior: SnackBarBehavior.floating,
-        duration: Duration(seconds: 2),
-      ),
-    );
+  void _salvarViagem(int index) async {
+    final docId = _viagens[index].id;
+    if (docId != null) {
+      try {
+        // Atualiza os dados no Firestore pelo ID
+        await FirebaseFirestore.instance.collection('viagens').doc(docId).update({
+          'destino': _destinoController.text.trim(),
+          'dataInicio': _inicioController.text.trim(),
+          'dataFim': _fimController.text.trim(),
+          'orcamento': _orcamentoController.text.trim(),
+          'anotacoes': _anotacoesController.text.trim(),
+        });
+        setState(() => _expandidoIndex = null);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Viagem salva com sucesso!'),
+            backgroundColor: Color(0xFF1E83DB),
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao atualizar viagem: $e')),
+        );
+      }
+    }
+  }
+
+  // Deleta o registro do banco de dados
+  void _excluirViagem(int index) async {
+    final docId = _viagens[index].id;
+    if (docId != null) {
+      try {
+        await FirebaseFirestore.instance.collection('viagens').doc(docId).delete();
+        setState(() => _expandidoIndex = null);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Viagem excluída com sucesso!'),
+            backgroundColor: Colors.redAccent,
+            behavior: SnackBarBehavior.floating,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao excluir viagem: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _selecionarData(TextEditingController controller) async {
@@ -161,11 +217,27 @@ class _ViagensPageState extends State<ViagensPage> {
       MaterialPageRoute(
         builder: (_) => DuplicarViagemPage(
           viagem: viagem,
-          onDuplicar: (novaViagem) {
-            setState(() {
-              viagensMock.add(novaViagem);
-              _aplicarFiltros(); // Atualiza a lista aplicando filtros
-            });
+          onDuplicar: (novaViagem) async {
+            final email = FirebaseAuth.instance.currentUser?.email ?? '';
+            try {
+              // Salva a cópia no banco de dados na nuvem
+              await FirebaseFirestore.instance.collection('viagens').add({
+                'destino': novaViagem.destino,
+                'imagemUrl': novaViagem.imagemUrl,
+                'dataInicio': novaViagem.dataInicio,
+                'dataFim': novaViagem.dataFim,
+                'orcamento': novaViagem.orcamento,
+                'anotacoes': novaViagem.anotacoes,
+                'tipo': novaViagem.tipo,
+                'confirmada': true,
+                'criado_por': email,
+                'criado_em': FieldValue.serverTimestamp(),
+              });
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Erro ao duplicar viagem: $e')),
+              );
+            }
           },
         ),
       ),
@@ -291,30 +363,49 @@ class _ViagensPageState extends State<ViagensPage> {
                   Text('Selecione o Tipo', style: TextStyle(fontSize: 12, color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
                   const SizedBox(height: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF7F8FA),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.grey.shade200),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
                     ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        isExpanded: true,
-                        value: _tipoSelecionado,
-                        icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey.shade500),
-                        items: _tiposDisponiveis.map((tipo) {
-                          return DropdownMenuItem(
-                            value: tipo,
-                            child: Text(tipo, style: const TextStyle(fontSize: 14, color: Colors.black87)),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _tipoSelecionado = newValue;
-                            _aplicarFiltros();
-                          });
-                        },
-                      ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _getIconForTipo(_tipoSelecionado),
+                          color: const Color(0xFF0284C7),
+                          size: 22,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              isExpanded: true,
+                              value: _tipoSelecionado,
+                              dropdownColor: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              icon: const Icon(Icons.keyboard_arrow_down, color: Color(0xFF64748B)),
+                              style: const TextStyle(
+                                color: Color(0xFF0F172A),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              items: _tiposDisponiveis.map((tipo) {
+                                return DropdownMenuItem(
+                                  value: tipo,
+                                  child: Text(tipo),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _tipoSelecionado = newValue;
+                                  _aplicarFiltros();
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -488,16 +579,40 @@ class _ViagensPageState extends State<ViagensPage> {
                 .copyWith(contentPadding: const EdgeInsets.all(14)),
           ),
           const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity, height: 50,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1BCE8A), foregroundColor: Colors.white,
-                elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    onPressed: () => _excluirViagem(index),
+                    child: const Text('Excluir', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                  ),
+                ),
               ),
-              onPressed: () => _salvarViagem(index),
-              child: const Text('Editar Viagem', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-            ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: SizedBox(
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1BCE8A),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                    onPressed: () => _salvarViagem(index),
+                    child: const Text('Editar Viagem', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

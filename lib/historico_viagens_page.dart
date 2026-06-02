@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'viagem_model.dart';
 import 'viagens_page.dart';
 
@@ -10,15 +13,61 @@ class HistoricoViagensPage extends StatefulWidget {
 }
 
 class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
-  // Reutiliza a lista de viagens já definida em viagens_page.dart
-  final List<Viagem> _viagens = List.from(viagensMock);
+  List<Viagem> _viagens = [];
+  StreamSubscription<QuerySnapshot>? _subscription;
   String _anoSelecionado = '2026';
   final List<String> _anos = ['2024', '2025', '2026'];
 
-  double get _totalInvestido => _viagens.fold(
+  @override
+  void initState() {
+    super.initState();
+    final email = FirebaseAuth.instance.currentUser?.email ?? '';
+    _subscription = FirebaseFirestore.instance
+        .collection('viagens')
+        .where('criado_por', isEqualTo: email)
+        .snapshots()
+        .listen((snapshot) {
+      if (!mounted) return;
+      setState(() {
+        _viagens = snapshot.docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return Viagem(
+            id: doc.id,
+            destino: data['destino'] ?? '',
+            imagemUrl: data['imagemUrl'] ?? 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
+            dataInicio: data['dataInicio'] ?? '',
+            dataFim: data['dataFim'] ?? '',
+            orcamento: data['orcamento'] ?? '',
+            anotacoes: data['anotacoes'] ?? '',
+            tipo: data['tipo'] ?? 'Lazer',
+            confirmada: data['confirmada'] ?? true,
+          );
+        }).toList();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  List<Viagem> get _viagensFiltradas {
+    return _viagens.where((v) {
+      if (v.dataInicio.isEmpty) return false;
+      final parts = v.dataInicio.split('/');
+      if (parts.length == 3) {
+        return parts[2] == _anoSelecionado;
+      }
+      return false;
+    }).toList();
+  }
+
+  double get _totalInvestido => _viagensFiltradas.fold(
       0, (soma, v) => soma + (double.tryParse(v.orcamento.replaceAll('.', '').replaceAll(',', '.')) ?? 0));
 
-  int get _totalViagens => _viagens.length;
+  int get _totalViagens => _viagensFiltradas.length;
 
   String _formatarReal(double valor) {
     // Formata 15000 → R$ 15.000
@@ -125,47 +174,32 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1E83DB)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // ── CORREÇÃO DA LOGO AQUI ──
-            Image.asset(
-              'assets/images/icon.png', // Busca a imagem oficial do projeto
-              height: 32,
-              errorBuilder: (_, __, ___) => Container( // Fallback caso a imagem não carregue
-                width: 32,
-                height: 32,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF23D2B5), // Cor ciano padrão
-                  shape: BoxShape.circle,
+        title: Image.asset(
+          'assets/images/logo_completa.png',
+          height: 55,
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => RichText(
+            text: const TextSpan(
+              children: [
+                TextSpan(
+                  text: 'Travel',
+                  style: TextStyle(
+                    color: Color(0xFF101828),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
                 ),
-                child: const Icon(Icons.flight, color: Colors.white, size: 18),
-              ),
-            ),
-            const SizedBox(width: 8),
-            RichText(
-              text: const TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'Travel',
-                    style: TextStyle(
-                      color: Color(0xFF101828), // Cor escura para combinar com a identidade
-                      fontWeight: FontWeight.w800,
-                      fontSize: 20,
-                    ),
+                TextSpan(
+                  text: 'Note',
+                  style: TextStyle(
+                    color: Color(0xFF23D2B5),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
-                  TextSpan(
-                    text: 'Note',
-                    style: TextStyle(
-                      color: Color(0xFF23D2B5), // Cor ciano padrão
-                      fontWeight: FontWeight.w800,
-                      fontSize: 20,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
         centerTitle: true,
       ),
@@ -353,10 +387,22 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
             ),
             const SizedBox(height: 12),
 
-            ...List.generate(
-              _viagens.length,
-              (index) => _buildCardGasto(_viagens[index], index),
-            ),
+            _viagensFiltradas.isEmpty
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32.0),
+                      child: Text(
+                        'Nenhuma viagem registrada neste ano.',
+                        style: TextStyle(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  )
+                : Column(
+                    children: List.generate(
+                      _viagensFiltradas.length,
+                      (index) => _buildCardGasto(_viagensFiltradas[index], index),
+                    ),
+                  ),
           ],
         ),
       ),

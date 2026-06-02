@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-
+import 'firebase_helper.dart';
 
 class RecuperarSenhaPage extends StatefulWidget {
   const RecuperarSenhaPage({super.key});
@@ -13,6 +13,7 @@ class RecuperarSenhaPage extends StatefulWidget {
 class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
   final _cpfController = TextEditingController();
   final _emailController = TextEditingController();
+  bool _carregando = false; // Controla o carregamento na solicitação
 
   final _cpfFormatter = MaskTextInputFormatter(
     mask: '###.###.###-##',
@@ -73,7 +74,7 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                               children: [
                                 IconButton(
                                   icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
-                                  onPressed: () => Navigator.pop(context),
+                                  onPressed: _carregando ? null : () => Navigator.pop(context),
                                   padding: EdgeInsets.zero,
                                   constraints: const BoxConstraints(),
                                 ),
@@ -107,6 +108,7 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                               controller: _cpfController,
                               keyboardType: TextInputType.number,
                               inputFormatters: [_cpfFormatter],
+                              enabled: !_carregando,
                               decoration: _decoration(
                                 'Digite seu CPF cadastrado',
                                 Icons.lock_outline,
@@ -116,6 +118,7 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                             TextField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
+                              enabled: !_carregando,
                               decoration: _decoration(
                                 'Digite seu Email cadastrado',
                                 Icons.mail_outline,
@@ -144,7 +147,7 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(12),
-                                  onTap: () {
+                                  onTap: _carregando ? null : () async {
                                     // Ação de solicitar senha
                                     if (_cpfController.text.isEmpty || _emailController.text.isEmpty) {
                                       ScaffoldMessenger.of(context).showSnackBar(
@@ -172,23 +175,49 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                                       );
                                       return;
                                     }
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Solicitação enviada com sucesso!'),
-                                      ),
-                                    );
-                                    Navigator.pop(context);
+
+                                    setState(() => _carregando = true);
+                                    try {
+                                      await FirebaseHelper.recuperarSenha(email, _cpfController.text);
+                                      if (!mounted) return;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('E-mail de recuperação de senha enviado!'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                      Navigator.pop(context);
+                                    } catch (e) {
+                                      if (!mounted) return;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(FirebaseHelper.obterMensagemErro(e)),
+                                          backgroundColor: Colors.redAccent,
+                                        ),
+                                      );
+                                    } finally {
+                                      if (mounted) setState(() => _carregando = false);
+                                    }
                                   },
-                                  child: const Center(
-                                    child: Text(
-                                      'Solicitar Senha',
-                                      style: TextStyle(
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                        letterSpacing: 0.5,
-                                      ),
-                                    ),
+                                  child: Center(
+                                    child: _carregando
+                                        ? const SizedBox(
+                                            height: 22,
+                                            width: 22,
+                                            child: CircularProgressIndicator(
+                                              color: Colors.white,
+                                              strokeWidth: 2.5,
+                                            ),
+                                          )
+                                        : const Text(
+                                            'Solicitar Senha',
+                                            style: TextStyle(
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                              letterSpacing: 0.5,
+                                            ),
+                                          ),
                                   ),
                                 ),
                               ),

@@ -34,11 +34,13 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
       'anotacoes': [
         {
           'titulo': 'Restaurante X',
-          'subtitulo': 'LOCALIZADO PRÓXIMO À TORRE\nEIFFEL. ÓTIMO RESTAURANTE E PREÇO\nBOM'
+          'subtitulo':
+              'LOCALIZADO PRÓXIMO À TORRE\nEIFFEL. ÓTIMO RESTAURANTE E PREÇO\nBOM'
         },
         {
           'titulo': 'Restaurante X',
-          'subtitulo': 'LOCALIZADO PRÓXIMO À TORRE\nEIFFEL. ÓTIMO RESTAURANTE E PREÇO\nBOM'
+          'subtitulo':
+              'LOCALIZADO PRÓXIMO À TORRE\nEIFFEL. ÓTIMO RESTAURANTE E PREÇO\nBOM'
         },
       ],
     },
@@ -74,7 +76,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
   String get dataFim => viagens[viagemAtual]['dataFim'] ?? '13';
   String get mesAno => viagens[viagemAtual]['mes'] ?? 'Jun';
 
-  void _atualizarViagem(String nome, String inicio, String fim, String mes) {
+  void _atualizarViagem(
+      String nome, String inicio, String fim, String mes) {
     setState(() {
       viagens[viagemAtual]['nome'] = nome;
       viagens[viagemAtual]['dataInicio'] = inicio;
@@ -102,6 +105,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Cabeçalho com logo ────────────────────────────────────────────────────
   Widget _cabecalho() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 20, 18, 10),
@@ -148,6 +152,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Card da viagem ────────────────────────────────────────────────────────
   Widget _cardViagem() {
     final content = Container(
       margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
@@ -170,7 +175,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 width: 90,
                 height: 80,
                 color: const Color(0xFFE0F2FE),
-                child: const Icon(Icons.flight, color: Color(0xFF23D2B5), size: 36),
+                child: const Icon(Icons.flight,
+                    color: Color(0xFF23D2B5), size: 36),
               ),
             ),
           ),
@@ -199,7 +205,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
               ],
             ),
           ),
-          const Icon(Icons.check_circle_rounded, color: Color(0xFF2DD4BF), size: 28),
+          const Icon(Icons.check_circle_rounded,
+              color: Color(0xFF2DD4BF), size: 28),
         ],
       ),
     );
@@ -207,6 +214,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     return content;
   }
 
+  // ── Abas ──────────────────────────────────────────────────────────────────
   Widget _abas() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -221,8 +229,12 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 Text(
                   abas[index],
                   style: TextStyle(
-                    color: selecionada ? const Color(0xFF0D9488) : const Color(0xFF94A3B8),
-                    fontWeight: selecionada ? FontWeight.bold : FontWeight.w500,
+                    color: selecionada
+                        ? const Color(0xFF0D9488)
+                        : const Color(0xFF94A3B8),
+                    fontWeight: selecionada
+                        ? FontWeight.bold
+                        : FontWeight.w500,
                     fontSize: 15,
                   ),
                 ),
@@ -231,7 +243,9 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                   width: 35,
                   height: 3.5,
                   decoration: BoxDecoration(
-                    color: selecionada ? const Color(0xFF0D9488) : Colors.transparent,
+                    color: selecionada
+                        ? const Color(0xFF0D9488)
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -243,12 +257,14 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Conteúdo da aba selecionada ───────────────────────────────────────────
   Widget _conteudo() {
     if (abaSelecionada == 0) return _roteiro();
     if (abaSelecionada == 1) return _compromissos();
     return _anotacoes();
   }
 
+  // ── Aba Roteiro ───────────────────────────────────────────────────────────
   Widget _roteiro() {
     return ListView(
       padding: const EdgeInsets.all(18),
@@ -258,11 +274,17 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             children: [
               const TextSpan(
                 text: 'Roteiro ',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0F172A)),
               ),
               TextSpan(
                 text: '(${roteiroItems.length} dias)',
-                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0D9488)),
+                style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0D9488)),
               ),
             ],
           ),
@@ -274,21 +296,25 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             (i + 1).toString().padLeft(2, '0'),
             item['titulo'] ?? '',
             item['subtitulo'] ?? '',
-            clicavel: false,
+            // CORREÇÃO 3 — ícone lápis visível e clique funcional
+            clicavel: true,
             index: i,
           );
         }),
-        const SizedBox(height: 10),
-        _botaoAdicionar('Adicionar Roteiro +'),
       ],
     );
   }
 
+  // ── Aba Compromissos ──────────────────────────────────────────────────────
   Widget _compromissos() {
     return ListView(
       padding: const EdgeInsets.all(18),
       children: [
-        const Text('Compromissos', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+        const Text('Compromissos',
+            style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A))),
         const SizedBox(height: 18),
         ...List.generate(compromissosItems.length, (i) {
           final item = compromissosItems[i];
@@ -296,7 +322,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             (i + 1).toString().padLeft(2, '0'),
             item['titulo'] ?? '',
             item['subtitulo'] ?? '',
-            clicavel: false,
+            // CORREÇÃO 3 — ícone lápis visível e clique funcional
+            clicavel: true,
             index: i,
           );
         }),
@@ -306,11 +333,16 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Aba Anotações ─────────────────────────────────────────────────────────
   Widget _anotacoes() {
     return ListView(
       padding: const EdgeInsets.all(18),
       children: [
-        const Text('Anotações', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF0F172A))),
+        const Text('Anotações',
+            style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A))),
         const SizedBox(height: 18),
         ...List.generate(anotacoesItems.length, (i) {
           final item = anotacoesItems[i];
@@ -318,7 +350,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             (i + 1).toString().padLeft(2, '0'),
             item['titulo'] ?? '',
             item['subtitulo'] ?? '',
-            clicavel: false,
+            // CORREÇÃO 3 — ícone lápis visível e clique funcional
+            clicavel: true,
             index: i,
           );
         }),
@@ -328,6 +361,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Item de lista — CORREÇÃO 3: lápis sempre visível e clicável ──────────
   Widget _item(
     String numero,
     String titulo,
@@ -355,27 +389,74 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
               alignment: Alignment.center,
               child: Text(numero, style: const TextStyle(color: Color(0xFF0284C7), fontWeight: FontWeight.bold, fontSize: 14)),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(titulo, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0F172A))),
-                  const SizedBox(height: 3),
-                  Text(subtitulo, style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w500)),
-                ],
-              ),
+          ),
+          const SizedBox(width: 14),
+
+          // Título e subtítulo
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(titulo,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Color(0xFF0F172A))),
+                const SizedBox(height: 3),
+                Text(subtitulo,
+                    style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF64748B),
+                        fontWeight: FontWeight.w500)),
+              ],
             ),
-            if (clicavel)
-              const Icon(Icons.chevron_right, size: 20, color: Color(0xFF94A3B8))
-            else
-              const SizedBox(width: 20),
-          ],
-        ),
+          ),
+
+          // Ícone lápis sempre visível e clicável para edição
+          GestureDetector(
+            onTap: () => _openEditor(
+              aba: abaSelecionada,
+              titulo: titulo,
+              subtitulo: subtitulo,
+              isNew: false,
+              index: index,
+            ),
+            child: const Padding(
+              padding: EdgeInsets.all(6),
+              child: Icon(Icons.edit_outlined,
+                  size: 20, color: Color(0xFF94A3B8)),
+            ),
+          ),
+        ],
       ),
     );
+
+    return clicavel
+        ? GestureDetector(
+            onTap: () {
+              if (abaSelecionada == 0) {
+                // Para Roteiro: abre as visitas desse dia
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RoteiroPage()),
+                );
+              } else {
+                // Para Compromissos e Anotações: abre o editor direto
+                _openEditor(
+                  aba: abaSelecionada,
+                  titulo: titulo,
+                  subtitulo: subtitulo,
+                  isNew: false,
+                  index: index,
+                );
+              }
+            },
+            child: cardContent,
+          )
+        : cardContent;
   }
 
+  // ── Botão "Adicionar X +" ─────────────────────────────────────────────────
   Widget _botaoAdicionar(String texto) {
     return InkWell(
       onTap: null,
@@ -388,7 +469,11 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
           borderRadius: BorderRadius.circular(25),
           border: Border.all(color: const Color(0xFFCBD5E1), width: 1.2),
         ),
-        child: Text(texto, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F172A), fontSize: 15)),
+        child: Text(texto,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A),
+                fontSize: 15)),
       ),
     );
   }
@@ -400,22 +485,32 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
         children: [
           Expanded(
             child: OutlinedButton(
-              onPressed: null,
+              // CORREÇÃO 2: era null, agora navega para RoteiroPage
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const RoteiroPage()),
+              ),
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0F172A),
                 backgroundColor: Colors.white,
-                side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                side: const BorderSide(
+                    color: Color(0xFFE2E8F0), width: 1.5),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.edit_outlined, size: 18, color: Color(0xFF0F172A)),
+                  Icon(Icons.edit_outlined,
+                      size: 18, color: Color(0xFF0F172A)),
                   SizedBox(width: 8),
                   Text(
                     'Editar',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A)),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Color(0xFF0F172A)),
                   ),
                 ],
               ),
@@ -428,8 +523,10 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0F172A),
                 backgroundColor: const Color(0xFFFEE2E2),
-                side: const BorderSide(color: Color(0xFFFCA5A5), width: 1.5),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                side: const BorderSide(
+                    color: Color(0xFFFCA5A5), width: 1.5),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               child: const Row(
@@ -437,10 +534,14 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 children: [
                   Text(
                     'Excluir',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Color(0xFF0F172A)),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Color(0xFF0F172A)),
                   ),
                   SizedBox(width: 8),
-                  Icon(Icons.delete_outline, size: 18, color: Color(0xFF0F172A)),
+                  Icon(Icons.delete_outline,
+                      size: 18, color: Color(0xFF0F172A)),
                 ],
               ),
             ),

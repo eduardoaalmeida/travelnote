@@ -1,39 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'navbar.dart';
 import 'viagem_model.dart';
 import 'detalhes_viagem.dart';
 import 'cadastrar_viagem.dart';
-import 'notificacoes_page.dart'; // <-- Importe o arquivo da tela de notificações aqui
+import 'notificacoes_page.dart';
+import 'viagens_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
-
-  static final List<Viagem> _proximasViagens = [
-    Viagem(
-      destino: 'Paris',
-      periodo: '10 à 18 Jun',
-      imagemUrl:
-          'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&q=80',
-    ),
-    Viagem(
-      destino: 'Paris',
-      periodo: '10 à 18 Jun',
-      imagemUrl:
-          'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&q=80',
-    ),
-    Viagem(
-      destino: 'Paris',
-      periodo: '10 à 18 Jun',
-      imagemUrl:
-          'https://images.unsplash.com/photo-1541264941462-5f8f2f4b7491?w=400&q=80',
-    ),
-    Viagem(
-      destino: 'Paris',
-      periodo: '10 à 18 Jun',
-      imagemUrl:
-          'https://images.unsplash.com/photo-1520939817895-060bdaf4fe1b?w=400&q=80',
-    ),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -70,17 +46,43 @@ class HomePage extends StatelessWidget {
                             ),
                             child: const CircleAvatar(
                               radius: 22,
-                              backgroundImage: AssetImage('assets/images/perfil.png'),
+                              backgroundImage: AssetImage(
+                                'assets/images/perfil.png',
+                              ),
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Text(
-                            'Olá, Eduardo!',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('usuarios')
+                                .doc(FirebaseAuth.instance.currentUser?.uid)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              String nome = 'Usuário';
+                              if (snapshot.hasData && snapshot.data!.exists) {
+                                final data =
+                                    snapshot.data!.data()
+                                        as Map<String, dynamic>?;
+                                nome = data?['nome'] ?? 'Usuário';
+                              } else if (FirebaseAuth
+                                      .instance
+                                      .currentUser
+                                      ?.displayName !=
+                                  null) {
+                                nome = FirebaseAuth
+                                    .instance
+                                    .currentUser!
+                                    .displayName!;
+                              }
+                              return Text(
+                                'Olá, $nome!',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -106,7 +108,8 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               Positioned(
-                bottom: -23, // Metade da altura do botão para sobrepor perfeitamente
+                bottom:
+                    -23, // Metade da altura do botão para sobrepor perfeitamente
                 left: 24,
                 right: 24,
                 child: SizedBox(
@@ -160,13 +163,106 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  ..._proximasViagens.map((v) => _ViagemCard(viagem: v)),
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('viagens')
+                        .where(
+                          'criado_por',
+                          isEqualTo:
+                              FirebaseAuth.instance.currentUser?.email ?? '',
+                        )
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(24.0),
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24.0),
+                          child: Center(
+                            child: Text(
+                              'Nenhuma viagem cadastrada.',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      final docs = snapshot.data!.docs;
+                      final viagens = docs.map((doc) {
+                        final data = doc.data() as Map<String, dynamic>;
+                        return Viagem(
+                          id: doc.id,
+                          destino: data['destino'] ?? '',
+                          imagemUrl:
+                              data['imagemUrl'] ??
+                              'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
+                          dataInicio: data['dataInicio'] ?? '',
+                          dataFim: data['dataFim'] ?? '',
+                          orcamento: data['orcamento'] ?? '',
+                          anotacoes: data['anotacoes'] ?? '',
+                          tipo: data['tipo'] ?? 'Lazer',
+                          confirmada: data['confirmada'] ?? true,
+                        );
+                      }).toList();
+
+                      // Ordena as viagens localmente por data de início de forma crescente
+                      try {
+                        viagens.sort((a, b) {
+                          final partsA = a.dataInicio.split('/');
+                          final partsB = b.dataInicio.split('/');
+                          if (partsA.length == 3 && partsB.length == 3) {
+                            final dateA = DateTime(
+                              int.parse(partsA[2]),
+                              int.parse(partsA[1]),
+                              int.parse(partsA[0]),
+                            );
+                            final dateB = DateTime(
+                              int.parse(partsB[2]),
+                              int.parse(partsB[1]),
+                              int.parse(partsB[0]),
+                            );
+                            return dateA.compareTo(dateB);
+                          }
+                          return 0;
+                        });
+                      } catch (_) {}
+
+                      // Exibe até 4 próximas viagens
+                      final proximas = viagens.take(4).toList();
+
+                      return Column(
+                        children: proximas
+                            .map((v) => _ViagemCard(viagem: v))
+                            .toList(),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const ViagensPage(),
+                            transitionDuration: Duration.zero,
+                            reverseTransitionDuration: Duration.zero,
+                          ),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF10B981),
                         foregroundColor: Colors.white,
@@ -205,9 +301,7 @@ class _ViagemCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (_) => const DetalhesViagemPage(),
-        ),
+        MaterialPageRoute(builder: (_) => const DetalhesViagemPage()),
       ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
