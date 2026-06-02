@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'firebase_helper.dart';
+import 'auxiliar_firebase.dart';
 import 'home_page.dart';
 import 'criar_conta_page.dart';
 import 'recuperar_senha_page.dart';
@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
   void _loginComGoogle() async {
     setState(() => _carregando = true);
     try {
-      final credencial = await FirebaseHelper.loginGoogle();
+      final credencial = await AuxiliarFirebase.loginGoogle();
       if (credencial != null) {
         if (!mounted) return;
         Navigator.pushReplacement(
@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(FirebaseHelper.obterMensagemErro(e)),
+          content: Text(AuxiliarFirebase.obterMensagemErro(e)),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -181,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
 
                                   setState(() => _carregando = true);
                                   try {
-                                    await FirebaseHelper.loginTradicional(email, _senhaController.text);
+                                    await AuxiliarFirebase.loginTradicional(email, _senhaController.text);
                                     if (!mounted) return;
                                     Navigator.pushReplacement(
                                       context,
@@ -192,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
                                     if (!mounted) return;
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        content: Text(FirebaseHelper.obterMensagemErro(e)),
+                                        content: Text(AuxiliarFirebase.obterMensagemErro(e)),
                                         backgroundColor: Colors.redAccent,
                                       ),
                                     );

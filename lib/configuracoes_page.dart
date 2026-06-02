@@ -5,7 +5,7 @@ import 'navbar.dart';
 import 'perfil_page.dart';
 import 'politica_privacidade_page.dart';
 import 'login_page.dart';
-import 'firebase_helper.dart';
+import 'auxiliar_firebase.dart';
 
 class ConfiguracoesPage extends StatefulWidget {
   const ConfiguracoesPage({super.key});
@@ -292,7 +292,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                         title: 'Sair da Conta',
                         trailingIcon: Icons.logout,
                         onTap: () async {
-                          await FirebaseHelper.logout();
+                          await AuxiliarFirebase.logout();
                           if (mounted) _abrirLogin(context);
                         },
                       ),

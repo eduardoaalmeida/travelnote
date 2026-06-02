@@ -8,7 +8,7 @@ import 'configuracoes_page.dart';
 import 'login_page.dart';
 import 'politica_privacidade_page.dart';
 import 'viagens_page.dart';
-import 'firebase_helper.dart';
+import 'auxiliar_firebase.dart';
 
 class PerfilPage extends StatefulWidget {
   const PerfilPage({super.key});
@@ -94,7 +94,7 @@ class _PerfilPageState extends State<PerfilPage> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(dialogContext);
-              await FirebaseHelper.logout();
+              await AuxiliarFirebase.logout();
               if (mounted) {
                 Navigator.pushAndRemoveUntil(
                   pageContext,

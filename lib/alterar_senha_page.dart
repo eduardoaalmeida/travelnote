@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'firebase_helper.dart';
+import 'auxiliar_firebase.dart';
 
 class AlterarSenhaPage extends StatefulWidget {
   const AlterarSenhaPage({super.key});
@@ -129,7 +129,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                ),
                             ),
                             const SizedBox(height: 40),
-                            if (FirebaseHelper.isGoogleUser()) ...[
+                            if (AuxiliarFirebase.isGoogleUser()) ...[
                               Container(
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(24.0),
@@ -313,7 +313,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
 
                                       setState(() => _carregando = true);
                                       try {
-                                        await FirebaseHelper.alterarSenha(
+                                        await AuxiliarFirebase.alterarSenha(
                                           senhaAtual: senhaAtual,
                                           novaSenha: novaSenha,
                                         );
@@ -335,7 +335,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                         if (!mounted) return;
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
-                                            content: Text(FirebaseHelper.obterMensagemErro(e)),
+                                            content: Text(AuxiliarFirebase.obterMensagemErro(e)),
                                             backgroundColor: Colors.redAccent,
                                           ),
                                         );

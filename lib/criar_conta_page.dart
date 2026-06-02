@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'firebase_helper.dart';
+import 'auxiliar_firebase.dart';
 import 'politica_privacidade_page.dart';
 
 class CriarContaPage extends StatefulWidget {
@@ -304,14 +304,14 @@ class _CriarContaPageState extends State<CriarContaPage> {
 
                                     setState(() => _carregando = true);
                                     try {
-                                      await FirebaseHelper.registrarUsuario(
-                                        nome: _nomeController.text,
-                                        email: email,
-                                        cpf: _cpfController.text,
-                                        telefone: _telefoneController.text,
-                                        senha: _senhaController.text,
-                                        aceitouTermos: _aceitouTermos,
-                                      );
+                                       await AuxiliarFirebase.registrarUsuario(
+                                         nome: _nomeController.text,
+                                         email: email,
+                                         cpf: _cpfController.text,
+                                         telefone: _telefoneController.text,
+                                         senha: _senhaController.text,
+                                         aceitouTermos: _aceitouTermos,
+                                       );
 
                                       if (!mounted) return;
                                       ScaffoldMessenger.of(context).showSnackBar(
@@ -325,10 +325,10 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                       if (!mounted) return;
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
-                                          content: Text(FirebaseHelper.obterMensagemErro(e)),
-                                          backgroundColor: Colors.redAccent,
-                                        ),
-                                      );
+                                           content: Text(AuxiliarFirebase.obterMensagemErro(e)),
+                                           backgroundColor: Colors.redAccent,
+                                         ),
+                                       );
                                     } finally {
                                       if (mounted) setState(() => _carregando = false);
                                     }
