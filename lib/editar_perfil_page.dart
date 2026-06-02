@@ -3,9 +3,6 @@ import 'navbar.dart';
 import 'detalhes_viagem.dart';
 import 'viagem_model.dart';
 
-// ── Modelo de Viagem ──────────────────────────────────────────────────────────
-
-// ── Página Home ───────────────────────────────────────────────────────────────
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -42,7 +39,6 @@ class HomePage extends StatelessWidget {
       backgroundColor: const Color(0xFFF6F7FB),
       body: Column(
         children: [
-          // ── Header gradiente ────────────────────────────────────
           Container(
             width: double.infinity,
             decoration: const BoxDecoration(
@@ -72,12 +68,15 @@ class HomePage extends StatelessWidget {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                    color: Colors.white, width: 2),
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
                               ),
                               child: const CircleAvatar(
                                 radius: 22,
                                 backgroundImage: NetworkImage(
-                                    'https://i.pravatar.cc/150?img=12'),
+                                  'https://i.pravatar.cc/150?img=12',
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -97,8 +96,11 @@ class HomePage extends StatelessWidget {
                             color: Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.notifications_none,
-                              color: Colors.white, size: 24),
+                          child: const Icon(
+                            Icons.notifications_none,
+                            color: Colors.white,
+                            size: 24,
+                          ),
                         ),
                       ],
                     ),
@@ -108,8 +110,11 @@ class HomePage extends StatelessWidget {
                       height: 46,
                       child: ElevatedButton.icon(
                         onPressed: () {},
-                        icon: const Icon(Icons.add,
-                            color: Colors.white, size: 20),
+                        icon: const Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
                         label: const Text(
                           'Nova Viagem +',
                           style: TextStyle(
@@ -133,11 +138,9 @@ class HomePage extends StatelessWidget {
             ),
           ),
 
-          // ── Lista de viagens ────────────────────────────────────
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -188,7 +191,6 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// ── Card individual de viagem ─────────────────────────────────────────────────
 class _ViagemCard extends StatelessWidget {
   final Viagem viagem;
   const _ViagemCard({required this.viagem});
@@ -198,9 +200,7 @@ class _ViagemCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (_) => const HomePage(),
-        ),
+        MaterialPageRoute(builder: (_) => const HomePage()),
       ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
@@ -242,13 +242,18 @@ class _ViagemCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined,
-                          size: 14, color: Colors.grey),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 14,
+                        color: Colors.grey,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         viagem.periodo,
                         style: const TextStyle(
-                            fontSize: 13, color: Colors.grey),
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
                       ),
                     ],
                   ),
@@ -262,8 +267,11 @@ class _ViagemCard extends StatelessWidget {
                   color: const Color(0xFFE6FAF5),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.check_circle,
-                    color: Color(0xFF23D2B5), size: 22),
+                child: const Icon(
+                  Icons.check_circle,
+                  color: Color(0xFF23D2B5),
+                  size: 22,
+                ),
               ),
           ],
         ),

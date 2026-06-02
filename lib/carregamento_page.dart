@@ -12,7 +12,6 @@ class CarregamentoPage extends StatefulWidget {
 }
 
 class _CarregamentoPageState extends State<CarregamentoPage> {
-  // Navega para a tela de login
   void _irParaLogin() {
     if (!mounted) return;
     Navigator.pushReplacement(
@@ -21,23 +20,22 @@ class _CarregamentoPageState extends State<CarregamentoPage> {
     );
   }
 
-  // Verifica se o usuário está logado e é válido
   void _verificarUsuario() async {
     if (!mounted) return;
     final usuario = FirebaseAuth.instance.currentUser;
     if (usuario != null) {
-      // Valida domínio institucional
       if (AuxiliarFirebase.isInstitutionalEmail(usuario.email ?? '')) {
         try {
-          final doc = await FirebaseFirestore.instance.collection('usuarios').doc(usuario.uid).get();
+          final doc = await FirebaseFirestore.instance
+              .collection('usuarios')
+              .doc(usuario.uid)
+              .get();
           if (doc.exists) {
-            // Se tem cadastro, vai direto para a home
             Navigator.pushReplacementNamed(context, '/home');
             return;
           }
         } catch (_) {}
       }
-      // Se não for válido, desloga
       await AuxiliarFirebase.logout();
     }
     _irParaLogin();
@@ -46,7 +44,6 @@ class _CarregamentoPageState extends State<CarregamentoPage> {
   @override
   void initState() {
     super.initState();
-    // Executa a verificação após 3 segundos
     Future.delayed(const Duration(seconds: 3), _verificarUsuario);
   }
 
@@ -59,9 +56,7 @@ class _CarregamentoPageState extends State<CarregamentoPage> {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            Center(
-              child: Image.asset('assets/images/carregamento.png'),
-            ),
+            Center(child: Image.asset('assets/images/carregamento.png')),
             const Positioned(
               bottom: 60,
               child: CircularProgressIndicator(

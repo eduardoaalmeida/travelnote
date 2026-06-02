@@ -61,11 +61,16 @@ class AuxiliarFirebase {
     if (!isInstitutionalEmail(email)) {
       throw FirebaseAuthException(
         code: 'domain-not-allowed',
-        message: 'Acesso permitido apenas para e-mails do domínio @souunit.com.br.',
+        message:
+            'Acesso permitido apenas para e-mails do domínio @souunit.com.br.',
       );
     }
 
-    final conflito = await checkDataConflict(email: email, cpf: cpf, telefone: telefone);
+    final conflito = await checkDataConflict(
+      email: email,
+      cpf: cpf,
+      telefone: telefone,
+    );
     if (conflito != null) {
       throw FirebaseAuthException(
         code: 'email-already-in-use',
@@ -92,11 +97,15 @@ class AuxiliarFirebase {
     return credential;
   }
 
-  static Future<UserCredential> loginTradicional(String email, String senha) async {
+  static Future<UserCredential> loginTradicional(
+    String email,
+    String senha,
+  ) async {
     if (!isInstitutionalEmail(email)) {
       throw FirebaseAuthException(
         code: 'domain-not-allowed',
-        message: 'Acesso permitido apenas para e-mails do domínio @souunit.com.br.',
+        message:
+            'Acesso permitido apenas para e-mails do domínio @souunit.com.br.',
       );
     }
 
@@ -106,12 +115,16 @@ class AuxiliarFirebase {
     );
 
     if (credential.user != null) {
-      final userDoc = await _db.collection('usuarios').doc(credential.user!.uid).get();
+      final userDoc = await _db
+          .collection('usuarios')
+          .doc(credential.user!.uid)
+          .get();
       if (!userDoc.exists) {
         await _auth.signOut();
         throw FirebaseAuthException(
           code: 'user-not-found',
-          message: 'Usuário autenticado, mas não possui cadastro no banco de dados.',
+          message:
+              'Usuário autenticado, mas não possui cadastro no banco de dados.',
         );
       }
     }
@@ -121,7 +134,9 @@ class AuxiliarFirebase {
 
   static Future<UserCredential?> loginGoogle() async {
     final GoogleSignIn googleSignIn = GoogleSignIn(
-      clientId: kIsWeb ? '646131190495-f7pend804pig1mr7rtqotkmcus5n90er.apps.googleusercontent.com' : null,
+      clientId: kIsWeb
+          ? '646131190495-f7pend804pig1mr7rtqotkmcus5n90er.apps.googleusercontent.com'
+          : null,
     );
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
@@ -133,11 +148,13 @@ class AuxiliarFirebase {
       await googleSignIn.signOut();
       throw FirebaseAuthException(
         code: 'domain-not-allowed',
-        message: 'Acesso permitido apenas para e-mails do domínio @souunit.com.br.',
+        message:
+            'Acesso permitido apenas para e-mails do domínio @souunit.com.br.',
       );
     }
 
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
     final AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
@@ -167,7 +184,8 @@ class AuxiliarFirebase {
     if (!isInstitutionalEmail(email)) {
       throw FirebaseAuthException(
         code: 'domain-not-allowed',
-        message: 'Acesso permitido apenas para e-mails do domínio @souunit.com.br.',
+        message:
+            'Acesso permitido apenas para e-mails do domínio @souunit.com.br.',
       );
     }
 
@@ -203,7 +221,7 @@ class AuxiliarFirebase {
     await GoogleSignIn().signOut();
     await _auth.signOut();
   }
- 
+
   static String obterMensagemErro(dynamic e) {
     if (e is FirebaseAuthException) {
       switch (e.code) {
@@ -243,7 +261,7 @@ class AuxiliarFirebase {
     }
     return e?.toString() ?? 'Ocorreu um erro inesperado.';
   }
- 
+
   static Future<bool> isGoogleUser() async {
     final user = _auth.currentUser;
     if (user == null) return false;
@@ -266,22 +284,23 @@ class AuxiliarFirebase {
     if (await isGoogleUser()) {
       throw FirebaseAuthException(
         code: 'operation-not-allowed',
-        message: 'Contas conectadas pelo Google não possuem senha no aplicativo.',
+        message:
+            'Contas conectadas pelo Google não possuem senha no aplicativo.',
       );
     }
- 
+
     if (user.email == null) {
       throw FirebaseAuthException(
         code: 'no-email',
         message: 'E-mail do usuário não encontrado.',
       );
     }
- 
+
     final AuthCredential credential = EmailAuthProvider.credential(
       email: user.email!,
       password: senhaAtual,
     );
- 
+
     try {
       await user.reauthenticateWithCredential(credential);
     } on FirebaseAuthException catch (e) {
@@ -293,7 +312,7 @@ class AuxiliarFirebase {
       }
       rethrow;
     }
- 
+
     await user.updatePassword(novaSenha);
   }
 }

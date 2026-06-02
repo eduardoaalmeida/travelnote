@@ -23,43 +23,45 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
   final TextEditingController _anotacoesController = TextEditingController();
 
   Future<void> _cadastrarViagem() async {
-  if (_destinoController.text.isEmpty ||
-      _dataInicio == null ||
-      _dataFim == null ||
-      _orcamentoController.text.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Preencha todos os campos obrigatórios')),
-    );
-    return;
-  }
+    if (_destinoController.text.isEmpty ||
+        _dataInicio == null ||
+        _dataFim == null ||
+        _orcamentoController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Preencha todos os campos obrigatórios')),
+      );
+      return;
+    }
 
-  await FirebaseFirestore.instance.collection('viagens').add({
-    'destino': _destinoController.text,
-    'dataInicio': Timestamp.fromDate(_dataInicio!),
-    'dataFim': Timestamp.fromDate(_dataFim!),
-    'orcamento': _orcamentoController.text,
-    'tipo': _selectedTipo,
-    'anotacoes': _anotacoesController.text,
-    'criadoEm': FieldValue.serverTimestamp(),
-  });
+    await FirebaseFirestore.instance.collection('viagens').add({
+      'destino': _destinoController.text,
+      'dataInicio': Timestamp.fromDate(_dataInicio!),
+      'dataFim': Timestamp.fromDate(_dataFim!),
+      'orcamento': _orcamentoController.text,
+      'tipo': _selectedTipo,
+      'anotacoes': _anotacoesController.text,
+      'criadoEm': FieldValue.serverTimestamp(),
+    });
 
-  showDialog(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Sucesso!'),
-      content: Text('Viagem para ${_destinoController.text} cadastrada com sucesso!'),
-      actions: [
-        ElevatedButton(
-          onPressed: () {
-            Navigator.of(ctx).pop();
-            Navigator.pop(context);
-          },
-          child: const Text('OK'),
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Sucesso!'),
+        content: Text(
+          'Viagem para ${_destinoController.text} cadastrada com sucesso!',
         ),
-      ],
-    ),
-  );
-}
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              Navigator.pop(context);
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -270,302 +272,306 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-                Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
-                    ),
-                    Expanded(
-                      child: Center(
-                        child: Image.asset(
-                          'assets/images/logo_completa.png',
-                          height: 75,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 48),
-                  ],
-                ),
-
-                const SizedBox(height: 25),
-
-                const Center(
-                  child: Text(
-                    'Cadastro de Viagem',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+              Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(
+                      Icons.arrow_back,
                       color: Color(0xFF0F172A),
                     ),
                   ),
-                ),
-
-                const SizedBox(height: 25),
-
-                RichText(
-                  text: const TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Onde começa sua\n',
-                        style: TextStyle(
-                          fontSize: 34,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF0F172A),
-                          height: 1.15,
-                        ),
+                  Expanded(
+                    child: Center(
+                      child: Image.asset(
+                        'assets/images/logo_completa.png',
+                        height: 75,
+                        fit: BoxFit.contain,
                       ),
-                      TextSpan(
-                        text: 'próxima história?',
-                        style: TextStyle(
-                          fontSize: 34,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFF0284C7),
-                          height: 1.15,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 48),
+                ],
+              ),
 
-                const SizedBox(height: 10),
+              const SizedBox(height: 25),
 
-                const Text(
-                  'Preencha os detalhes para que possamos organizar cada momento especial do seu roteiro.',
+              const Center(
+                child: Text(
+                  'Cadastro de Viagem',
                   style: TextStyle(
-                    color: Color(0xFF64748B),
-                    fontSize: 15,
-                    height: 1.4,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0F172A),
                   ),
                 ),
+              ),
 
-                const SizedBox(height: 30),
+              const SizedBox(height: 25),
 
-                _buildLabel('DESTINO'),
-                TextField(
-                  controller: _destinoController,
-                  decoration: _buildInputDecoration(
-                    hintText: 'Para onde você vai?',
-                    prefixIcon: const Icon(
-                      Icons.location_on_outlined,
-                      color: Color(0xFF0284C7),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                Row(
+              RichText(
+                text: const TextSpan(
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildLabel('INÍCIO'),
-                          TextField(
-                            readOnly: true,
-                            onTap: () => _selectDate(context, true),
-                            controller: _inicioController,
-                            decoration: _buildInputDecoration(
-                              hintText: 'DD/MM/AAAA',
-                              prefixIcon: const Icon(
-                                Icons.calendar_today_outlined,
-                                color: Color(0xFF0284C7),
-                              ),
-                            ),
-                          ),
-                        ],
+                    TextSpan(
+                      text: 'Onde começa sua\n',
+                      style: TextStyle(
+                        fontSize: 34,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF0F172A),
+                        height: 1.15,
                       ),
                     ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildLabel('FIM'),
-                          TextField(
-                            readOnly: true,
-                            onTap: () => _selectDate(context, false),
-                            controller: _fimController,
-                            decoration: _buildInputDecoration(
-                              hintText: 'DD/MM/AAAA',
-                              prefixIcon: const Icon(
-                                Icons.calendar_today_outlined,
-                                color: Color(0xFF0284C7),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                _buildLabel('ORÇAMENTO PREVISTO'),
-                TextField(
-                  controller: _orcamentoController,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    TextInputFormatter.withFunction((oldValue, newValue) {
-                      final formatted = _formatarOrcamento(newValue.text);
-                      return TextEditingValue(
-                        text: formatted,
-                        selection: TextSelection.collapsed(
-                          offset: formatted.length,
-                        ),
-                      );
-                    }),
-                  ],
-                  decoration: _buildInputDecoration(
-                    hintText: '0,00',
-                    prefixIcon: const Icon(
-                      Icons.attach_money,
-                      color: Color(0xFF0284C7),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                _buildLabel('TIPO DA VIAGEM'),
-                GestureDetector(
-                  onTap: _showTipoViagemPicker,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(
-                        color: const Color(0xFFE2E8F0),
-                        width: 1.2,
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(_selectedIcon, color: const Color(0xFF0284C7), size: 24),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _selectedTipo,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Color(0xFF0F172A),
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                _selectedSubtitle,
-                                style: const TextStyle(
-                                  color: Color(0xFF64748B),
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          width: 18,
-                          height: 18,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF0284C7),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                _buildLabel('ANOTAÇÕES'),
-                TextField(
-                  controller: _anotacoesController,
-                  maxLines: 4,
-                  decoration: InputDecoration(
-                    hintText:
-                        'Ex: Visitar o museu local, jantar no restaurante indicado...',
-                    hintStyle: const TextStyle(
-                      color: Color(0xFF94A3B8),
-                      fontSize: 15,
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
-                    contentPadding: const EdgeInsets.all(16),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: const BorderSide(
-                        color: Color(0xFFE2E8F0),
-                        width: 1.2,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: const BorderSide(
+                    TextSpan(
+                      text: 'próxima história?',
+                      style: TextStyle(
+                        fontSize: 34,
+                        fontWeight: FontWeight.w900,
                         color: Color(0xFF0284C7),
-                        width: 1.5,
+                        height: 1.15,
                       ),
                     ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              const Text(
+                'Preencha os detalhes para que possamos organizar cada momento especial do seu roteiro.',
+                style: TextStyle(
+                  color: Color(0xFF64748B),
+                  fontSize: 15,
+                  height: 1.4,
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              _buildLabel('DESTINO'),
+              TextField(
+                controller: _destinoController,
+                decoration: _buildInputDecoration(
+                  hintText: 'Para onde você vai?',
+                  prefixIcon: const Icon(
+                    Icons.location_on_outlined,
+                    color: Color(0xFF0284C7),
                   ),
                 ),
+              ),
 
-                const SizedBox(height: 35),
+              const SizedBox(height: 20),
 
-                Container(
-                  width: double.infinity,
-                  height: 58,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    gradient: const LinearGradient(
-                      colors: [
-                        Color(0xFF10B981),
-                        Color(0xFF059669),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildLabel('INÍCIO'),
+                        TextField(
+                          readOnly: true,
+                          onTap: () => _selectDate(context, true),
+                          controller: _inicioController,
+                          decoration: _buildInputDecoration(
+                            hintText: 'DD/MM/AAAA',
+                            prefixIcon: const Icon(
+                              Icons.calendar_today_outlined,
+                              color: Color(0xFF0284C7),
+                            ),
+                          ),
+                        ),
                       ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF10B981).withValues(alpha: 0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+                  ),
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildLabel('FIM'),
+                        TextField(
+                          readOnly: true,
+                          onTap: () => _selectDate(context, false),
+                          controller: _fimController,
+                          decoration: _buildInputDecoration(
+                            hintText: 'DD/MM/AAAA',
+                            prefixIcon: const Icon(
+                              Icons.calendar_today_outlined,
+                              color: Color(0xFF0284C7),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              _buildLabel('ORÇAMENTO PREVISTO'),
+              TextField(
+                controller: _orcamentoController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  TextInputFormatter.withFunction((oldValue, newValue) {
+                    final formatted = _formatarOrcamento(newValue.text);
+                    return TextEditingValue(
+                      text: formatted,
+                      selection: TextSelection.collapsed(
+                        offset: formatted.length,
+                      ),
+                    );
+                  }),
+                ],
+                decoration: _buildInputDecoration(
+                  hintText: '0,00',
+                  prefixIcon: const Icon(
+                    Icons.attach_money,
+                    color: Color(0xFF0284C7),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              _buildLabel('TIPO DA VIAGEM'),
+              GestureDetector(
+                onTap: _showTipoViagemPicker,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: const Color(0xFFE2E8F0),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _selectedIcon,
+                        color: const Color(0xFF0284C7),
+                        size: 24,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _selectedTipo,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Color(0xFF0F172A),
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _selectedSubtitle,
+                              style: const TextStyle(
+                                color: Color(0xFF64748B),
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 18,
+                        height: 18,
+                        decoration: const BoxDecoration(
+                          color: Color(0xFF0284C7),
+                          shape: BoxShape.circle,
+                        ),
                       ),
                     ],
                   ),
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.transparent,
-                      shadowColor: Colors.transparent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              _buildLabel('ANOTAÇÕES'),
+              TextField(
+                controller: _anotacoesController,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  hintText:
+                      'Ex: Visitar o museu local, jantar no restaurante indicado...',
+                  hintStyle: const TextStyle(
+                    color: Color(0xFF94A3B8),
+                    fontSize: 15,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.all(16),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(
+                      color: Color(0xFFE2E8F0),
+                      width: 1.2,
                     ),
-                    onPressed: _cadastrarViagem,
-                    child: const Text(
-                      'Cadastrar Viagem',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(
+                      color: Color(0xFF0284C7),
+                      width: 1.5,
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+
+              const SizedBox(height: 35),
+
+              Container(
+                width: double.infinity,
+                height: 58,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF10B981), Color(0xFF059669)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    shadowColor: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                  onPressed: _cadastrarViagem,
+                  child: const Text(
+                    'Cadastrar Viagem',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 }

@@ -64,7 +64,6 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
           _carregando = false;
         });
 
-        // Aplica formatação via formatter
         _cpfFormatter.formatEditUpdate(
           TextEditingValue.empty,
           TextEditingValue(text: cpf.replaceAll(RegExp(r'[^0-9]'), '')),
@@ -346,7 +345,7 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              // Botão Salvar Dados
+
                               Container(
                                 width: double.infinity,
                                 height: 56,

@@ -5,7 +5,7 @@ class PoliticaPrivacidadePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const String textoPolitica = 
+    const String textoPolitica =
         'Textos de Política de Privacidade. Coletamos informações que você nos fornece diretamente, como ao criar uma conta, criar notas de viagem ou sincronizar seu calendário. Isso pode incluir nome, endereço de e-mail e preferências de viagem.\n\n'
         'Textos de Política de Privacidade. Coletamos informações que você nos fornece diretamente, como ao criar uma conta, criar notas de viagem ou sincronizar seu calendário. Isso pode incluir nome, endereço de e-mail e preferências de viagem.\n\n'
         'Textos de Política de Privacidade. Coletamos informações que você nos fornece diretamente, como ao criar uma conta, criar notas de viagem ou sincronizar seu calendário. Isso pode incluir nome, endereço de e-mail e preferências de viagem.\n\n'

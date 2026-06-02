@@ -27,24 +27,26 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
         .where('criado_por', isEqualTo: email)
         .snapshots()
         .listen((snapshot) {
-      if (!mounted) return;
-      setState(() {
-        _viagens = snapshot.docs.map((doc) {
-          final data = doc.data() as Map<String, dynamic>;
-          return Viagem(
-            id: doc.id,
-            destino: data['destino'] ?? '',
-            imagemUrl: data['imagemUrl'] ?? 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
-            dataInicio: data['dataInicio'] ?? '',
-            dataFim: data['dataFim'] ?? '',
-            orcamento: data['orcamento'] ?? '',
-            anotacoes: data['anotacoes'] ?? '',
-            tipo: data['tipo'] ?? 'Lazer',
-            confirmada: data['confirmada'] ?? true,
-          );
-        }).toList();
-      });
-    });
+          if (!mounted) return;
+          setState(() {
+            _viagens = snapshot.docs.map((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              return Viagem(
+                id: doc.id,
+                destino: data['destino'] ?? '',
+                imagemUrl:
+                    data['imagemUrl'] ??
+                    'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
+                dataInicio: data['dataInicio'] ?? '',
+                dataFim: data['dataFim'] ?? '',
+                orcamento: data['orcamento'] ?? '',
+                anotacoes: data['anotacoes'] ?? '',
+                tipo: data['tipo'] ?? 'Lazer',
+                confirmada: data['confirmada'] ?? true,
+              );
+            }).toList();
+          });
+        });
   }
 
   @override
@@ -65,12 +67,18 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
   }
 
   double get _totalInvestido => _viagensFiltradas.fold(
-      0, (soma, v) => soma + (double.tryParse(v.orcamento.replaceAll('.', '').replaceAll(',', '.')) ?? 0));
+    0,
+    (soma, v) =>
+        soma +
+        (double.tryParse(
+              v.orcamento.replaceAll('.', '').replaceAll(',', '.'),
+            ) ??
+            0),
+  );
 
   int get _totalViagens => _viagensFiltradas.length;
 
   String _formatarReal(double valor) {
-    // Formata 15000 → R$ 15.000
     final s = valor.toStringAsFixed(0);
     final buffer = StringBuffer();
     for (int i = 0; i < s.length; i++) {
@@ -80,7 +88,6 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
     return 'R\$ ${buffer.toString()}';
   }
 
-  // Navega para ViagensPage abrindo direto o formulário da viagem selecionada
   void _verDetalhes(int index) {
     Navigator.push(
       context,
@@ -88,7 +95,6 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
     );
   }
 
-  // ── FUNÇÃO NOVA: Abre o calendário completo ──
   Future<void> _abrirCalendario() async {
     final DateTime? dataSelecionada = await showDatePicker(
       context: context,
@@ -99,7 +105,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF1E83DB), // Cor azul para combinar com sua tela
+              primary: Color(0xFF1E83DB),
               onPrimary: Colors.white,
               onSurface: Colors.black87,
             ),
@@ -116,7 +122,6 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
     }
   }
 
-  // ── FUNÇÃO EXISTENTE: Abre o seletor rápido inferior ──
   void _mostrarSeletorAno() {
     showModalBottomSheet(
       context: context,
@@ -156,8 +161,19 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
     final p = data.split('/');
     if (p.length < 3) return data;
     const meses = [
-      '', 'JANEIRO', 'FEVEREIRO', 'MARÇO', 'ABRIL', 'MAIO', 'JUNHO',
-      'JULHO', 'AGOSTO', 'SETEMBRO', 'OUTUBRO', 'NOVEMBRO', 'DEZEMBRO'
+      '',
+      'JANEIRO',
+      'FEVEREIRO',
+      'MARÇO',
+      'ABRIL',
+      'MAIO',
+      'JUNHO',
+      'JULHO',
+      'AGOSTO',
+      'SETEMBRO',
+      'OUTUBRO',
+      'NOVEMBRO',
+      'DEZEMBRO',
     ];
     final mes = int.tryParse(p[1]) ?? 0;
     return '${mes >= 1 && mes <= 12 ? meses[mes] : p[1]} ${p[2]}';
@@ -218,7 +234,6 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
             ),
             const SizedBox(height: 16),
 
-            // ── Card resumo anual ──────────────────────
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -242,7 +257,9 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                         onTap: _mostrarSeletorAno,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 6),
+                            horizontal: 14,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFE8F4FD),
                             borderRadius: BorderRadius.circular(20),
@@ -258,15 +275,18 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(Icons.keyboard_arrow_down,
-                                  color: Color(0xFF1E83DB), size: 16),
+                              const Icon(
+                                Icons.keyboard_arrow_down,
+                                color: Color(0xFF1E83DB),
+                                size: 16,
+                              ),
                             ],
                           ),
                         ),
                       ),
-                      // ── CORREÇÃO DO ÍCONE DE CALENDÁRIO ──
+
                       GestureDetector(
-                        onTap: _abrirCalendario, // Agora abre o calendário completo!
+                        onTap: _abrirCalendario,
                         child: Icon(
                           Icons.calendar_month_outlined,
                           color: Colors.grey.shade400,
@@ -357,7 +377,6 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
             ),
             const SizedBox(height: 24),
 
-            // ── Lista de gastos ───────────────────────
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -393,14 +412,19 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                       padding: EdgeInsets.symmetric(vertical: 32.0),
                       child: Text(
                         'Nenhuma viagem registrada neste ano.',
-                        style: TextStyle(color: Colors.grey, fontSize: 15, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   )
                 : Column(
                     children: List.generate(
                       _viagensFiltradas.length,
-                      (index) => _buildCardGasto(_viagensFiltradas[index], index),
+                      (index) =>
+                          _buildCardGasto(_viagensFiltradas[index], index),
                     ),
                   ),
           ],
@@ -410,8 +434,10 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
   }
 
   Widget _buildCardGasto(Viagem viagem, int index) {
-    final valor = double.tryParse(
-            viagem.orcamento.replaceAll('.', '').replaceAll(',', '.')) ??
+    final valor =
+        double.tryParse(
+          viagem.orcamento.replaceAll('.', '').replaceAll(',', '.'),
+        ) ??
         0;
 
     return Container(
@@ -485,8 +511,7 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
               backgroundColor: const Color(0xFF1BCE8A),
               foregroundColor: Colors.white,
               elevation: 0,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
