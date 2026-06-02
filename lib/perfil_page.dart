@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'alterar_dados_page.dart';
 import 'home_page.dart';
 import 'navbar.dart';
@@ -6,6 +8,7 @@ import 'configuracoes_page.dart';
 import 'login_page.dart';
 import 'politica_privacidade_page.dart';
 import 'viagens_page.dart';
+import 'firebase_helper.dart';
 
 class PerfilPage extends StatefulWidget {
   const PerfilPage({super.key});
@@ -15,9 +18,12 @@ class PerfilPage extends StatefulWidget {
 }
 
 class _PerfilPageState extends State<PerfilPage> {
-  String _nome = 'Eduardo Andrade';
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   final TextEditingController _nomeController = TextEditingController();
+
+  User? get _user => _auth.currentUser;
 
   @override
   void dispose() {
@@ -25,13 +31,12 @@ class _PerfilPageState extends State<PerfilPage> {
     super.dispose();
   }
 
-  void _abrirEdicaoNome() {
-    _nomeController.text = _nome;
+  Future<void> _abrirEdicaoNome(String nomeAtual) async {
+    _nomeController.text = nomeAtual;
 
-    showModalBottomSheet(
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-
       builder: (context) => Padding(
         padding: EdgeInsets.only(
           left: 20,
@@ -39,41 +44,33 @@ class _PerfilPageState extends State<PerfilPage> {
           top: 20,
           bottom: MediaQuery.of(context).viewInsets.bottom + 20,
         ),
-
         child: Column(
           mainAxisSize: MainAxisSize.min,
-
           children: [
             const Text(
               'Editar nome',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-
             const SizedBox(height: 15),
-
             TextField(
               controller: _nomeController,
               autofocus: true,
-
               decoration: const InputDecoration(
                 labelText: 'Novo nome',
                 border: OutlineInputBorder(),
               ),
             ),
-
             const SizedBox(height: 15),
-
             ElevatedButton(
-              onPressed: () {
-                if (_nomeController.text.isNotEmpty) {
-                  setState(() {
-                    _nome = _nomeController.text;
+              onPressed: () async {
+                if (_nomeController.text.isNotEmpty && _user != null) {
+                  await _db.collection('usuarios').doc(_user!.uid).update({
+                    'nome': _nomeController.text.trim(),
+                    'usuario_logado': _user!.email ?? '',
                   });
                 }
-
-                Navigator.pop(context);
+                if (mounted) Navigator.pop(context);
               },
-
               child: const Text('Salvar'),
             ),
           ],
@@ -83,33 +80,33 @@ class _PerfilPageState extends State<PerfilPage> {
   }
 
   void _confirmarSaida() {
+    final pageContext = context;
     showDialog(
-      context: context,
-
-      builder: (context) => AlertDialog(
+      context: pageContext,
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Sair do sistema'),
-
         content: const Text('Tem certeza que deseja sair?'),
-
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Não'),
           ),
-
           ElevatedButton(
-            onPressed: () => Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginPage()),
-              (route) => false,
-            ),
-
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              await FirebaseHelper.logout();
+              if (mounted) {
+                Navigator.pushAndRemoveUntil(
+                  pageContext,
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                  (route) => false,
+                );
+              }
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-
             child: const Text('Sim'),
           ),
         ],
@@ -174,7 +171,11 @@ class _PerfilPageState extends State<PerfilPage> {
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A), size: 24),
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Color(0xFF0F172A),
+            size: 24,
+          ),
           onPressed: () => Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => const HomePage()),
@@ -193,95 +194,136 @@ class _PerfilPageState extends State<PerfilPage> {
         backgroundColor: const Color(0xFFF8FAFC),
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-        child: Column(
-          children: [
-            const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFCBD5E1), width: 2.5),
-              ),
-              child: const CircleAvatar(
-                radius: 56,
-                backgroundColor: Colors.white,
-                backgroundImage: AssetImage('assets/images/perfil.png'),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              _nome,
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF0F172A),
-                letterSpacing: -0.5,
-              ),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'eduardo@gmail.com',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF1B4E88),
-              ),
-            ),
-            const SizedBox(height: 32),
-            _itemPerfil(
-              icon: Icons.person_outline,
-              titulo: 'Dados Pessoais',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const AlterarDadosPage()),
-                );
-              },
-            ),
-            _itemPerfil(
-              icon: Icons.map_outlined,
-              titulo: 'Minhas Viagens',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ViagensPage()),
-                );
-              },
-            ),
-            _itemPerfil(
-              icon: Icons.settings_outlined,
-              titulo: 'Configurações',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ConfiguracoesPage()),
-                );
-              },
-            ),
-            _itemPerfil(
-              icon: Icons.verified_user_outlined,
-              titulo: 'Termos de Privacidade',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const PoliticaPrivacidadePage(),
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: _user != null
+            ? _db.collection('usuarios').doc(_user!.uid).snapshots()
+            : const Stream.empty(),
+        builder: (context, snapshot) {
+          String nome = _user?.displayName ?? 'Usuário';
+          String email = _user?.email ?? '';
+
+          if (snapshot.hasData && snapshot.data!.exists) {
+            final data = snapshot.data!.data() as Map<String, dynamic>;
+            nome = (data['nome'] as String?)?.isNotEmpty == true
+                ? data['nome'] as String
+                : nome;
+            email = (data['email'] as String?)?.isNotEmpty == true
+                ? data['email'] as String
+                : email;
+          }
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+            child: Column(
+              children: [
+                const SizedBox(height: 24),
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFCBD5E1),
+                      width: 2.5,
+                    ),
                   ),
-                );
-              },
+                  child: const CircleAvatar(
+                    radius: 56,
+                    backgroundColor: Colors.white,
+                    backgroundImage: AssetImage('assets/images/perfil.png'),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                GestureDetector(
+                  onTap: () => _abrirEdicaoNome(nome),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        nome,
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF0F172A),
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.edit_outlined,
+                        size: 20,
+                        color: Colors.grey.shade500,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  email,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF1B4E88),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                _itemPerfil(
+                  icon: Icons.person_outline,
+                  titulo: 'Dados Pessoais',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const AlterarDadosPage(),
+                      ),
+                    );
+                  },
+                ),
+                _itemPerfil(
+                  icon: Icons.map_outlined,
+                  titulo: 'Minhas Viagens',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ViagensPage()),
+                    );
+                  },
+                ),
+                _itemPerfil(
+                  icon: Icons.settings_outlined,
+                  titulo: 'Configurações',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ConfiguracoesPage(),
+                      ),
+                    );
+                  },
+                ),
+                _itemPerfil(
+                  icon: Icons.verified_user_outlined,
+                  titulo: 'Termos de Privacidade',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const PoliticaPrivacidadePage(),
+                      ),
+                    );
+                  },
+                ),
+                _itemPerfil(
+                  icon: Icons.logout,
+                  titulo: 'Sair',
+                  iconColor: const Color(0xFFEF4444),
+                  titleColor: const Color(0xFFEF4444),
+                  leadingBgColor: const Color(0xFFFEE2E2),
+                  onTap: _confirmarSaida,
+                ),
+              ],
             ),
-            _itemPerfil(
-              icon: Icons.logout,
-              titulo: 'Sair',
-              iconColor: const Color(0xFFEF4444),
-              titleColor: const Color(0xFFEF4444),
-              leadingBgColor: const Color(0xFFFEE2E2),
-              onTap: _confirmarSaida,
-            ),
-          ],
-        ),
+          );
+        },
       ),
       bottomNavigationBar: const NavBar(currentIndex: 0),
     );
