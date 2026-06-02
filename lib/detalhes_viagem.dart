@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'navbar.dart';
+import 'roteiro_page.dart';
+
+// classe principal
 // classe principal 
 class DetalhesViagemPage extends StatefulWidget {
   const DetalhesViagemPage({super.key});
@@ -360,101 +363,87 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
       ],
     );
   }
-
-  // ── Item de lista — CORREÇÃO 3: lápis sempre visível e clicável ──────────
   Widget _item(
-    String numero,
-    String titulo,
-    String subtitulo, {
-    bool clicavel = true,
-    int? index,
-  }) {
-    return InkWell(
-      onTap: null,
-      borderRadius: BorderRadius.circular(15),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: const BoxDecoration(color: Color(0xFFE0F2FE), shape: BoxShape.circle),
-              alignment: Alignment.center,
-              child: Text(numero, style: const TextStyle(color: Color(0xFF0284C7), fontWeight: FontWeight.bold, fontSize: 14)),
+  String numero,
+  String titulo,
+  String subtitulo, {
+  bool clicavel = true,
+  int? index,
+}) {
+  return InkWell(
+    onTap: clicavel
+        ? () {
+            if (abaSelecionada == 0) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => RoteiroPage()),
+              );
+            }
+          }
+        : null,
+    borderRadius: BorderRadius.circular(15),
+    child: Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: const BoxDecoration(
+              color: Color(0xFFE0F2FE),
+              shape: BoxShape.circle,
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              numero,
+              style: const TextStyle(
+                color: Color(0xFF0284C7),
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
             ),
           ),
           const SizedBox(width: 14),
-
-          // Título e subtítulo
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(titulo,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Color(0xFF0F172A))),
+                Text(
+                  titulo,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Color(0xFF0F172A),
+                  ),
+                ),
                 const SizedBox(height: 3),
-                Text(subtitulo,
-                    style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF64748B),
-                        fontWeight: FontWeight.w500)),
+                Text(
+                  subtitulo,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF64748B),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ],
             ),
           ),
-
-          // Ícone lápis sempre visível e clicável para edição
-          GestureDetector(
-            onTap: () => _openEditor(
-              aba: abaSelecionada,
-              titulo: titulo,
-              subtitulo: subtitulo,
-              isNew: false,
-              index: index,
-            ),
-            child: const Padding(
-              padding: EdgeInsets.all(6),
-              child: Icon(Icons.edit_outlined,
-                  size: 20, color: Color(0xFF94A3B8)),
-            ),
+          Icon(
+            abaSelecionada == 0 ? Icons.chevron_right : Icons.edit_outlined,
+            size: 20,
+            color: const Color(0xFF94A3B8),
           ),
         ],
       ),
-    );
-
-    return clicavel
-        ? GestureDetector(
-            onTap: () {
-              if (abaSelecionada == 0) {
-                // Para Roteiro: abre as visitas desse dia
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const RoteiroPage()),
-                );
-              } else {
-                // Para Compromissos e Anotações: abre o editor direto
-                _openEditor(
-                  aba: abaSelecionada,
-                  titulo: titulo,
-                  subtitulo: subtitulo,
-                  isNew: false,
-                  index: index,
-                );
-              }
-            },
-            child: cardContent,
-          )
-        : cardContent;
-  }
+    ),
+  );
+}
 
   // ── Botão "Adicionar X +" ─────────────────────────────────────────────────
   Widget _botaoAdicionar(String texto) {
