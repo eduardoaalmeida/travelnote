@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'carregamento_page.dart';
 import 'login_page.dart';
 import 'criar_conta_page.dart';
@@ -19,7 +20,13 @@ import 'viagens_page.dart';
 import 'notificacoes_page.dart';
 import 'historico_viagens_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const MeuApp());
 }
 

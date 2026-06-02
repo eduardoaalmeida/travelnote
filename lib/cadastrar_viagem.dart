@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CadastrarViagemPage extends StatefulWidget {
   const CadastrarViagemPage({super.key});
@@ -20,6 +21,45 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
   final TextEditingController _destinoController = TextEditingController();
   final TextEditingController _orcamentoController = TextEditingController();
   final TextEditingController _anotacoesController = TextEditingController();
+
+  Future<void> _cadastrarViagem() async {
+  if (_destinoController.text.isEmpty ||
+      _dataInicio == null ||
+      _dataFim == null ||
+      _orcamentoController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Preencha todos os campos obrigatórios')),
+    );
+    return;
+  }
+
+  await FirebaseFirestore.instance.collection('viagens').add({
+    'destino': _destinoController.text,
+    'dataInicio': Timestamp.fromDate(_dataInicio!),
+    'dataFim': Timestamp.fromDate(_dataFim!),
+    'orcamento': _orcamentoController.text,
+    'tipo': _selectedTipo,
+    'anotacoes': _anotacoesController.text,
+    'criadoEm': FieldValue.serverTimestamp(),
+  });
+
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Sucesso!'),
+      content: Text('Viagem para ${_destinoController.text} cadastrada com sucesso!'),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(ctx).pop();
+            Navigator.pop(context);
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
 
   @override
   void dispose() {
@@ -511,36 +551,7 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          title: const Text('Sucesso!'),
-                          content: Text(
-                            'Viagem para ${_destinoController.text.isEmpty ? 'seu destino' : _destinoController.text} foi cadastrada com sucesso!',
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          actions: [
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF10B981),
-                              ),
-                              onPressed: () {
-                                Navigator.of(ctx).pop();
-                                Navigator.pop(context);
-                              },
-                              child: const Text(
-                                'OK',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                    onPressed: _cadastrarViagem,
                     child: const Text(
                       'Cadastrar Viagem',
                       style: TextStyle(
