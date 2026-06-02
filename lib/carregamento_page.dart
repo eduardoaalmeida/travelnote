@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'firebase_helper.dart';
+import 'auxiliar_firebase.dart';
 import 'login_page.dart';
 
 class CarregamentoPage extends StatefulWidget {
@@ -27,7 +27,7 @@ class _CarregamentoPageState extends State<CarregamentoPage> {
     final usuario = FirebaseAuth.instance.currentUser;
     if (usuario != null) {
       // Valida domínio institucional
-      if (FirebaseHelper.isInstitutionalEmail(usuario.email ?? '')) {
+      if (AuxiliarFirebase.isInstitutionalEmail(usuario.email ?? '')) {
         try {
           final doc = await FirebaseFirestore.instance.collection('usuarios').doc(usuario.uid).get();
           if (doc.exists) {
@@ -38,7 +38,7 @@ class _CarregamentoPageState extends State<CarregamentoPage> {
         } catch (_) {}
       }
       // Se não for válido, desloga
-      await FirebaseHelper.logout();
+      await AuxiliarFirebase.logout();
     }
     _irParaLogin();
   }

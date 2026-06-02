@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'login_page.dart';
 import 'alterar_senha_page.dart';
-import 'firebase_helper.dart';
+import 'auxiliar_firebase.dart';
 
 class AlterarDadosPage extends StatefulWidget {
   const AlterarDadosPage({super.key});
@@ -126,7 +126,7 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(FirebaseHelper.obterMensagemErro(e)),
+            content: Text(AuxiliarFirebase.obterMensagemErro(e)),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -144,7 +144,7 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
   }
 
   Future<void> _signOut() async {
-    await FirebaseHelper.logout();
+    await AuxiliarFirebase.logout();
     if (mounted) {
       Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const LoginPage()),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'firebase_helper.dart';
+import 'auxiliar_firebase.dart';
 
 class RecuperarSenhaPage extends StatefulWidget {
   const RecuperarSenhaPage({super.key});
@@ -178,23 +178,23 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
 
                                     setState(() => _carregando = true);
                                     try {
-                                      await FirebaseHelper.recuperarSenha(email, _cpfController.text);
-                                      if (!mounted) return;
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('E-mail de recuperação de senha enviado!'),
-                                          backgroundColor: Colors.green,
-                                        ),
-                                      );
-                                      Navigator.pop(context);
-                                    } catch (e) {
-                                      if (!mounted) return;
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          content: Text(FirebaseHelper.obterMensagemErro(e)),
-                                          backgroundColor: Colors.redAccent,
-                                        ),
-                                      );
+                                       await AuxiliarFirebase.recuperarSenha(email, _cpfController.text);
+                                       if (!mounted) return;
+                                       ScaffoldMessenger.of(context).showSnackBar(
+                                         const SnackBar(
+                                           content: Text('E-mail de recuperação de senha enviado!'),
+                                           backgroundColor: Colors.green,
+                                         ),
+                                       );
+                                       Navigator.pop(context);
+                                     } catch (e) {
+                                       if (!mounted) return;
+                                       ScaffoldMessenger.of(context).showSnackBar(
+                                         SnackBar(
+                                           content: Text(AuxiliarFirebase.obterMensagemErro(e)),
+                                           backgroundColor: Colors.redAccent,
+                                         ),
+                                       );
                                     } finally {
                                       if (mounted) setState(() => _carregando = false);
                                     }

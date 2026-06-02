@@ -3,24 +3,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class FirebaseHelper {
+class AuxiliarFirebase {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  // 1. Regra de Negócio e Segurança de Domínio
-  // O acesso só deve ser concedido se o e-mail pertencer ao domínio @souunit.com.br
   static bool isInstitutionalEmail(String email) {
     return email.trim().toLowerCase().endsWith('@souunit.com.br');
   }
 
-  // 2. Verifica se o e-mail, CPF ou Telefone já estão cadastrados no Firestore
   static Future<String?> checkDataConflict({
     required String email,
     required String cpf,
     required String telefone,
     String? excludeUserId,
   }) async {
-    // Verificar e-mail
     final emailQuery = await _db
         .collection('usuarios')
         .where('email', isEqualTo: email.trim().toLowerCase())
@@ -31,7 +27,6 @@ class FirebaseHelper {
       }
     }
 
-    // Verificar CPF
     final cpfQuery = await _db
         .collection('usuarios')
         .where('cpf', isEqualTo: cpf.trim())
@@ -42,7 +37,6 @@ class FirebaseHelper {
       }
     }
 
-    // Verificar Telefone
     final telQuery = await _db
         .collection('usuarios')
         .where('telefone', isEqualTo: telefone.trim())
@@ -53,10 +47,9 @@ class FirebaseHelper {
       }
     }
 
-    return null; // Sem conflito
+    return null;
   }
 
-  // 3. Cadastrar usuário no Firebase Auth + Firestore
   static Future<UserCredential> registrarUsuario({
     required String nome,
     required String email,
@@ -67,12 +60,11 @@ class FirebaseHelper {
   }) async {
     if (!isInstitutionalEmail(email)) {
       throw FirebaseAuthException(
-        code: 'invalid-email',
-        message: 'Apenas e-mails do domínio institucional @souunit.com.br são permitidos.',
+        code: 'domain-not-allowed',
+        message: 'Acesso permitido apenas para e-mails do domínio @souunit.com.br.',
       );
     }
 
-    // Verificar se já existe no banco antes de criar no Auth
     final conflito = await checkDataConflict(email: email, cpf: cpf, telefone: telefone);
     if (conflito != null) {
       throw FirebaseAuthException(
@@ -81,14 +73,12 @@ class FirebaseHelper {
       );
     }
 
-    // Criar credencial no Firebase Auth
     final credential = await _auth.createUserWithEmailAndPassword(
       email: email.trim().toLowerCase(),
       password: senha,
     );
 
     if (credential.user != null) {
-      // Salvar os dados adicionais no Firestore
       await _db.collection('usuarios').doc(credential.user!.uid).set({
         'nome': nome.trim(),
         'email': email.trim().toLowerCase(),
@@ -102,26 +92,22 @@ class FirebaseHelper {
     return credential;
   }
 
-  // 4. Efetuar Login tradicional com verificação de domínio institucional
   static Future<UserCredential> loginTradicional(String email, String senha) async {
     if (!isInstitutionalEmail(email)) {
       throw FirebaseAuthException(
-        code: 'invalid-email',
-        message: 'Acesso restrito a e-mails institucionais (@souunit.com.br).',
+        code: 'domain-not-allowed',
+        message: 'Acesso permitido apenas para e-mails do domínio @souunit.com.br.',
       );
     }
 
-    // Tentar fazer login no Auth
     final credential = await _auth.signInWithEmailAndPassword(
       email: email.trim().toLowerCase(),
       password: senha,
     );
 
     if (credential.user != null) {
-      // Consultar se o usuário possui cadastro no Firestore
       final userDoc = await _db.collection('usuarios').doc(credential.user!.uid).get();
       if (!userDoc.exists) {
-        // Se a conta existe no Auth mas não no Firestore, barra e desloga
         await _auth.signOut();
         throw FirebaseAuthException(
           code: 'user-not-found',
@@ -133,7 +119,6 @@ class FirebaseHelper {
     return credential;
   }
 
-  // 5. Autenticação Nativa com Provedor Google (Google Sign-In)
   static Future<UserCredential?> loginGoogle() async {
     final GoogleSignIn googleSignIn = GoogleSignIn(
       clientId: kIsWeb ? '646131190495-f7pend804pig1mr7rtqotkmcus5n90er.apps.googleusercontent.com' : null,
@@ -141,16 +126,14 @@ class FirebaseHelper {
     final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
     if (googleUser == null) {
-      // Usuário cancelou a tela de login
       return null;
     }
 
-    // Validar e-mail institucional retornado pelo Google
     if (!isInstitutionalEmail(googleUser.email)) {
       await googleSignIn.signOut();
       throw FirebaseAuthException(
-        code: 'invalid-email',
-        message: 'Acesso restrito a contas do domínio institucional @souunit.com.br.',
+        code: 'domain-not-allowed',
+        message: 'Acesso permitido apenas para e-mails do domínio @souunit.com.br.',
       );
     }
 
@@ -164,17 +147,14 @@ class FirebaseHelper {
 
     if (userCredential.user != null) {
       final user = userCredential.user!;
-      // Verificar se possui o documento no Firestore usuarios
       final doc = await _db.collection('usuarios').doc(user.uid).get();
       if (!doc.exists) {
-        // Se não possui cadastro no Firestore (ex: primeira vez logando via Google),
-        // cria o cadastro automaticamente usando os dados disponíveis
         await _db.collection('usuarios').doc(user.uid).set({
           'nome': user.displayName ?? 'Usuário Google',
           'email': user.email!.trim().toLowerCase(),
-          'cpf': '', // Deixa vazio para preencher depois
+          'cpf': '',
           'telefone': user.phoneNumber ?? '',
-          'aceitouTermos': true, // Assume true já que logou via Google no app
+          'aceitouTermos': true,
           'criado_em': FieldValue.serverTimestamp(),
         });
       }
@@ -183,16 +163,14 @@ class FirebaseHelper {
     return userCredential;
   }
 
-  // 6. Enviar e-mail de recuperação de senha com validação de CPF correspondente
   static Future<void> recuperarSenha(String email, String cpf) async {
     if (!isInstitutionalEmail(email)) {
       throw FirebaseAuthException(
-        code: 'invalid-email',
-        message: 'E-mail inválido ou não pertencente ao domínio institucional.',
+        code: 'domain-not-allowed',
+        message: 'Acesso permitido apenas para e-mails do domínio @souunit.com.br.',
       );
     }
 
-    // Buscar o perfil do usuário correspondente a esse e-mail no Firestore
     final userQuery = await _db
         .collection('usuarios')
         .where('email', isEqualTo: email.trim().toLowerCase())
@@ -208,7 +186,6 @@ class FirebaseHelper {
     final userDoc = userQuery.docs.first;
     final cpfCadastrado = userDoc.data()['cpf'] as String? ?? '';
 
-    // Limpa a formatação de ambos os CPFs para comparar apenas os dígitos numéricos
     final cpfLimpoDigitado = cpf.replaceAll(RegExp(r'[^0-9]'), '');
     final cpfLimpoCadastrado = cpfCadastrado.replaceAll(RegExp(r'[^0-9]'), '');
 
@@ -219,20 +196,19 @@ class FirebaseHelper {
       );
     }
 
-    // Se bater, dispara o e-mail de recuperação
     await _auth.sendPasswordResetEmail(email: email.trim().toLowerCase());
   }
 
-  // 7. Logout imediato
   static Future<void> logout() async {
     await GoogleSignIn().signOut();
     await _auth.signOut();
   }
  
-  // 8. Obter mensagem de erro amigável em Português
   static String obterMensagemErro(dynamic e) {
     if (e is FirebaseAuthException) {
       switch (e.code) {
+        case 'domain-not-allowed':
+          return 'Acesso permitido apenas para e-mails do domínio @souunit.com.br.';
         case 'invalid-email':
           return 'O formato do e-mail inserido é inválido.';
         case 'user-disabled':
@@ -268,14 +244,12 @@ class FirebaseHelper {
     return e?.toString() ?? 'Ocorreu um erro inesperado.';
   }
  
-  // Verifica se o usuário atual está logado com o Google
   static bool isGoogleUser() {
     final user = _auth.currentUser;
     if (user == null) return false;
     return user.providerData.any((info) => info.providerId == 'google.com');
   }
 
-  // 9. Alterar a senha do usuário autenticado (reautenticação necessária)
   static Future<void> alterarSenha({
     required String senhaAtual,
     required String novaSenha,
@@ -302,7 +276,6 @@ class FirebaseHelper {
       );
     }
  
-    // Reautenticar por segurança com a senha atual
     final AuthCredential credential = EmailAuthProvider.credential(
       email: user.email!,
       password: senhaAtual,
@@ -320,7 +293,6 @@ class FirebaseHelper {
       rethrow;
     }
  
-    // Atualizar a senha para o novo valor
     await user.updatePassword(novaSenha);
   }
 }
