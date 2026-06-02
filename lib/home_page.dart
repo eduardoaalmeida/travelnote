@@ -165,13 +165,8 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 16),
                   StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
-                        .collection('viagens')
-                        .where(
-                          'criado_por',
-                          isEqualTo:
-                              FirebaseAuth.instance.currentUser?.email ?? '',
-                        )
-                        .snapshots(),
+                    .collection('viagens')
+                    .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(
@@ -196,17 +191,31 @@ class HomePage extends StatelessWidget {
                         );
                       }
 
-                      final docs = snapshot.data!.docs;
+                     final docs = snapshot.data!.docs;
+
+                      String formatarData(dynamic data) {
+                        if (data is Timestamp) {
+                          final date = data.toDate();
+                          return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+                        }
+
+                        if (data is String) {
+                          return data;
+                        }
+
+                        return '';
+                      }
+
                       final viagens = docs.map((doc) {
                         final data = doc.data() as Map<String, dynamic>;
+
                         return Viagem(
                           id: doc.id,
                           destino: data['destino'] ?? '',
-                          imagemUrl:
-                              data['imagemUrl'] ??
+                          imagemUrl: data['imagemUrl'] ??
                               'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
-                          dataInicio: data['dataInicio'] ?? '',
-                          dataFim: data['dataFim'] ?? '',
+                          dataInicio: formatarData(data['dataInicio']),
+                          dataFim: formatarData(data['dataFim']),
                           orcamento: data['orcamento'] ?? '',
                           anotacoes: data['anotacoes'] ?? '',
                           tipo: data['tipo'] ?? 'Lazer',
@@ -214,36 +223,65 @@ class HomePage extends StatelessWidget {
                         );
                       }).toList();
 
-                      // Ordena as viagens localmente por data de início de forma crescente
+                     DateTime? converterData(String data) {
                       try {
-                        viagens.sort((a, b) {
-                          final partsA = a.dataInicio.split('/');
-                          final partsB = b.dataInicio.split('/');
-                          if (partsA.length == 3 && partsB.length == 3) {
-                            final dateA = DateTime(
-                              int.parse(partsA[2]),
-                              int.parse(partsA[1]),
-                              int.parse(partsA[0]),
-                            );
-                            final dateB = DateTime(
-                              int.parse(partsB[2]),
-                              int.parse(partsB[1]),
-                              int.parse(partsB[0]),
-                            );
-                            return dateA.compareTo(dateB);
-                          }
-                          return 0;
-                        });
+                        final partes = data.split('/');
+
+                        if (partes.length == 3) {
+                          return DateTime(
+                            int.parse(partes[2]),
+                            int.parse(partes[1]),
+                            int.parse(partes[0]),
+                          );
+                        }
                       } catch (_) {}
 
-                      // Exibe até 4 próximas viagens
-                      final proximas = viagens.take(4).toList();
+                      return null;
+                    }
 
-                      return Column(
-                        children: proximas
-                            .map((v) => _ViagemCard(viagem: v))
-                            .toList(),
+                    final hoje = DateTime.now();
+                    final hojeSemHora = DateTime(hoje.year, hoje.month, hoje.day);
+
+                    final proximas = viagens.where((viagem) {
+                      final dataFim = converterData(viagem.dataFim);
+
+                      if (dataFim == null) return false;
+
+                      return dataFim.isAtSameMomentAs(hojeSemHora) ||
+                          dataFim.isAfter(hojeSemHora);
+                    }).toList();
+
+                    proximas.sort((a, b) {
+                      final dataA = converterData(a.dataInicio);
+                      final dataB = converterData(b.dataInicio);
+
+                      if (dataA == null || dataB == null) return 0;
+
+                      return dataA.compareTo(dataB);
+                    });
+
+                    final proximasLimitadas = proximas.take(4).toList();
+
+                    if (proximasLimitadas.isEmpty) {
+                      return const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 24.0),
+                        child: Center(
+                          child: Text(
+                            'Nenhuma próxima viagem cadastrada.',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
                       );
+                    }
+
+                    return Column(
+                      children: proximasLimitadas
+                          .map((v) => _ViagemCard(viagem: v))
+                          .toList(),
+                    );
                     },
                   ),
                   const SizedBox(height: 16),
