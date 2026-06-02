@@ -199,7 +199,7 @@ class _ViagemCard extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => const DetalhesViagemPage(),
+          builder: (_) => const HomePage(),
         ),
       ),
       child: Container(

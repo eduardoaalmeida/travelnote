@@ -260,7 +260,7 @@ class HomePage extends StatelessWidget {
                       return dataA.compareTo(dataB);
                     });
 
-                    final proximasLimitadas = proximas.take(4).toList();
+                    final proximasLimitadas = proximas.toList();
 
                     if (proximasLimitadas.isEmpty) {
                       return const Padding(
@@ -338,9 +338,11 @@ class _ViagemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => const DetalhesViagemPage()),
+      context,
+      MaterialPageRoute(
+        builder: (_) => DetalhesViagemPage(viagem: viagem),
       ),
+    ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(12),

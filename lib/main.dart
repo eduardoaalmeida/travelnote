@@ -63,7 +63,7 @@ class MeuApp extends StatelessWidget {
         '/alterar-dados': (_) => const AlterarDadosPage(),
         '/politica':      (_) => const PoliticaPrivacidadePage(),
         '/roteiro':       (_) => const RoteiroPage(),
-        '/detalhes':      (_) => const DetalhesViagemPage(),
+        //'/detalhes':      (_) => const DetalhesViagemPage(),
         '/viagens':       (_) => const ViagensPage(),
         '/notificacoes':  (_) => const NotificacoesPage(),
         '/historico':     (_) => const HistoricoViagensPage(),
