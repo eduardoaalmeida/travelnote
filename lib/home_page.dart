@@ -46,7 +46,9 @@ class HomePage extends StatelessWidget {
                             ),
                             child: const CircleAvatar(
                               radius: 22,
-                              backgroundImage: AssetImage('assets/images/perfil.png'),
+                              backgroundImage: AssetImage(
+                                'assets/images/perfil.png',
+                              ),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -58,10 +60,19 @@ class HomePage extends StatelessWidget {
                             builder: (context, snapshot) {
                               String nome = 'Usuário';
                               if (snapshot.hasData && snapshot.data!.exists) {
-                                final data = snapshot.data!.data() as Map<String, dynamic>?;
+                                final data =
+                                    snapshot.data!.data()
+                                        as Map<String, dynamic>?;
                                 nome = data?['nome'] ?? 'Usuário';
-                              } else if (FirebaseAuth.instance.currentUser?.displayName != null) {
-                                nome = FirebaseAuth.instance.currentUser!.displayName!;
+                              } else if (FirebaseAuth
+                                      .instance
+                                      .currentUser
+                                      ?.displayName !=
+                                  null) {
+                                nome = FirebaseAuth
+                                    .instance
+                                    .currentUser!
+                                    .displayName!;
                               }
                               return Text(
                                 'Olá, $nome!',
@@ -97,7 +108,8 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               Positioned(
-                bottom: -23, // Metade da altura do botão para sobrepor perfeitamente
+                bottom:
+                    -23, // Metade da altura do botão para sobrepor perfeitamente
                 left: 24,
                 right: 24,
                 child: SizedBox(
@@ -154,7 +166,11 @@ class HomePage extends StatelessWidget {
                   StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('viagens')
-                        .where('criado_por', isEqualTo: FirebaseAuth.instance.currentUser?.email ?? '')
+                        .where(
+                          'criado_por',
+                          isEqualTo:
+                              FirebaseAuth.instance.currentUser?.email ?? '',
+                        )
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -171,19 +187,24 @@ class HomePage extends StatelessWidget {
                           child: Center(
                             child: Text(
                               'Nenhuma viagem cadastrada.',
-                              style: TextStyle(color: Colors.grey, fontSize: 16),
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
                         );
                       }
-                      
+
                       final docs = snapshot.data!.docs;
                       final viagens = docs.map((doc) {
                         final data = doc.data() as Map<String, dynamic>;
                         return Viagem(
                           id: doc.id,
                           destino: data['destino'] ?? '',
-                          imagemUrl: data['imagemUrl'] ?? 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
+                          imagemUrl:
+                              data['imagemUrl'] ??
+                              'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
                           dataInicio: data['dataInicio'] ?? '',
                           dataFim: data['dataFim'] ?? '',
                           orcamento: data['orcamento'] ?? '',
@@ -199,8 +220,16 @@ class HomePage extends StatelessWidget {
                           final partsA = a.dataInicio.split('/');
                           final partsB = b.dataInicio.split('/');
                           if (partsA.length == 3 && partsB.length == 3) {
-                            final dateA = DateTime(int.parse(partsA[2]), int.parse(partsA[1]), int.parse(partsA[0]));
-                            final dateB = DateTime(int.parse(partsB[2]), int.parse(partsB[1]), int.parse(partsB[0]));
+                            final dateA = DateTime(
+                              int.parse(partsA[2]),
+                              int.parse(partsA[1]),
+                              int.parse(partsA[0]),
+                            );
+                            final dateB = DateTime(
+                              int.parse(partsB[2]),
+                              int.parse(partsB[1]),
+                              int.parse(partsB[0]),
+                            );
                             return dateA.compareTo(dateB);
                           }
                           return 0;
@@ -211,7 +240,9 @@ class HomePage extends StatelessWidget {
                       final proximas = viagens.take(4).toList();
 
                       return Column(
-                        children: proximas.map((v) => _ViagemCard(viagem: v)).toList(),
+                        children: proximas
+                            .map((v) => _ViagemCard(viagem: v))
+                            .toList(),
                       );
                     },
                   ),
@@ -224,7 +255,9 @@ class HomePage extends StatelessWidget {
                         Navigator.pushReplacement(
                           context,
                           PageRouteBuilder(
-                            pageBuilder: (context, animation, secondaryAnimation) => const ViagensPage(),
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const ViagensPage(),
                             transitionDuration: Duration.zero,
                             reverseTransitionDuration: Duration.zero,
                           ),
@@ -268,9 +301,7 @@ class _ViagemCard extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(
-          builder: (_) => const DetalhesViagemPage(),
-        ),
+        MaterialPageRoute(builder: (_) => const DetalhesViagemPage()),
       ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
