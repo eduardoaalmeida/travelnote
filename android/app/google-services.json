@@ -12,7 +12,12 @@
           "package_name": "com.example.travelnote"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "646131190495-f7pend804pig1mr7rtqotkmcus5n90er.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyADtlTcU2OxYHLAXaulG6nOXwpnB5O21-I"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "646131190495-f7pend804pig1mr7rtqotkmcus5n90er.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "646131190495-4ou5uq4qdje933eq4u5o1n0u2m94mk96.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.travelnote"
+              }
+            }
+          ]
         }
       }
     }
