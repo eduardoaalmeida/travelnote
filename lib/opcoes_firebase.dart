@@ -12,23 +12,15 @@ class OpcoesPadraoFirebase {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'FirebaseOptions para iOS não configurado.',
-        );
+        throw UnsupportedError('FirebaseOptions para iOS não configurado.');
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'FirebaseOptions para macOS não configurado.',
-        );
+        throw UnsupportedError('FirebaseOptions para macOS não configurado.');
       case TargetPlatform.windows:
         return web;
       case TargetPlatform.linux:
-        throw UnsupportedError(
-          'FirebaseOptions para Linux não configurado.',
-        );
+        throw UnsupportedError('FirebaseOptions para Linux não configurado.');
       default:
-        throw UnsupportedError(
-          'Plataforma não suportada.',
-        );
+        throw UnsupportedError('Plataforma não suportada.');
     }
   }
 

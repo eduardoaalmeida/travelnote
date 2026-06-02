@@ -7,10 +7,7 @@ import 'viagens_page.dart';
 class NavBar extends StatelessWidget {
   final int currentIndex;
 
-  const NavBar({
-    super.key,
-    required this.currentIndex,
-  });
+  const NavBar({super.key, required this.currentIndex});
 
   void _onItemTapped(BuildContext context, int index) {
     if (index == currentIndex) return;
@@ -53,8 +50,14 @@ class NavBar extends StatelessWidget {
       backgroundColor: Colors.white,
       selectedItemColor: const Color(0xFF475569),
       unselectedItemColor: const Color(0xFF94A3B8),
-      selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12),
-      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
+      selectedLabelStyle: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 12,
+      ),
+      unselectedLabelStyle: const TextStyle(
+        fontWeight: FontWeight.w500,
+        fontSize: 12,
+      ),
 
       items: const [
         BottomNavigationBarItem(

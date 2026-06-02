@@ -15,7 +15,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _senhaController = TextEditingController();
   bool _senhaVisivel = false;
-  bool _carregando = false; // Controla o estado de carregamento da tela
+  bool _carregando = false;
 
   @override
   void dispose() {
@@ -24,7 +24,6 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  // Efetua login usando o provedor nativo do Google
   void _loginComGoogle() async {
     setState(() => _carregando = true);
     try {
@@ -64,7 +63,10 @@ class _LoginPageState extends State<LoginPage> {
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 500),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0,
+                          vertical: 20,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
@@ -81,7 +83,10 @@ class _LoginPageState extends State<LoginPage> {
                               enabled: !_carregando,
                               decoration: InputDecoration(
                                 hintText: 'Digite seu Email',
-                                hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
+                                hintStyle: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 15,
+                                ),
                                 prefixIcon: const Icon(
                                   Icons.person_outline,
                                   color: Colors.grey,
@@ -89,18 +94,26 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 filled: true,
                                 fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(vertical: 18),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 18,
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(color: Color(0xFF2196F3)),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFF2196F3),
+                                  ),
                                 ),
                               ),
                             ),
@@ -111,7 +124,10 @@ class _LoginPageState extends State<LoginPage> {
                               enabled: !_carregando,
                               decoration: InputDecoration(
                                 hintText: 'Digite sua Senha',
-                                hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
+                                hintStyle: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 15,
+                                ),
                                 prefixIcon: const Icon(
                                   Icons.lock_outline,
                                   color: Colors.grey,
@@ -125,23 +141,32 @@ class _LoginPageState extends State<LoginPage> {
                                     color: Colors.grey,
                                     size: 22,
                                   ),
-                                  onPressed: () =>
-                                      setState(() => _senhaVisivel = !_senhaVisivel),
+                                  onPressed: () => setState(
+                                    () => _senhaVisivel = !_senhaVisivel,
+                                  ),
                                 ),
                                 filled: true,
                                 fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(vertical: 18),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 18,
+                                ),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.grey.shade300),
+                                  borderSide: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(color: Color(0xFF2196F3)),
+                                  borderSide: const BorderSide(
+                                    color: Color(0xFF2196F3),
+                                  ),
                                 ),
                               ),
                             ),
@@ -158,48 +183,75 @@ class _LoginPageState extends State<LoginPage> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                                onPressed: _carregando ? null : () async {
-                                  if (_emailController.text.trim().isEmpty ||
-                                      _senhaController.text.isEmpty) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Preencha o e-mail e a senha.'),
-                                      ),
-                                    );
-                                    return;
-                                  }
-                                  final email = _emailController.text.trim();
-                                  final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-                                  if (!emailRegex.hasMatch(email)) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Por favor, insira um e-mail válido.'),
-                                      ),
-                                    );
-                                    return;
-                                  }
+                                onPressed: _carregando
+                                    ? null
+                                    : () async {
+                                        if (_emailController.text
+                                                .trim()
+                                                .isEmpty ||
+                                            _senhaController.text.isEmpty) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Preencha o e-mail e a senha.',
+                                              ),
+                                            ),
+                                          );
+                                          return;
+                                        }
+                                        final email = _emailController.text
+                                            .trim();
+                                        final emailRegex = RegExp(
+                                          r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+                                        );
+                                        if (!emailRegex.hasMatch(email)) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Por favor, insira um e-mail válido.',
+                                              ),
+                                            ),
+                                          );
+                                          return;
+                                        }
 
-                                  setState(() => _carregando = true);
-                                  try {
-                                    await AuxiliarFirebase.loginTradicional(email, _senhaController.text);
-                                    if (!mounted) return;
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => const HomePage()),
-                                    );
-                                   } catch (e) {
-                                    if (!mounted) return;
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(AuxiliarFirebase.obterMensagemErro(e)),
-                                        backgroundColor: Colors.redAccent,
-                                      ),
-                                    );
-                                  } finally {
-                                    if (mounted) setState(() => _carregando = false);
-                                  }
-                                },
+                                        setState(() => _carregando = true);
+                                        try {
+                                          await AuxiliarFirebase.loginTradicional(
+                                            email,
+                                            _senhaController.text,
+                                          );
+                                          if (!mounted) return;
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const HomePage(),
+                                            ),
+                                          );
+                                        } catch (e) {
+                                          if (!mounted) return;
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                AuxiliarFirebase.obterMensagemErro(
+                                                  e,
+                                                ),
+                                              ),
+                                              backgroundColor: Colors.redAccent,
+                                            ),
+                                          );
+                                        } finally {
+                                          if (mounted)
+                                            setState(() => _carregando = false);
+                                        }
+                                      },
                                 child: _carregando
                                     ? const SizedBox(
                                         height: 20,
@@ -225,7 +277,10 @@ class _LoginPageState extends State<LoginPage> {
                               height: 52,
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF2DD4BF), Color(0xFF10B981)],
+                                  colors: [
+                                    Color(0xFF2DD4BF),
+                                    Color(0xFF10B981),
+                                  ],
                                   begin: Alignment.centerLeft,
                                   end: Alignment.centerRight,
                                 ),
@@ -235,11 +290,15 @@ class _LoginPageState extends State<LoginPage> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(10),
-                                  onTap: _carregando ? null : () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const CriarContaPage()),
-                                  ),
+                                  onTap: _carregando
+                                      ? null
+                                      : () => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                const CriarContaPage(),
+                                          ),
+                                        ),
                                   child: const Center(
                                     child: Text(
                                       'Criar Conta',
@@ -263,7 +322,10 @@ class _LoginPageState extends State<LoginPage> {
                                   'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/480px-Google_%22G%22_logo.svg.png',
                                   height: 22,
                                   width: 22,
-                                  errorBuilder: (_, __, ___) => const Icon(Icons.g_mobiledata, color: Colors.red),
+                                  errorBuilder: (_, __, ___) => const Icon(
+                                    Icons.g_mobiledata,
+                                    color: Colors.red,
+                                  ),
                                 ),
                                 label: const Text(
                                   'Entrar com o Google',
@@ -285,13 +347,17 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             const SizedBox(height: 22),
                             GestureDetector(
-                              onTap: _carregando ? null : () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const RecuperarSenhaPage()),
-                                );
-                              },
+                              onTap: _carregando
+                                  ? null
+                                  : () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RecuperarSenhaPage(),
+                                        ),
+                                      );
+                                    },
                               child: const Text(
                                 'Esqueceu sua senha?',
                                 style: TextStyle(

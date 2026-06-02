@@ -12,7 +12,7 @@ import 'perfil_page.dart';
 import 'agenda_page.dart';
 import 'configuracoes_page.dart';
 import 'alterar_dados_page.dart';
-import 'editar_perfil_page.dart' hide HomePage; 
+import 'editar_perfil_page.dart' hide HomePage;
 import 'politica_privacidade_page.dart';
 import 'roteiro_page.dart';
 import 'detalhes_viagem.dart';
@@ -24,9 +24,7 @@ import 'historico_viagens_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: OpcoesPadraoFirebase.currentPlatform,
-  );
+  await Firebase.initializeApp(options: OpcoesPadraoFirebase.currentPlatform);
 
   runApp(const MeuApp());
 }
@@ -34,15 +32,6 @@ void main() async {
 class MeuApp extends StatelessWidget {
   const MeuApp({super.key});
 
-  //  Troque aqui para testar uma tela específica:
-  //   '/'              → carregamento
-  //   '/login'         → login
-  //   '/home'          → home
-  //   '/viagens'       → suas viagens
-  //   '/historico'     → histórico de gastos
-  //   '/notificacoes'  → notificações
-  //   '/roteiro'       → roteiro
-  //   '/detalhes'      → detalhes da viagem
   static const String telaInicial = '/';
 
   @override
@@ -52,21 +41,21 @@ class MeuApp extends StatelessWidget {
       theme: ThemeData(primaryColor: Colors.lightBlueAccent),
       initialRoute: telaInicial,
       routes: {
-        '/':              (_) => const CarregamentoPage(),
-        '/login':         (_) => const LoginPage(),
-        '/criar-conta':   (_) => const CriarContaPage(),
-        '/recuperar':     (_) => const RecuperarSenhaPage(),
-        '/home':          (_) => const HomePage(),
-        '/perfil':        (_) => const PerfilPage(),
-        '/agenda':        (_) => const AgendaPage(),
+        '/': (_) => const CarregamentoPage(),
+        '/login': (_) => const LoginPage(),
+        '/criar-conta': (_) => const CriarContaPage(),
+        '/recuperar': (_) => const RecuperarSenhaPage(),
+        '/home': (_) => const HomePage(),
+        '/perfil': (_) => const PerfilPage(),
+        '/agenda': (_) => const AgendaPage(),
         '/configuracoes': (_) => const ConfiguracoesPage(),
         '/alterar-dados': (_) => const AlterarDadosPage(),
-        '/politica':      (_) => const PoliticaPrivacidadePage(),
-        '/roteiro':       (_) => const RoteiroPage(),
-        //'/detalhes':      (_) => const DetalhesViagemPage(),
-        '/viagens':       (_) => const ViagensPage(),
-        '/notificacoes':  (_) => const NotificacoesPage(),
-        '/historico':     (_) => const HistoricoViagensPage(),
+        '/politica': (_) => const PoliticaPrivacidadePage(),
+        '/roteiro': (_) => const RoteiroPage(),
+
+        '/viagens': (_) => const ViagensPage(),
+        '/notificacoes': (_) => const NotificacoesPage(),
+        '/historico': (_) => const HistoricoViagensPage(),
       },
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,

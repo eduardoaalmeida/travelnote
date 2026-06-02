@@ -30,7 +30,7 @@ class _CriarContaPageState extends State<CriarContaPage> {
   bool _senhaVisivel = false;
   bool _confirmarSenhaVisivel = false;
   bool _aceitouTermos = false;
-  bool _carregando = false; // Controla o estado de salvamento
+  bool _carregando = false;
 
   @override
   void dispose() {
@@ -43,7 +43,11 @@ class _CriarContaPageState extends State<CriarContaPage> {
     super.dispose();
   }
 
-  InputDecoration _decoration(String hint, IconData prefixIcon, {Widget? suffix}) {
+  InputDecoration _decoration(
+    String hint,
+    IconData prefixIcon, {
+    Widget? suffix,
+  }) {
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
@@ -98,8 +102,14 @@ class _CriarContaPageState extends State<CriarContaPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
-                              onPressed: _carregando ? null : () => Navigator.pop(context),
+                              icon: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.black,
+                                size: 28,
+                              ),
+                              onPressed: _carregando
+                                  ? null
+                                  : () => Navigator.pop(context),
                               padding: EdgeInsets.zero,
                               constraints: const BoxConstraints(),
                             ),
@@ -118,7 +128,10 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                     ),
                                   ),
                                   const SizedBox(width: 12),
-                                  Image.asset('assets/images/icon.png', height: 44),
+                                  Image.asset(
+                                    'assets/images/icon.png',
+                                    height: 44,
+                                  ),
                                 ],
                               ),
                             ),
@@ -128,7 +141,10 @@ class _CriarContaPageState extends State<CriarContaPage> {
                               keyboardType: TextInputType.name,
                               textCapitalization: TextCapitalization.words,
                               enabled: !_carregando,
-                              decoration: _decoration('Nome Completo', Icons.person_outline),
+                              decoration: _decoration(
+                                'Nome Completo',
+                                Icons.person_outline,
+                              ),
                             ),
                             const SizedBox(height: 16),
                             TextField(
@@ -136,14 +152,20 @@ class _CriarContaPageState extends State<CriarContaPage> {
                               keyboardType: TextInputType.number,
                               inputFormatters: [_cpfFormatter],
                               enabled: !_carregando,
-                              decoration: _decoration('CPF', Icons.lock_outline),
+                              decoration: _decoration(
+                                'CPF',
+                                Icons.lock_outline,
+                              ),
                             ),
                             const SizedBox(height: 16),
                             TextField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               enabled: !_carregando,
-                              decoration: _decoration('Email', Icons.email_outlined),
+                              decoration: _decoration(
+                                'Email',
+                                Icons.email_outlined,
+                              ),
                             ),
                             const SizedBox(height: 16),
                             TextField(
@@ -151,7 +173,10 @@ class _CriarContaPageState extends State<CriarContaPage> {
                               keyboardType: TextInputType.phone,
                               inputFormatters: [_telefoneFormatter],
                               enabled: !_carregando,
-                              decoration: _decoration('Telefone', Icons.lock_outline),
+                              decoration: _decoration(
+                                'Telefone',
+                                Icons.lock_outline,
+                              ),
                             ),
                             const SizedBox(height: 16),
                             TextField(
@@ -163,7 +188,9 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                 Icons.lock_outline,
                                 suffix: _eyeIcon(
                                   _senhaVisivel,
-                                  () => setState(() => _senhaVisivel = !_senhaVisivel),
+                                  () => setState(
+                                    () => _senhaVisivel = !_senhaVisivel,
+                                  ),
                                 ),
                               ),
                             ),
@@ -177,7 +204,10 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                 Icons.lock_outline,
                                 suffix: _eyeIcon(
                                   _confirmarSenhaVisivel,
-                                  () => setState(() => _confirmarSenhaVisivel = !_confirmarSenhaVisivel),
+                                  () => setState(
+                                    () => _confirmarSenhaVisivel =
+                                        !_confirmarSenhaVisivel,
+                                  ),
                                 ),
                               ),
                             ),
@@ -189,9 +219,16 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                   width: 24,
                                   child: Checkbox(
                                     value: _aceitouTermos,
-                                    onChanged: _carregando ? null : (v) => setState(() => _aceitouTermos = v ?? false),
+                                    onChanged: _carregando
+                                        ? null
+                                        : (v) => setState(
+                                            () => _aceitouTermos = v ?? false,
+                                          ),
                                     activeColor: const Color(0xFF2DD4BF),
-                                    side: BorderSide(color: Colors.grey.shade400, width: 1.5),
+                                    side: BorderSide(
+                                      color: Colors.grey.shade400,
+                                      width: 1.5,
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(50),
                                     ),
@@ -200,17 +237,23 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                 const SizedBox(width: 10),
                                 const Text(
                                   'Li e aceito os ',
-                                  style: TextStyle(fontSize: 15, color: Colors.black87),
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: Colors.black87,
+                                  ),
                                 ),
                                 GestureDetector(
-                                  onTap: _carregando ? null : () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const PoliticaPrivacidadePage(),
-                                      ),
-                                    );
-                                  },
+                                  onTap: _carregando
+                                      ? null
+                                      : () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const PoliticaPrivacidadePage(),
+                                            ),
+                                          );
+                                        },
                                   child: const Text(
                                     'Termos de Privacidade',
                                     style: TextStyle(
@@ -228,14 +271,19 @@ class _CriarContaPageState extends State<CriarContaPage> {
                               height: 56,
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF2DD4BF), Color(0xFF10B981)],
+                                  colors: [
+                                    Color(0xFF2DD4BF),
+                                    Color(0xFF10B981),
+                                  ],
                                   begin: Alignment.centerLeft,
                                   end: Alignment.centerRight,
                                 ),
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF2DD4BF).withValues(alpha: 0.2),
+                                    color: const Color(
+                                      0xFF2DD4BF,
+                                    ).withValues(alpha: 0.2),
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
                                   ),
@@ -245,94 +293,152 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(12),
-                                  onTap: _carregando ? null : () async {
-                                    if (_nomeController.text.trim().isEmpty ||
-                                        _cpfController.text.trim().isEmpty ||
-                                        _emailController.text.trim().isEmpty ||
-                                        _telefoneController.text.trim().isEmpty ||
-                                        _senhaController.text.trim().isEmpty ||
-                                        _confirmarSenhaController.text.trim().isEmpty) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Por favor, preencha todos os campos.'),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    final email = _emailController.text.trim();
-                                    final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-                                    if (!emailRegex.hasMatch(email)) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Por favor, insira um e-mail válido.'),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    if (_cpfController.text.length < 14) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Por favor, insira o CPF completo.'),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    if (_telefoneController.text.length < 15) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Por favor, insira o telefone completo.'),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    if (_senhaController.text != _confirmarSenhaController.text) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('As senhas não coincidem.'),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    if (!_aceitouTermos) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Você deve aceitar os Termos de Privacidade.'),
-                                        ),
-                                      );
-                                      return;
-                                    }
+                                  onTap: _carregando
+                                      ? null
+                                      : () async {
+                                          if (_nomeController.text
+                                                  .trim()
+                                                  .isEmpty ||
+                                              _cpfController.text
+                                                  .trim()
+                                                  .isEmpty ||
+                                              _emailController.text
+                                                  .trim()
+                                                  .isEmpty ||
+                                              _telefoneController.text
+                                                  .trim()
+                                                  .isEmpty ||
+                                              _senhaController.text
+                                                  .trim()
+                                                  .isEmpty ||
+                                              _confirmarSenhaController.text
+                                                  .trim()
+                                                  .isEmpty) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Por favor, preencha todos os campos.',
+                                                ),
+                                              ),
+                                            );
+                                            return;
+                                          }
+                                          final email = _emailController.text
+                                              .trim();
+                                          final emailRegex = RegExp(
+                                            r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+                                          );
+                                          if (!emailRegex.hasMatch(email)) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Por favor, insira um e-mail válido.',
+                                                ),
+                                              ),
+                                            );
+                                            return;
+                                          }
+                                          if (_cpfController.text.length < 14) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Por favor, insira o CPF completo.',
+                                                ),
+                                              ),
+                                            );
+                                            return;
+                                          }
+                                          if (_telefoneController.text.length <
+                                              15) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Por favor, insira o telefone completo.',
+                                                ),
+                                              ),
+                                            );
+                                            return;
+                                          }
+                                          if (_senhaController.text !=
+                                              _confirmarSenhaController.text) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'As senhas não coincidem.',
+                                                ),
+                                              ),
+                                            );
+                                            return;
+                                          }
+                                          if (!_aceitouTermos) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Você deve aceitar os Termos de Privacidade.',
+                                                ),
+                                              ),
+                                            );
+                                            return;
+                                          }
 
-                                    setState(() => _carregando = true);
-                                    try {
-                                       await AuxiliarFirebase.registrarUsuario(
-                                         nome: _nomeController.text,
-                                         email: email,
-                                         cpf: _cpfController.text,
-                                         telefone: _telefoneController.text,
-                                         senha: _senhaController.text,
-                                         aceitouTermos: _aceitouTermos,
-                                       );
+                                          setState(() => _carregando = true);
+                                          try {
+                                            await AuxiliarFirebase.registrarUsuario(
+                                              nome: _nomeController.text,
+                                              email: email,
+                                              cpf: _cpfController.text,
+                                              telefone:
+                                                  _telefoneController.text,
+                                              senha: _senhaController.text,
+                                              aceitouTermos: _aceitouTermos,
+                                            );
 
-                                      if (!mounted) return;
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Cadastro realizado com sucesso!'),
-                                          backgroundColor: Colors.green,
-                                        ),
-                                      );
-                                      Navigator.pop(context);
-                                    } catch (e) {
-                                      if (!mounted) return;
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                           content: Text(AuxiliarFirebase.obterMensagemErro(e)),
-                                           backgroundColor: Colors.redAccent,
-                                         ),
-                                       );
-                                    } finally {
-                                      if (mounted) setState(() => _carregando = false);
-                                    }
-                                  },
+                                            if (!mounted) return;
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Cadastro realizado com sucesso!',
+                                                ),
+                                                backgroundColor: Colors.green,
+                                              ),
+                                            );
+                                            Navigator.pop(context);
+                                          } catch (e) {
+                                            if (!mounted) return;
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  AuxiliarFirebase.obterMensagemErro(
+                                                    e,
+                                                  ),
+                                                ),
+                                                backgroundColor:
+                                                    Colors.redAccent,
+                                              ),
+                                            );
+                                          } finally {
+                                            if (mounted)
+                                              setState(
+                                                () => _carregando = false,
+                                              );
+                                          }
+                                        },
                                   child: Center(
                                     child: _carregando
                                         ? const SizedBox(

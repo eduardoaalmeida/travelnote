@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'viagens_page.dart';       // para navegar ao tocar em notificação de viagem
-import 'historico_viagens_page.dart'; // para navegar ao tocar em notificação de orçamento
+import 'viagens_page.dart';
+import 'historico_viagens_page.dart';
 
-// ─────────────────────────────────────────────
-// MODELO
-// ─────────────────────────────────────────────
 enum TipoNotificacao {
   contagemRegressiva,
   orcamentoExcedido,
@@ -29,9 +26,6 @@ class Notificacao {
   });
 }
 
-// ─────────────────────────────────────────────
-// DADOS MOCKADOS
-// ─────────────────────────────────────────────
 final List<Notificacao> _notificacoesMock = [
   Notificacao(
     tipo: TipoNotificacao.contagemRegressiva,
@@ -70,9 +64,6 @@ final List<Notificacao> _notificacoesMock = [
   ),
 ];
 
-// ─────────────────────────────────────────────
-// PÁGINA
-// ─────────────────────────────────────────────
 class NotificacoesPage extends StatefulWidget {
   const NotificacoesPage({super.key});
 
@@ -85,7 +76,6 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
 
   int get _novasCount => _notificacoes.where((n) => !n.lida).length;
 
-  // Configurações visuais por tipo de notificação
   _ConfigNotificacao _config(TipoNotificacao tipo) {
     switch (tipo) {
       case TipoNotificacao.contagemRegressiva:
@@ -121,9 +111,7 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
     }
   }
 
-  // Navega para a tela certa dependendo do tipo de notificação
   void _aoTocar(Notificacao notificacao) {
-    // Marca como lida
     setState(() => notificacao.lida = true);
 
     switch (notificacao.tipo) {
@@ -178,8 +166,7 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
             if (_novasCount > 0) ...[
               const SizedBox(width: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1BCE8A),
                   borderRadius: BorderRadius.circular(12),
@@ -220,8 +207,7 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
               ),
             )
           : ListView.separated(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               itemCount: _notificacoes.length,
               separatorBuilder: (_, _) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
@@ -230,19 +216,16 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
                 return _buildCardNotificacao(notif, config);
               },
             ),
-      // Sem bottomNavigationBar aqui — fica centralizado no bottom_nav_bar.dart
     );
   }
 
-  Widget _buildCardNotificacao(
-      Notificacao notif, _ConfigNotificacao config) {
+  Widget _buildCardNotificacao(Notificacao notif, _ConfigNotificacao config) {
     return GestureDetector(
       onTap: () => _aoTocar(notif),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          // Destaque visual para não lidas
           color: notif.lida ? Colors.white : const Color(0xFFF0FAF6),
           borderRadius: BorderRadius.circular(14),
           border: notif.lida
@@ -259,7 +242,6 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Ícone colorido
             Container(
               width: 44,
               height: 44,
@@ -270,7 +252,7 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
               child: Icon(config.icone, color: config.corIcone, size: 22),
             ),
             const SizedBox(width: 12),
-            // Texto
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -288,23 +270,17 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
                   const SizedBox(height: 3),
                   Text(
                     notif.descricao,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
                   ),
                   const SizedBox(height: 6),
                   Text(
                     notif.tempo,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey.shade400,
-                    ),
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
                   ),
                 ],
               ),
             ),
-            // Bolinha verde para não lidas
+
             if (!notif.lida)
               Container(
                 width: 8,
@@ -322,7 +298,6 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
   }
 }
 
-// ── Helper interno ─────────────────────────────────
 class _ConfigNotificacao {
   final IconData icone;
   final Color corFundo;

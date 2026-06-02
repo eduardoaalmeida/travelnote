@@ -98,9 +98,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
       return const Scaffold(
         backgroundColor: Color(0xFFF2F3F5),
         body: Center(
-          child: CircularProgressIndicator(
-            color: Color(0xFF2DD4BF),
-          ),
+          child: CircularProgressIndicator(color: Color(0xFF2DD4BF)),
         ),
       );
     }
@@ -125,7 +123,11 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                             Row(
                               children: [
                                 IconButton(
-                                  icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
+                                  icon: const Icon(
+                                    Icons.arrow_back,
+                                    color: Colors.black,
+                                    size: 28,
+                                  ),
                                   onPressed: () => Navigator.pop(context),
                                   padding: EdgeInsets.zero,
                                   constraints: const BoxConstraints(),
@@ -133,9 +135,11 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                 const Expanded(
                                   child: Center(
                                     child: Padding(
-                                      padding: EdgeInsets.only(right: 28.0), // Compensation for back button
+                                      padding: EdgeInsets.only(right: 28.0),
                                       child: Image(
-                                        image: AssetImage('assets/images/logo_completa.png'),
+                                        image: AssetImage(
+                                          'assets/images/logo_completa.png',
+                                        ),
                                         height: 60,
                                       ),
                                     ),
@@ -145,15 +149,15 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                             ),
                             const SizedBox(height: 40),
                             const Center(
-                               child: Text(
-                                 'Alteração de Senha',
-                                 style: TextStyle(
-                                   fontSize: 24,
-                                   fontWeight: FontWeight.w800,
-                                   color: Color(0xFF0F172A),
-                                   letterSpacing: -0.5,
-                                 ),
-                               ),
+                              child: Text(
+                                'Alteração de Senha',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF0F172A),
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
                             ),
                             const SizedBox(height: 40),
                             if (_isGoogleUser!) ...[
@@ -211,7 +215,10 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                       height: 50,
                                       decoration: BoxDecoration(
                                         gradient: const LinearGradient(
-                                          colors: [Color(0xFF2DD4BF), Color(0xFF10B981)],
+                                          colors: [
+                                            Color(0xFF2DD4BF),
+                                            Color(0xFF10B981),
+                                          ],
                                           begin: Alignment.centerLeft,
                                           end: Alignment.centerRight,
                                         ),
@@ -220,7 +227,9 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                       child: Material(
                                         color: Colors.transparent,
                                         child: InkWell(
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
                                           onTap: () => Navigator.pop(context),
                                           child: const Center(
                                             child: Text(
@@ -248,7 +257,10 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                   'Digite sua senha Atual',
                                   suffix: _eyeIcon(
                                     _senhaAtualVisivel,
-                                    () => setState(() => _senhaAtualVisivel = !_senhaAtualVisivel),
+                                    () => setState(
+                                      () => _senhaAtualVisivel =
+                                          !_senhaAtualVisivel,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -262,7 +274,10 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                   'Digite sua Nova Senha',
                                   suffix: _eyeIcon(
                                     _novaSenhaVisivel,
-                                    () => setState(() => _novaSenhaVisivel = !_novaSenhaVisivel),
+                                    () => setState(
+                                      () => _novaSenhaVisivel =
+                                          !_novaSenhaVisivel,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -276,7 +291,10 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                   'Confirme a Nova Senha',
                                   suffix: _eyeIcon(
                                     _confirmarSenhaVisivel,
-                                    () => setState(() => _confirmarSenhaVisivel = !_confirmarSenhaVisivel),
+                                    () => setState(
+                                      () => _confirmarSenhaVisivel =
+                                          !_confirmarSenhaVisivel,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -286,14 +304,19 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                 height: 56,
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
-                                    colors: [Color(0xFF2DD4BF), Color(0xFF10B981)],
+                                    colors: [
+                                      Color(0xFF2DD4BF),
+                                      Color(0xFF10B981),
+                                    ],
                                     begin: Alignment.centerLeft,
                                     end: Alignment.centerRight,
                                   ),
                                   borderRadius: BorderRadius.circular(12),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(0xFF2DD4BF).withValues(alpha: 0.2),
+                                      color: const Color(
+                                        0xFF2DD4BF,
+                                      ).withValues(alpha: 0.2),
                                       blurRadius: 8,
                                       offset: const Offset(0, 4),
                                     ),
@@ -303,75 +326,110 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                   color: Colors.transparent,
                                   child: InkWell(
                                     borderRadius: BorderRadius.circular(12),
-                                    onTap: _carregando ? null : () async {
-                                      final senhaAtual = _senhaAtualController.text;
-                                      final novaSenha = _novaSenhaController.text;
-                                      final confirmarSenha = _confirmarSenhaController.text;
+                                    onTap: _carregando
+                                        ? null
+                                        : () async {
+                                            final senhaAtual =
+                                                _senhaAtualController.text;
+                                            final novaSenha =
+                                                _novaSenhaController.text;
+                                            final confirmarSenha =
+                                                _confirmarSenhaController.text;
 
-                                      if (senhaAtual.isEmpty || novaSenha.isEmpty || confirmarSenha.isEmpty) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('Por favor, preencha todos os campos.'),
-                                            backgroundColor: Colors.redAccent,
-                                          ),
-                                        );
-                                        return;
-                                      }
+                                            if (senhaAtual.isEmpty ||
+                                                novaSenha.isEmpty ||
+                                                confirmarSenha.isEmpty) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'Por favor, preencha todos os campos.',
+                                                  ),
+                                                  backgroundColor:
+                                                      Colors.redAccent,
+                                                ),
+                                              );
+                                              return;
+                                            }
 
-                                      if (novaSenha != confirmarSenha) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('A nova senha e a confirmação não coincidem.'),
-                                            backgroundColor: Colors.redAccent,
-                                          ),
-                                        );
-                                        return;
-                                      }
+                                            if (novaSenha != confirmarSenha) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'A nova senha e a confirmação não coincidem.',
+                                                  ),
+                                                  backgroundColor:
+                                                      Colors.redAccent,
+                                                ),
+                                              );
+                                              return;
+                                            }
 
-                                      if (novaSenha.length < 6) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('A nova senha deve conter pelo menos 6 caracteres.'),
-                                            backgroundColor: Colors.redAccent,
-                                          ),
-                                        );
-                                        return;
-                                      }
+                                            if (novaSenha.length < 6) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'A nova senha deve conter pelo menos 6 caracteres.',
+                                                  ),
+                                                  backgroundColor:
+                                                      Colors.redAccent,
+                                                ),
+                                              );
+                                              return;
+                                            }
 
-                                      setState(() => _carregando = true);
-                                      try {
-                                        await AuxiliarFirebase.alterarSenha(
-                                          senhaAtual: senhaAtual,
-                                          novaSenha: novaSenha,
-                                        );
+                                            setState(() => _carregando = true);
+                                            try {
+                                              await AuxiliarFirebase.alterarSenha(
+                                                senhaAtual: senhaAtual,
+                                                novaSenha: novaSenha,
+                                              );
 
-                                        if (!mounted) return;
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('Senha alterada com sucesso!'),
-                                            backgroundColor: Colors.green,
-                                          ),
-                                        );
+                                              if (!mounted) return;
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                    'Senha alterada com sucesso!',
+                                                  ),
+                                                  backgroundColor: Colors.green,
+                                                ),
+                                              );
 
-                                        _senhaAtualController.clear();
-                                        _novaSenhaController.clear();
-                                        _confirmarSenhaController.clear();
+                                              _senhaAtualController.clear();
+                                              _novaSenhaController.clear();
+                                              _confirmarSenhaController.clear();
 
-                                        Navigator.pop(context);
-                                      } catch (e) {
-                                        if (!mounted) return;
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(
-                                            content: Text(AuxiliarFirebase.obterMensagemErro(e)),
-                                            backgroundColor: Colors.redAccent,
-                                          ),
-                                        );
-                                      } finally {
-                                        if (mounted) {
-                                          setState(() => _carregando = false);
-                                        }
-                                      }
-                                    },
+                                              Navigator.pop(context);
+                                            } catch (e) {
+                                              if (!mounted) return;
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    AuxiliarFirebase.obterMensagemErro(
+                                                      e,
+                                                    ),
+                                                  ),
+                                                  backgroundColor:
+                                                      Colors.redAccent,
+                                                ),
+                                              );
+                                            } finally {
+                                              if (mounted) {
+                                                setState(
+                                                  () => _carregando = false,
+                                                );
+                                              }
+                                            }
+                                          },
                                     child: Center(
                                       child: _carregando
                                           ? const SizedBox(

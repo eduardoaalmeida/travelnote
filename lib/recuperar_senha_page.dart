@@ -13,13 +13,12 @@ class RecuperarSenhaPage extends StatefulWidget {
 class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
   final _cpfController = TextEditingController();
   final _emailController = TextEditingController();
-  bool _carregando = false; // Controla o carregamento na solicitação
+  bool _carregando = false;
 
   final _cpfFormatter = MaskTextInputFormatter(
     mask: '###.###.###-##',
     filter: {'#': RegExp(r'[0-9]')},
   );
-
 
   @override
   void dispose() {
@@ -73,17 +72,25 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                             Row(
                               children: [
                                 IconButton(
-                                  icon: const Icon(Icons.arrow_back, color: Colors.black, size: 28),
-                                  onPressed: _carregando ? null : () => Navigator.pop(context),
+                                  icon: const Icon(
+                                    Icons.arrow_back,
+                                    color: Colors.black,
+                                    size: 28,
+                                  ),
+                                  onPressed: _carregando
+                                      ? null
+                                      : () => Navigator.pop(context),
                                   padding: EdgeInsets.zero,
                                   constraints: const BoxConstraints(),
                                 ),
                                 const Expanded(
                                   child: Center(
                                     child: Padding(
-                                      padding: EdgeInsets.only(right: 28.0), // Compensation for back button
+                                      padding: EdgeInsets.only(right: 28.0),
                                       child: Image(
-                                        image: AssetImage('assets/images/logo_completa.png'),
+                                        image: AssetImage(
+                                          'assets/images/logo_completa.png',
+                                        ),
                                         height: 60,
                                       ),
                                     ),
@@ -130,14 +137,19 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                               height: 56,
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF2DD4BF), Color(0xFF10B981)],
+                                  colors: [
+                                    Color(0xFF2DD4BF),
+                                    Color(0xFF10B981),
+                                  ],
                                   begin: Alignment.centerLeft,
                                   end: Alignment.centerRight,
                                 ),
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF2DD4BF).withValues(alpha: 0.2),
+                                    color: const Color(
+                                      0xFF2DD4BF,
+                                    ).withValues(alpha: 0.2),
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
                                   ),
@@ -147,58 +159,92 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(12),
-                                  onTap: _carregando ? null : () async {
-                                    // Ação de solicitar senha
-                                    if (_cpfController.text.isEmpty || _emailController.text.isEmpty) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Por favor, preencha o CPF e o Email.'),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    if (_cpfController.text.length < 14) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Por favor, insira o CPF completo.'),
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    final email = _emailController.text.trim();
-                                    final emailRegex = RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
-                                    if (!emailRegex.hasMatch(email)) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Por favor, insira um e-mail válido.'),
-                                        ),
-                                      );
-                                      return;
-                                    }
+                                  onTap: _carregando
+                                      ? null
+                                      : () async {
+                                          if (_cpfController.text.isEmpty ||
+                                              _emailController.text.isEmpty) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Por favor, preencha o CPF e o Email.',
+                                                ),
+                                              ),
+                                            );
+                                            return;
+                                          }
+                                          if (_cpfController.text.length < 14) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Por favor, insira o CPF completo.',
+                                                ),
+                                              ),
+                                            );
+                                            return;
+                                          }
+                                          final email = _emailController.text
+                                              .trim();
+                                          final emailRegex = RegExp(
+                                            r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+                                          );
+                                          if (!emailRegex.hasMatch(email)) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'Por favor, insira um e-mail válido.',
+                                                ),
+                                              ),
+                                            );
+                                            return;
+                                          }
 
-                                    setState(() => _carregando = true);
-                                    try {
-                                       await AuxiliarFirebase.recuperarSenha(email, _cpfController.text);
-                                       if (!mounted) return;
-                                       ScaffoldMessenger.of(context).showSnackBar(
-                                         const SnackBar(
-                                           content: Text('E-mail de recuperação de senha enviado!'),
-                                           backgroundColor: Colors.green,
-                                         ),
-                                       );
-                                       Navigator.pop(context);
-                                     } catch (e) {
-                                       if (!mounted) return;
-                                       ScaffoldMessenger.of(context).showSnackBar(
-                                         SnackBar(
-                                           content: Text(AuxiliarFirebase.obterMensagemErro(e)),
-                                           backgroundColor: Colors.redAccent,
-                                         ),
-                                       );
-                                    } finally {
-                                      if (mounted) setState(() => _carregando = false);
-                                    }
-                                  },
+                                          setState(() => _carregando = true);
+                                          try {
+                                            await AuxiliarFirebase.recuperarSenha(
+                                              email,
+                                              _cpfController.text,
+                                            );
+                                            if (!mounted) return;
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                  'E-mail de recuperação de senha enviado!',
+                                                ),
+                                                backgroundColor: Colors.green,
+                                              ),
+                                            );
+                                            Navigator.pop(context);
+                                          } catch (e) {
+                                            if (!mounted) return;
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  AuxiliarFirebase.obterMensagemErro(
+                                                    e,
+                                                  ),
+                                                ),
+                                                backgroundColor:
+                                                    Colors.redAccent,
+                                              ),
+                                            );
+                                          } finally {
+                                            if (mounted)
+                                              setState(
+                                                () => _carregando = false,
+                                              );
+                                          }
+                                        },
                                   child: Center(
                                     child: _carregando
                                         ? const SizedBox(

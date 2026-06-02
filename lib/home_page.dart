@@ -17,7 +17,6 @@ class HomePage extends StatelessWidget {
       backgroundColor: const Color(0xFFF8FAFC),
       body: Column(
         children: [
-          // ── Header Flat com Botão Sobreposto ──────────────────────────────────
           Stack(
             clipBehavior: Clip.none,
             alignment: Alignment.center,
@@ -26,7 +25,7 @@ class HomePage extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.fromLTRB(24, 16, 24, 42),
                 decoration: const BoxDecoration(
-                  color: Color(0xFF429EDB), // Flat Sky Blue
+                  color: Color(0xFF429EDB),
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(30),
                     bottomRight: Radius.circular(30),
@@ -86,7 +85,7 @@ class HomePage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      // ── BOTÃO DE NOTIFICAÇÃO ADICIONADO AQUI ──────────
+
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -102,14 +101,12 @@ class HomePage extends StatelessWidget {
                           size: 28,
                         ),
                       ),
-                      // ──────────────────────────────────────────────────
                     ],
                   ),
                 ),
               ),
               Positioned(
-                bottom:
-                    -23, // Metade da altura do botão para sobrepor perfeitamente
+                bottom: -23,
                 left: 24,
                 right: 24,
                 child: SizedBox(
@@ -146,7 +143,6 @@ class HomePage extends StatelessWidget {
             ],
           ),
 
-          // ── Lista de viagens ────────────────────────────────────
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(24, 44, 24, 20),
@@ -165,8 +161,8 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 16),
                   StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
-                    .collection('viagens')
-                    .snapshots(),
+                        .collection('viagens')
+                        .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(
@@ -191,7 +187,7 @@ class HomePage extends StatelessWidget {
                         );
                       }
 
-                     final docs = snapshot.data!.docs;
+                      final docs = snapshot.data!.docs;
 
                       String formatarData(dynamic data) {
                         if (data is Timestamp) {
@@ -212,7 +208,8 @@ class HomePage extends StatelessWidget {
                         return Viagem(
                           id: doc.id,
                           destino: data['destino'] ?? '',
-                          imagemUrl: data['imagemUrl'] ??
+                          imagemUrl:
+                              data['imagemUrl'] ??
                               'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
                           dataInicio: formatarData(data['dataInicio']),
                           dataFim: formatarData(data['dataFim']),
@@ -223,65 +220,69 @@ class HomePage extends StatelessWidget {
                         );
                       }).toList();
 
-                     DateTime? converterData(String data) {
-                      try {
-                        final partes = data.split('/');
+                      DateTime? converterData(String data) {
+                        try {
+                          final partes = data.split('/');
 
-                        if (partes.length == 3) {
-                          return DateTime(
-                            int.parse(partes[2]),
-                            int.parse(partes[1]),
-                            int.parse(partes[0]),
-                          );
-                        }
-                      } catch (_) {}
+                          if (partes.length == 3) {
+                            return DateTime(
+                              int.parse(partes[2]),
+                              int.parse(partes[1]),
+                              int.parse(partes[0]),
+                            );
+                          }
+                        } catch (_) {}
 
-                      return null;
-                    }
+                        return null;
+                      }
 
-                    final hoje = DateTime.now();
-                    final hojeSemHora = DateTime(hoje.year, hoje.month, hoje.day);
+                      final hoje = DateTime.now();
+                      final hojeSemHora = DateTime(
+                        hoje.year,
+                        hoje.month,
+                        hoje.day,
+                      );
 
-                    final proximas = viagens.where((viagem) {
-                      final dataFim = converterData(viagem.dataFim);
+                      final proximas = viagens.where((viagem) {
+                        final dataFim = converterData(viagem.dataFim);
 
-                      if (dataFim == null) return false;
+                        if (dataFim == null) return false;
 
-                      return dataFim.isAtSameMomentAs(hojeSemHora) ||
-                          dataFim.isAfter(hojeSemHora);
-                    }).toList();
+                        return dataFim.isAtSameMomentAs(hojeSemHora) ||
+                            dataFim.isAfter(hojeSemHora);
+                      }).toList();
 
-                    proximas.sort((a, b) {
-                      final dataA = converterData(a.dataInicio);
-                      final dataB = converterData(b.dataInicio);
+                      proximas.sort((a, b) {
+                        final dataA = converterData(a.dataInicio);
+                        final dataB = converterData(b.dataInicio);
 
-                      if (dataA == null || dataB == null) return 0;
+                        if (dataA == null || dataB == null) return 0;
 
-                      return dataA.compareTo(dataB);
-                    });
+                        return dataA.compareTo(dataB);
+                      });
 
-                    final proximasLimitadas = proximas.toList();
+                      final proximasLimitadas = proximas.toList();
 
-                    if (proximasLimitadas.isEmpty) {
-                      return const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 24.0),
-                        child: Center(
-                          child: Text(
-                            'Nenhuma próxima viagem cadastrada.',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
+                      if (proximasLimitadas.isEmpty) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24.0),
+                          child: Center(
+                            child: Text(
+                              'Nenhuma próxima viagem cadastrada.',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16,
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    }
+                        );
+                      }
 
-                    return Column(
-                      children: proximasLimitadas
-                          .map((v) => _ViagemCard(viagem: v))
-                          .toList(),
-                    );
+                      return Column(
+                        children: proximasLimitadas
+                            .map((v) => _ViagemCard(viagem: v))
+                            .toList(),
+                      );
                     },
                   ),
                   const SizedBox(height: 16),
@@ -338,11 +339,9 @@ class _ViagemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => DetalhesViagemPage(viagem: viagem),
+        context,
+        MaterialPageRoute(builder: (_) => DetalhesViagemPage(viagem: viagem)),
       ),
-    ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(12),
