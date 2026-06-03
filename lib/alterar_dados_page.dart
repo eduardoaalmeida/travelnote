@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'login_page.dart';
 import 'alterar_senha_page.dart';
-import 'auxiliar_firebase.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class AlterarDadosPage extends StatefulWidget {
   const AlterarDadosPage({super.key});
@@ -64,6 +64,7 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
           _carregando = false;
         });
 
+        // Aplica formatação via formatter
         _cpfFormatter.formatEditUpdate(
           TextEditingValue.empty,
           TextEditingValue(text: cpf.replaceAll(RegExp(r'[^0-9]'), '')),
@@ -125,7 +126,7 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AuxiliarFirebase.obterMensagemErro(e)),
+            content: Text(e.toString()),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -142,14 +143,40 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
     super.dispose();
   }
 
-  Future<void> _signOut() async {
-    await AuxiliarFirebase.logout();
-    if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const LoginPage()),
-        (route) => false,
-      );
-    }
+  void _signOut() {
+    final nav = Navigator.of(context);
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Sair do sistema'),
+        content: const Text('Tem certeza que deseja sair?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Não'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              try {
+                await GoogleSignIn().signOut();
+              } catch (_) {}
+              await FirebaseAuth.instance.signOut();
+              nav.pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+                (route) => false,
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Sim'),
+          ),
+        ],
+      ),
+    );
   }
 
   InputDecoration _decoration(String hint, IconData prefixIcon) {
@@ -345,7 +372,7 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-
+                              // Botão Salvar Dados
                               Container(
                                 width: double.infinity,
                                 height: 56,

@@ -8,7 +8,7 @@ import 'configuracoes_page.dart';
 import 'login_page.dart';
 import 'politica_privacidade_page.dart';
 import 'viagens_page.dart';
-import 'auxiliar_firebase.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class PerfilPage extends StatefulWidget {
   const PerfilPage({super.key});
@@ -80,10 +80,11 @@ class _PerfilPageState extends State<PerfilPage> {
   }
 
   void _confirmarSaida() {
-    final pageContext = context;
+    final nav = Navigator.of(context);
     showDialog(
-      context: pageContext,
+      context: context,
       builder: (dialogContext) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Sair do sistema'),
         content: const Text('Tem certeza que deseja sair?'),
         actions: [
@@ -94,14 +95,14 @@ class _PerfilPageState extends State<PerfilPage> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(dialogContext);
-              await AuxiliarFirebase.logout();
-              if (mounted) {
-                Navigator.pushAndRemoveUntil(
-                  pageContext,
-                  MaterialPageRoute(builder: (_) => const LoginPage()),
-                  (route) => false,
-                );
-              }
+              try {
+                await GoogleSignIn().signOut();
+              } catch (_) {}
+              await FirebaseAuth.instance.signOut();
+              nav.pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+                (route) => false,
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.red,
