@@ -51,10 +51,7 @@ class _AgendaPageState extends State<AgendaPage> {
 
   String get _usuarioLogado => _auth.currentUser?.email ?? '';
 
-  CollectionReference get _eventosRef => _db
-      .collection('usuarios')
-      .doc(_auth.currentUser?.uid)
-      .collection('eventos');
+  CollectionReference get _eventosRef => _db.collection('eventos');
 
   List<_AgendaEvent> _getEventsForDay(DateTime day, List<_AgendaEvent> todos) {
     return todos.where((e) {
@@ -168,8 +165,13 @@ class _AgendaPageState extends State<AgendaPage> {
         title: const Text('Agenda', style: TextStyle(color: Colors.black)),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _eventosRef.orderBy('data').snapshots(),
+        stream: _eventosRef
+            .where('uid', isEqualTo: _auth.currentUser?.uid ?? '')
+            .snapshots(),
         builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Erro: \${snapshot.error}'));
+          }
           List<_AgendaEvent> todosEventos = [];
           if (snapshot.hasData) {
             for (var doc in snapshot.data!.docs) {
@@ -189,6 +191,9 @@ class _AgendaPageState extends State<AgendaPage> {
               );
             }
           }
+
+          // Ordena localmente (evita índice composto no Firestore)
+          todosEventos.sort((a, b) => a.data.compareTo(b.data));
 
           final eventosDoDia = _getEventsForDay(_selectedDay, todosEventos);
 
@@ -463,6 +468,7 @@ class _AgendaPageState extends State<AgendaPage> {
                       'endereco': endereco,
                       'horario': _novoHorario.format(context),
                       'data': Timestamp.fromDate(normalizedDate),
+                      'uid': _auth.currentUser?.uid ?? '',
                       'usuario_logado': _usuarioLogado,
                       'criado_em': FieldValue.serverTimestamp(),
                     });
