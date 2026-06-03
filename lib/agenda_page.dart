@@ -80,7 +80,7 @@ class _AgendaPageState extends State<AgendaPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
@@ -158,11 +158,14 @@ class _AgendaPageState extends State<AgendaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF6F7FB),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
-        title: const Text('Agenda', style: TextStyle(color: Colors.black)),
+        title: Text(
+          'Agenda',
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _eventosRef
@@ -204,7 +207,7 @@ class _AgendaPageState extends State<AgendaPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: TableCalendar(

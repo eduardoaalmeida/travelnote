@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'theme_notifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'navbar.dart';
@@ -43,12 +44,14 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
         final data = doc.data() as Map<String, dynamic>;
         final prefs = data['preferencias'] as Map<String, dynamic>?;
         if (prefs != null) {
+          final noturno = (prefs['modoNoturno'] as bool?) ?? false;
+          ThemeNotifier.instance.setModoNoturno(noturno);
           setState(() {
             _idioma = (prefs['idioma'] as String?) ?? 'Português';
             _pais = (prefs['pais'] as String?) ?? 'Brasil';
             _moeda = (prefs['moeda'] as String?) ?? 'BRL';
             _notificacoesAtivas = (prefs['notificacoes'] as bool?) ?? true;
-            _modoNoturno = (prefs['modoNoturno'] as bool?) ?? false;
+            _modoNoturno = noturno;
           });
         }
       }
@@ -81,66 +84,85 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
     bool showArrow = false,
     VoidCallback? onTap,
   }) {
-    return Container(
-      color: Colors.white,
-      child: ListTile(
-        onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF0F172A),
+    return Builder(
+      builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final bgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+        final titleColor = isDark ? Colors.white : const Color(0xFF0F172A);
+        final subtitleColor = isDark ? Colors.white54 : const Color(0xFF94A3B8);
+
+        return Container(
+          color: bgColor,
+          child: ListTile(
+            onTap: onTap,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 4,
+            ),
+            title: Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: titleColor,
+              ),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (value != null && value.isNotEmpty) ...[
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: subtitleColor,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                ],
+                if (trailingIcon != null)
+                  Icon(trailingIcon, color: subtitleColor, size: 24),
+                if (showArrow)
+                  Icon(Icons.chevron_right, color: subtitleColor, size: 24),
+              ],
+            ),
           ),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (value != null && value.isNotEmpty) ...[
-              Text(
-                value,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Color(0xFF94A3B8),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(width: 4),
-            ],
-            if (trailingIcon != null)
-              Icon(trailingIcon, color: const Color(0xFF94A3B8), size: 24),
-            if (showArrow)
-              const Icon(
-                Icons.chevron_right,
-                color: Color(0xFF94A3B8),
-                size: 24,
-              ),
-          ],
-        ),
-      ),
+        );
+      },
     );
   }
 
   Widget _buildGroup(List<Widget> items) {
-    List<Widget> children = [];
-    for (int i = 0; i < items.length; i++) {
-      children.add(items[i]);
-      if (i < items.length - 1) {
-        children.add(
-          const Divider(height: 1, thickness: 1, color: Color(0xFFF1F5F9)),
+    return Builder(
+      builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final bgColor = isDark ? const Color(0xFF1E293B) : Colors.white;
+        final borderColor = isDark
+            ? const Color(0xFF334155)
+            : const Color(0xFFEFF2F6);
+        final dividerColor = isDark
+            ? const Color(0xFF334155)
+            : const Color(0xFFF1F5F9);
+
+        List<Widget> children = [];
+        for (int i = 0; i < items.length; i++) {
+          children.add(items[i]);
+          if (i < items.length - 1) {
+            children.add(Divider(height: 1, thickness: 1, color: dividerColor));
+          }
+        }
+        return Container(
+          decoration: BoxDecoration(
+            color: bgColor,
+            border: Border(
+              top: BorderSide(color: borderColor, width: 1),
+              bottom: BorderSide(color: borderColor, width: 1),
+            ),
+          ),
+          child: Column(children: children),
         );
-      }
-    }
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(color: Color(0xFFEFF2F6), width: 1),
-          bottom: BorderSide(color: Color(0xFFEFF2F6), width: 1),
-        ),
-      ),
-      child: Column(children: children),
+      },
     );
   }
 
@@ -194,9 +216,9 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
@@ -277,12 +299,48 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                           await _salvarPreferencias();
                         },
                       ),
-                      _buildItem(
-                        title: 'Modo Noturno',
-                        trailingIcon: Icons.lightbulb_outline,
-                        onTap: () async {
-                          setState(() => _modoNoturno = !_modoNoturno);
-                          await _salvarPreferencias();
+                      Builder(
+                        builder: (context) {
+                          final isDark =
+                              Theme.of(context).brightness == Brightness.dark;
+                          final bgColor = isDark
+                              ? const Color(0xFF1E293B)
+                              : Colors.white;
+                          final titleColor = isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A);
+                          return Container(
+                            color: bgColor,
+                            child: SwitchListTile(
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 24,
+                                vertical: 4,
+                              ),
+                              title: Text(
+                                'Modo Noturno',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: titleColor,
+                                ),
+                              ),
+                              secondary: Icon(
+                                _modoNoturno
+                                    ? Icons.dark_mode
+                                    : Icons.light_mode_outlined,
+                                color: isDark
+                                    ? Colors.white54
+                                    : const Color(0xFF94A3B8),
+                              ),
+                              value: _modoNoturno,
+                              activeColor: const Color(0xFF10B981),
+                              onChanged: (val) async {
+                                setState(() => _modoNoturno = val);
+                                ThemeNotifier.instance.setModoNoturno(val);
+                                await _salvarPreferencias();
+                              },
+                            ),
+                          );
                         },
                       ),
                     ]),
