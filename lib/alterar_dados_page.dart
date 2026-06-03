@@ -182,7 +182,7 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
   InputDecoration _decoration(String hint, IconData prefixIcon) {
     return InputDecoration(
       filled: true,
-      fillColor: Colors.white,
+      fillColor: Theme.of(context).cardColor,
       contentPadding: const EdgeInsets.symmetric(vertical: 18),
       prefixIcon: Icon(prefixIcon, color: const Color(0xFF94A3B8), size: 22),
       suffixIcon: const Icon(
@@ -208,9 +208,9 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
@@ -304,10 +304,12 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
                                 children: [
                                   Text(
                                     _nome.isNotEmpty ? _nome : 'Usuário',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 26,
                                       fontWeight: FontWeight.w800,
-                                      color: Color(0xFF0F172A),
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                       letterSpacing: -0.5,
                                     ),
                                   ),
@@ -467,7 +469,7 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
                                   vertical: 12,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: Theme.of(context).cardColor,
                                   borderRadius: BorderRadius.circular(24),
                                   boxShadow: [
                                     BoxShadow(

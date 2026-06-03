@@ -51,10 +51,7 @@ class _AgendaPageState extends State<AgendaPage> {
 
   String get _usuarioLogado => _auth.currentUser?.email ?? '';
 
-  CollectionReference get _eventosRef => _db
-      .collection('usuarios')
-      .doc(_auth.currentUser?.uid)
-      .collection('eventos');
+  CollectionReference get _eventosRef => _db.collection('eventos');
 
   List<_AgendaEvent> _getEventsForDay(DateTime day, List<_AgendaEvent> todos) {
     return todos.where((e) {
@@ -83,7 +80,7 @@ class _AgendaPageState extends State<AgendaPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
@@ -161,15 +158,23 @@ class _AgendaPageState extends State<AgendaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF6F7FB),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
-        title: const Text('Agenda', style: TextStyle(color: Colors.black)),
+        title: Text(
+          'Agenda',
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _eventosRef.orderBy('data').snapshots(),
+        stream: _eventosRef
+            .where('uid', isEqualTo: _auth.currentUser?.uid ?? '')
+            .snapshots(),
         builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Erro: \${snapshot.error}'));
+          }
           List<_AgendaEvent> todosEventos = [];
           if (snapshot.hasData) {
             for (var doc in snapshot.data!.docs) {
@@ -190,6 +195,9 @@ class _AgendaPageState extends State<AgendaPage> {
             }
           }
 
+          // Ordena localmente (evita índice composto no Firestore)
+          todosEventos.sort((a, b) => a.data.compareTo(b.data));
+
           final eventosDoDia = _getEventsForDay(_selectedDay, todosEventos);
 
           return Padding(
@@ -199,7 +207,7 @@ class _AgendaPageState extends State<AgendaPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: TableCalendar(
@@ -463,6 +471,7 @@ class _AgendaPageState extends State<AgendaPage> {
                       'endereco': endereco,
                       'horario': _novoHorario.format(context),
                       'data': Timestamp.fromDate(normalizedDate),
+                      'uid': _auth.currentUser?.uid ?? '',
                       'usuario_logado': _usuarioLogado,
                       'criado_em': FieldValue.serverTimestamp(),
                     });
