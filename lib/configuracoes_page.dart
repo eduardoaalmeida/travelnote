@@ -5,7 +5,7 @@ import 'navbar.dart';
 import 'perfil_page.dart';
 import 'politica_privacidade_page.dart';
 import 'login_page.dart';
-import 'auxiliar_firebase.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class ConfiguracoesPage extends StatefulWidget {
   const ConfiguracoesPage({super.key});
@@ -291,9 +291,46 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                       _buildItem(
                         title: 'Sair da Conta',
                         trailingIcon: Icons.logout,
-                        onTap: () async {
-                          await AuxiliarFirebase.logout();
-                          if (mounted) _abrirLogin(context);
+                        onTap: () {
+                          final nav = Navigator.of(context);
+                          showDialog(
+                            context: context,
+                            builder: (dialogContext) => AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              title: const Text('Sair do sistema'),
+                              content: const Text(
+                                'Tem certeza que deseja sair?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(dialogContext),
+                                  child: const Text('Não'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    Navigator.pop(dialogContext);
+                                    try {
+                                      await GoogleSignIn().signOut();
+                                    } catch (_) {}
+                                    await FirebaseAuth.instance.signOut();
+                                    nav.pushAndRemoveUntil(
+                                      MaterialPageRoute(
+                                        builder: (_) => const LoginPage(),
+                                      ),
+                                      (route) => false,
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  child: const Text('Sim'),
+                                ),
+                              ],
+                            ),
+                          );
                         },
                       ),
                       _buildItem(
