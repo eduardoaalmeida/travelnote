@@ -42,14 +42,19 @@ class NavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: (index) => _onItemTapped(context, index),
 
       type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.white,
-      selectedItemColor: const Color(0xFF475569),
-      unselectedItemColor: const Color(0xFF94A3B8),
+      backgroundColor: Theme.of(context).cardColor,
+      selectedItemColor: isDark
+          ? const Color(0xFF38BDF8)
+          : const Color(0xFF1B4E88),
+      unselectedItemColor: isDark
+          ? const Color(0xFF6B7280)
+          : const Color(0xFF94A3B8),
       selectedLabelStyle: const TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 12,
