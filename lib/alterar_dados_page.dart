@@ -213,9 +213,9 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
-            color: Color(0xFF0F172A),
+            color: Theme.of(context).colorScheme.onSurface,
             size: 24,
           ),
           onPressed: () => Navigator.of(context).pop(),
@@ -243,10 +243,12 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const Text(
+                              Text(
                                 'Alterar dados',
                                 style: TextStyle(
-                                  color: Color(0xFF0F172A),
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                   fontSize: 24,
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: -0.5,
@@ -264,9 +266,11 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
                                         width: 2.5,
                                       ),
                                     ),
-                                    child: const CircleAvatar(
+                                    child: CircleAvatar(
                                       radius: 56,
-                                      backgroundColor: Colors.white,
+                                      backgroundColor: Theme.of(
+                                        context,
+                                      ).cardColor,
                                       backgroundImage: AssetImage(
                                         'assets/images/perfil.png',
                                       ),
@@ -278,21 +282,25 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
                                     child: Container(
                                       width: 28,
                                       height: 28,
-                                      decoration: const BoxDecoration(
+                                      decoration: BoxDecoration(
                                         color: Colors.white,
                                         shape: BoxShape.circle,
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black12,
+                                            color: Colors.black.withOpacity(
+                                              0.12,
+                                            ),
                                             blurRadius: 4,
                                             offset: Offset(0, 2),
                                           ),
                                         ],
                                       ),
-                                      child: const Icon(
+                                      child: Icon(
                                         Icons.edit_outlined,
                                         size: 16,
-                                        color: Color(0xFF0F172A),
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                       ),
                                     ),
                                   ),
@@ -473,7 +481,9 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
                                   borderRadius: BorderRadius.circular(24),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.03),
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface.withOpacity(0.03),
                                       blurRadius: 12,
                                       spreadRadius: 2,
                                       offset: const Offset(0, 4),
@@ -494,9 +504,11 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
                                             14,
                                           ),
                                         ),
-                                        child: const Icon(
+                                        child: Icon(
                                           Icons.chevron_left,
-                                          color: Color(0xFF475569),
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
                                           size: 24,
                                         ),
                                       ),

@@ -27,14 +27,18 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
     super.dispose();
   }
 
-  InputDecoration _decoration(String hint, IconData prefixIcon) {
+  InputDecoration _decoration(
+    BuildContext context,
+    String hint,
+    IconData prefixIcon,
+  ) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
+      hintStyle: TextStyle(color: Colors.grey, fontSize: 15),
       prefixIcon: Icon(prefixIcon, color: Colors.grey, size: 22),
       filled: true,
-      fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(vertical: 18),
+      fillColor: Theme.of(context).cardColor,
+      contentPadding: EdgeInsets.symmetric(vertical: 18),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(color: Colors.grey.shade300),
@@ -53,7 +57,7 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F3F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -72,9 +76,11 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                             Row(
                               children: [
                                 IconButton(
-                                  icon: const Icon(
+                                  icon: Icon(
                                     Icons.arrow_back,
-                                    color: Colors.black,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                     size: 28,
                                   ),
                                   onPressed: _carregando
@@ -99,34 +105,44 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                               ],
                             ),
                             const SizedBox(height: 40),
-                            const Center(
+                            Center(
                               child: Text(
                                 'Recuperação De Conta',
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w800,
-                                  color: Color(0xFF0F172A),
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                   letterSpacing: -0.5,
                                 ),
                               ),
                             ),
                             const SizedBox(height: 40),
                             TextField(
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               controller: _cpfController,
                               keyboardType: TextInputType.number,
                               inputFormatters: [_cpfFormatter],
                               enabled: !_carregando,
                               decoration: _decoration(
+                                context,
                                 'Digite seu CPF cadastrado',
                                 Icons.lock_outline,
                               ),
                             ),
                             const SizedBox(height: 20),
                             TextField(
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               enabled: !_carregando,
                               decoration: _decoration(
+                                context,
                                 'Digite seu Email cadastrado',
                                 Icons.mail_outline,
                               ),

@@ -42,15 +42,19 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
     super.dispose();
   }
 
-  InputDecoration _decoration(String hint, {Widget? suffix}) {
+  InputDecoration _decoration(
+    BuildContext context,
+    String hint, {
+    Widget? suffix,
+  }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
-      prefixIcon: const Icon(Icons.lock_outline, color: Colors.grey, size: 22),
+      hintStyle: TextStyle(color: Colors.grey, fontSize: 15),
+      prefixIcon: Icon(Icons.lock_outline, color: Colors.grey, size: 22),
       suffixIcon: suffix,
       filled: true,
-      fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(vertical: 18),
+      fillColor: Theme.of(context).cardColor,
+      contentPadding: EdgeInsets.symmetric(vertical: 18),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(color: Colors.grey.shade300),
@@ -95,16 +99,16 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
   @override
   Widget build(BuildContext context) {
     if (_isGoogleUser == null) {
-      return const Scaffold(
-        backgroundColor: Color(0xFFF2F3F5),
-        body: Center(
+      return Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: const Center(
           child: CircularProgressIndicator(color: Color(0xFF2DD4BF)),
         ),
       );
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F3F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -123,9 +127,11 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                             Row(
                               children: [
                                 IconButton(
-                                  icon: const Icon(
+                                  icon: Icon(
                                     Icons.arrow_back,
-                                    color: Colors.black,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                     size: 28,
                                   ),
                                   onPressed: () => Navigator.pop(context),
@@ -148,13 +154,15 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                               ],
                             ),
                             const SizedBox(height: 40),
-                            const Center(
+                            Center(
                               child: Text(
                                 'Alteração de Senha',
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w800,
-                                  color: Color(0xFF0F172A),
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                   letterSpacing: -0.5,
                                 ),
                               ),
@@ -165,11 +173,13 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(24.0),
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: Theme.of(context).cardColor,
                                   borderRadius: BorderRadius.circular(16),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface.withOpacity(0.03),
                                       blurRadius: 10,
                                       offset: const Offset(0, 4),
                                     ),
@@ -191,21 +201,25 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                       ),
                                     ),
                                     const SizedBox(height: 20),
-                                    const Text(
+                                    Text(
                                       'Login pelo Google',
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: Color(0xFF0F172A),
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
                                       ),
                                     ),
                                     const SizedBox(height: 12),
-                                    const Text(
+                                    Text(
                                       'Sua conta está conectada através do Google Sign-In. Portanto, você não possui uma senha local para alterar neste aplicativo.',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: Color(0xFF475569),
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
                                         height: 1.5,
                                       ),
                                     ),
@@ -254,6 +268,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                 obscureText: !_senhaAtualVisivel,
                                 enabled: !_carregando,
                                 decoration: _decoration(
+                                  context,
                                   'Digite sua senha Atual',
                                   suffix: _eyeIcon(
                                     _senhaAtualVisivel,
@@ -271,6 +286,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                 obscureText: !_novaSenhaVisivel,
                                 enabled: !_carregando,
                                 decoration: _decoration(
+                                  context,
                                   'Digite sua Nova Senha',
                                   suffix: _eyeIcon(
                                     _novaSenhaVisivel,
@@ -288,6 +304,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                 obscureText: !_confirmarSenhaVisivel,
                                 enabled: !_carregando,
                                 decoration: _decoration(
+                                  context,
                                   'Confirme a Nova Senha',
                                   suffix: _eyeIcon(
                                     _confirmarSenhaVisivel,

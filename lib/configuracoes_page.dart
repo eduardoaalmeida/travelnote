@@ -45,7 +45,9 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
         final prefs = data['preferencias'] as Map<String, dynamic>?;
         if (prefs != null) {
           final noturno = (prefs['modoNoturno'] as bool?) ?? false;
-          ThemeNotifier.instance.setModoNoturno(noturno);
+          // Só sincroniza se for true (restaura dark mode salvo)
+          // Nunca chama setModoNoturno(false) ao abrir a tela para não resetar o tema
+          if (noturno) ThemeNotifier.instance.setModoNoturno(true);
           setState(() {
             _idioma = (prefs['idioma'] as String?) ?? 'Português';
             _pais = (prefs['pais'] as String?) ?? 'Brasil';
@@ -222,17 +224,17 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
-            color: Color(0xFF0F172A),
+            color: Theme.of(context).colorScheme.onSurface,
             size: 24,
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Configurações',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w800,
             fontSize: 20,
           ),

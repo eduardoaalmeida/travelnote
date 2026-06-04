@@ -51,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F3F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -81,6 +81,9 @@ class _LoginPageState extends State<LoginPage> {
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               enabled: !_carregando,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               decoration: InputDecoration(
                                 hintText: 'Digite seu Email',
                                 hintStyle: const TextStyle(
@@ -93,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                                   size: 22,
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: Theme.of(context).cardColor,
                                 contentPadding: const EdgeInsets.symmetric(
                                   vertical: 18,
                                 ),
@@ -122,6 +125,9 @@ class _LoginPageState extends State<LoginPage> {
                               controller: _senhaController,
                               obscureText: !_senhaVisivel,
                               enabled: !_carregando,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               decoration: InputDecoration(
                                 hintText: 'Digite sua Senha',
                                 hintStyle: const TextStyle(
@@ -146,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                                 filled: true,
-                                fillColor: Colors.white,
+                                fillColor: Theme.of(context).cardColor,
                                 contentPadding: const EdgeInsets.symmetric(
                                   vertical: 18,
                                 ),
@@ -327,16 +333,18 @@ class _LoginPageState extends State<LoginPage> {
                                     color: Colors.red,
                                   ),
                                 ),
-                                label: const Text(
+                                label: Text(
                                   'Entrar com o Google',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.black87,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                 ),
                                 style: OutlinedButton.styleFrom(
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: Theme.of(context).cardColor,
                                   side: BorderSide(color: Colors.grey.shade300),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),

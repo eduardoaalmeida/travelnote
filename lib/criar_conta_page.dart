@@ -44,18 +44,19 @@ class _CriarContaPageState extends State<CriarContaPage> {
   }
 
   InputDecoration _decoration(
+    BuildContext context,
     String hint,
     IconData prefixIcon, {
     Widget? suffix,
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.grey, fontSize: 15),
+      hintStyle: TextStyle(color: Colors.grey, fontSize: 15),
       prefixIcon: Icon(prefixIcon, color: Colors.grey, size: 22),
       suffixIcon: suffix,
       filled: true,
-      fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(vertical: 18),
+      fillColor: Theme.of(context).cardColor,
+      contentPadding: EdgeInsets.symmetric(vertical: 18),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide(color: Colors.grey.shade300),
@@ -85,7 +86,7 @@ class _CriarContaPageState extends State<CriarContaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F3F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -102,9 +103,9 @@ class _CriarContaPageState extends State<CriarContaPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             IconButton(
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.arrow_back,
-                                color: Colors.black,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 size: 28,
                               ),
                               onPressed: _carregando
@@ -118,12 +119,14 @@ class _CriarContaPageState extends State<CriarContaPage> {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Criar Conta',
                                     style: TextStyle(
                                       fontSize: 32,
                                       fontWeight: FontWeight.w800,
-                                      color: Color(0xFF0F172A),
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                       letterSpacing: -0.5,
                                     ),
                                   ),
@@ -137,53 +140,73 @@ class _CriarContaPageState extends State<CriarContaPage> {
                             ),
                             const Spacer(flex: 2),
                             TextField(
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               controller: _nomeController,
                               keyboardType: TextInputType.name,
                               textCapitalization: TextCapitalization.words,
                               enabled: !_carregando,
                               decoration: _decoration(
+                                context,
                                 'Nome Completo',
                                 Icons.person_outline,
                               ),
                             ),
                             const SizedBox(height: 16),
                             TextField(
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               controller: _cpfController,
                               keyboardType: TextInputType.number,
                               inputFormatters: [_cpfFormatter],
                               enabled: !_carregando,
                               decoration: _decoration(
+                                context,
                                 'CPF',
                                 Icons.lock_outline,
                               ),
                             ),
                             const SizedBox(height: 16),
                             TextField(
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               enabled: !_carregando,
                               decoration: _decoration(
+                                context,
                                 'Email',
                                 Icons.email_outlined,
                               ),
                             ),
                             const SizedBox(height: 16),
                             TextField(
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               controller: _telefoneController,
                               keyboardType: TextInputType.phone,
                               inputFormatters: [_telefoneFormatter],
                               enabled: !_carregando,
                               decoration: _decoration(
+                                context,
                                 'Telefone',
                                 Icons.lock_outline,
                               ),
                             ),
                             const SizedBox(height: 16),
                             TextField(
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               controller: _senhaController,
                               obscureText: !_senhaVisivel,
                               enabled: !_carregando,
                               decoration: _decoration(
+                                context,
                                 'Senha',
                                 Icons.lock_outline,
                                 suffix: _eyeIcon(
@@ -196,10 +219,14 @@ class _CriarContaPageState extends State<CriarContaPage> {
                             ),
                             const SizedBox(height: 16),
                             TextField(
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
                               controller: _confirmarSenhaController,
                               obscureText: !_confirmarSenhaVisivel,
                               enabled: !_carregando,
                               decoration: _decoration(
+                                context,
                                 'Confirme sua Senha',
                                 Icons.lock_outline,
                                 suffix: _eyeIcon(
@@ -235,11 +262,13 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                   ),
                                 ),
                                 const SizedBox(width: 10),
-                                const Text(
+                                Text(
                                   'Li e aceito os ',
                                   style: TextStyle(
                                     fontSize: 15,
-                                    color: Colors.black87,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurface,
                                   ),
                                 ),
                                 GestureDetector(

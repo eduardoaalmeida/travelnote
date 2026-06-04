@@ -119,18 +119,21 @@ class _PerfilPageState extends State<PerfilPage> {
     required IconData icon,
     required String titulo,
     required VoidCallback onTap,
-    Color iconColor = const Color(0xFF1B4E88),
-    Color titleColor = const Color(0xFF0F172A),
+    Color? iconColor,
+    Color? titleColor,
     Color? leadingBgColor,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    iconColor ??= isDark ? const Color(0xFF38BDF8) : const Color(0xFF1B4E88);
+    titleColor ??= Theme.of(context).colorScheme.onSurface;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.015),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.015),
             blurRadius: 10,
             spreadRadius: 2,
             offset: const Offset(0, 4),
@@ -158,7 +161,7 @@ class _PerfilPageState extends State<PerfilPage> {
         ),
         trailing: Icon(
           Icons.chevron_right,
-          color: Colors.grey.shade400,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
           size: 24,
         ),
         onTap: onTap,
@@ -169,12 +172,12 @@ class _PerfilPageState extends State<PerfilPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
-            color: Color(0xFF0F172A),
+            color: Theme.of(context).colorScheme.onSurface,
             size: 24,
           ),
           onPressed: () => Navigator.pushAndRemoveUntil(
@@ -183,16 +186,16 @@ class _PerfilPageState extends State<PerfilPage> {
             (route) => false,
           ),
         ),
-        title: const Text(
+        title: Text(
           'Meu Perfil',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w800,
             fontSize: 20,
           ),
         ),
         centerTitle: true,
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
       ),
       body: StreamBuilder<DocumentSnapshot>(
@@ -227,9 +230,9 @@ class _PerfilPageState extends State<PerfilPage> {
                       width: 2.5,
                     ),
                   ),
-                  child: const CircleAvatar(
+                  child: CircleAvatar(
                     radius: 56,
-                    backgroundColor: Colors.white,
+                    backgroundColor: Theme.of(context).cardColor,
                     backgroundImage: AssetImage('assets/images/perfil.png'),
                   ),
                 ),
@@ -241,10 +244,10 @@ class _PerfilPageState extends State<PerfilPage> {
                     children: [
                       Text(
                         nome,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF0F172A),
+                          color: Theme.of(context).colorScheme.onSurface,
                           letterSpacing: -0.5,
                         ),
                       ),
@@ -260,10 +263,12 @@ class _PerfilPageState extends State<PerfilPage> {
                 const SizedBox(height: 6),
                 Text(
                   email,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Color(0xFF1B4E88),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF38BDF8)
+                        : const Color(0xFF1B4E88),
                   ),
                 ),
                 const SizedBox(height: 32),

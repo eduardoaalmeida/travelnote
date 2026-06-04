@@ -13,18 +13,21 @@ class PoliticaPrivacidadePage extends StatelessWidget {
         'Textos de Política de Privacidade. Coletamos informações que você nos fornece diretamente, como ao criar uma conta, criar notas de viagem ou sincronizar seu calendário. Isso pode incluir nome, endereço de e-mail e preferências de viagem.';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F3F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).colorScheme.onSurface,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
+        title: Text(
           'Política de Privacidade',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
@@ -37,22 +40,24 @@ class PoliticaPrivacidadePage extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(24.0),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: Colors.grey.shade200),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.02),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: const Text(
+          child: Text(
             textoPolitica,
             style: TextStyle(
               fontSize: 16,
-              color: Color(0xFF475569),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               height: 1.6,
             ),
           ),
