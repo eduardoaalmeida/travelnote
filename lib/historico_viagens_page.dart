@@ -182,9 +182,9 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F3F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xFF1E83DB)),
@@ -224,12 +224,12 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Histórico de Gastos',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
-                color: Colors.black87,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 16),
@@ -238,11 +238,13 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.06),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withOpacity(0.06),
                     blurRadius: 10,
                     offset: const Offset(0, 3),
                   ),
@@ -317,19 +319,23 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
                                 children: [
                                   TextSpan(
                                     text: '$_totalViagens\n',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 36,
                                       fontWeight: FontWeight.w800,
-                                      color: Colors.black87,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                       height: 1.1,
                                     ),
                                   ),
-                                  const TextSpan(
+                                  TextSpan(
                                     text: 'Viagens',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.black87,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurface,
                                     ),
                                   ),
                                 ],
@@ -380,12 +386,12 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   'Gastos por Viagem',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black87,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 GestureDetector(
@@ -444,11 +450,11 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -478,19 +484,19 @@ class _HistoricoViagensPageState extends State<HistoricoViagensPage> {
               children: [
                 Text(
                   viagem.destino,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 15,
-                    color: Colors.black87,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   _formatarReal(valor),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 16,
-                    color: Colors.black87,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),

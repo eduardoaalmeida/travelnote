@@ -92,7 +92,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -115,7 +115,10 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
         children: [
           IconButton(
             onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+            icon: Icon(
+              Icons.arrow_back,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
           ),
           Expanded(
             child: Center(
@@ -124,12 +127,12 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 height: 55,
                 fit: BoxFit.contain,
                 errorBuilder: (_, __, ___) => RichText(
-                  text: const TextSpan(
+                  text: TextSpan(
                     children: [
                       TextSpan(
                         text: 'Travel',
                         style: TextStyle(
-                          color: Color(0xFF0F172A),
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                         ),
@@ -159,9 +162,9 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
       margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+        border: Border.all(color: Theme.of(context).dividerColor, width: 1.2),
       ),
       child: Row(
         children: [
@@ -191,17 +194,17 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
               children: [
                 Text(
                   nomeViagem,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
-                    color: Color(0xFF0F172A),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   widget.viagem.periodo,
-                  style: const TextStyle(
-                    color: Color(0xFF64748B),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
@@ -274,12 +277,12 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
         RichText(
           text: TextSpan(
             children: [
-              const TextSpan(
+              TextSpan(
                 text: 'Roteiro ',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               TextSpan(
@@ -313,12 +316,12 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     return ListView(
       padding: const EdgeInsets.all(18),
       children: [
-        const Text(
+        Text(
           'Compromissos',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF0F172A),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 18),
@@ -343,12 +346,12 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     return ListView(
       padding: const EdgeInsets.all(18),
       children: [
-        const Text(
+        Text(
           'Anotações',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF0F172A),
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 18),
@@ -400,9 +403,9 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+          border: Border.all(color: Theme.of(context).dividerColor, width: 1.2),
         ),
         child: Row(
           children: [
@@ -430,18 +433,18 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 children: [
                   Text(
                     titulo,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: Color(0xFF0F172A),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 3),
                   Text(
                     subtitulo,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
-                      color: Color(0xFF64748B),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -517,7 +520,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
       context: context,
       barrierDismissible: true,
       builder: (ctx) => Dialog(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).cardColor,
         surfaceTintColor: Colors.transparent,
         insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -531,10 +534,10 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 Center(
                   child: Text(
                     isNew ? 'Cadastro de $tipo' : 'Editar $tipo',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF0F172A),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -685,7 +688,10 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
   }) => TextField(
     controller: controller,
     maxLines: maxLines,
-    style: const TextStyle(fontSize: 14, color: Color(0xFF0F172A)),
+    style: TextStyle(
+      fontSize: 14,
+      color: Theme.of(context).colorScheme.onSurface,
+    ),
     decoration: InputDecoration(
       hintText: hint,
       hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
@@ -723,15 +729,15 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
         height: 52,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(25),
-          border: Border.all(color: const Color(0xFFCBD5E1), width: 1.2),
+          border: Border.all(color: Theme.of(context).dividerColor, width: 1.2),
         ),
         child: Text(
           texto,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Color(0xFF0F172A),
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 15,
           ),
         ),
@@ -752,24 +758,28 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
               ),
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0F172A),
-                backgroundColor: Colors.white,
+                backgroundColor: Theme.of(context).cardColor,
                 side: const BorderSide(color: Color(0xFFE2E8F0), width: 1.5),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.edit_outlined, size: 18, color: Color(0xFF0F172A)),
+                  Icon(
+                    Icons.edit_outlined,
+                    size: 18,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                   SizedBox(width: 8),
                   Text(
                     'Editar',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
-                      color: Color(0xFF0F172A),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -781,15 +791,17 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             child: OutlinedButton(
               onPressed: null,
               style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF0F172A),
-                backgroundColor: const Color(0xFFFEE2E2),
+                foregroundColor: Theme.of(context).colorScheme.onSurface,
+                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? const Color(0xFF3D1515)
+                    : const Color(0xFFFEE2E2),
                 side: const BorderSide(color: Color(0xFFFCA5A5), width: 1.5),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
@@ -797,14 +809,14 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
-                      color: Color(0xFF0F172A),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   SizedBox(width: 8),
                   Icon(
                     Icons.delete_outline,
                     size: 18,
-                    color: Color(0xFF0F172A),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ],
               ),

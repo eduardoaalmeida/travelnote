@@ -138,7 +138,7 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -149,14 +149,17 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 10,
+                ),
                 child: Text(
                   'Selecione o tipo de viagem',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F172A),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -190,7 +193,9 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
                   ),
                   subtitle: Text(
                     opt['subtitle'] as String,
-                    style: const TextStyle(color: Color(0xFF64748B)),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   trailing: isSelected
                       ? const Icon(Icons.check_circle, color: Color(0xFF0284C7))
@@ -217,10 +222,10 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
       padding: const EdgeInsets.only(bottom: 6),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF64748B),
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
           letterSpacing: 0.5,
         ),
       ),
@@ -236,7 +241,7 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
       hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 15),
       prefixIcon: prefixIcon,
       filled: true,
-      fillColor: Colors.white,
+      fillColor: Theme.of(context).cardColor,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(15),
@@ -265,7 +270,7 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -276,9 +281,9 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
                 children: [
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back,
-                      color: Color(0xFF0F172A),
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   Expanded(
@@ -296,13 +301,13 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
 
               const SizedBox(height: 25),
 
-              const Center(
+              Center(
                 child: Text(
                   'Cadastro de Viagem',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F172A),
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -310,18 +315,18 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
               const SizedBox(height: 25),
 
               RichText(
-                text: const TextSpan(
+                text: TextSpan(
                   children: [
                     TextSpan(
                       text: 'Onde começa sua\n',
                       style: TextStyle(
                         fontSize: 34,
                         fontWeight: FontWeight.w900,
-                        color: Color(0xFF0F172A),
+                        color: Theme.of(context).colorScheme.onSurface,
                         height: 1.15,
                       ),
                     ),
-                    TextSpan(
+                    const TextSpan(
                       text: 'próxima história?',
                       style: TextStyle(
                         fontSize: 34,
@@ -336,10 +341,10 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
 
               const SizedBox(height: 10),
 
-              const Text(
+              Text(
                 'Preencha os detalhes para que possamos organizar cada momento especial do seu roteiro.',
                 style: TextStyle(
-                  color: Color(0xFF64748B),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 15,
                   height: 1.4,
                 ),
@@ -349,6 +354,9 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
 
               _buildLabel('DESTINO'),
               TextField(
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 controller: _destinoController,
                 decoration: _buildInputDecoration(
                   hintText: 'Para onde você vai?',
@@ -411,6 +419,9 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
 
               _buildLabel('ORÇAMENTO PREVISTO'),
               TextField(
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 controller: _orcamentoController,
                 keyboardType: TextInputType.number,
                 inputFormatters: [
@@ -445,10 +456,10 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
                     vertical: 14,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(15),
                     border: Border.all(
-                      color: const Color(0xFFE2E8F0),
+                      color: Theme.of(context).dividerColor,
                       width: 1.2,
                     ),
                   ),
@@ -466,17 +477,19 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
                           children: [
                             Text(
                               _selectedTipo,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                                color: Color(0xFF0F172A),
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               _selectedSubtitle,
-                              style: const TextStyle(
-                                color: Color(0xFF64748B),
+                              style: TextStyle(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                                 fontSize: 12,
                               ),
                             ),
@@ -500,6 +513,9 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
 
               _buildLabel('ANOTAÇÕES'),
               TextField(
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
                 controller: _anotacoesController,
                 maxLines: 4,
                 decoration: InputDecoration(
@@ -510,7 +526,7 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
                     fontSize: 15,
                   ),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).cardColor,
                   contentPadding: const EdgeInsets.all(16),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(15),
