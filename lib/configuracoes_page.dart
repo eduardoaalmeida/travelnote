@@ -45,9 +45,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
         final prefs = data['preferencias'] as Map<String, dynamic>?;
         if (prefs != null) {
           final noturno = (prefs['modoNoturno'] as bool?) ?? false;
-          // Só sincroniza se for true (restaura dark mode salvo)
-          // Nunca chama setModoNoturno(false) ao abrir a tela para não resetar o tema
-          if (noturno) ThemeNotifier.instance.setModoNoturno(true);
+          ThemeNotifier.instance.setModoNoturno(noturno);
           setState(() {
             _idioma = (prefs['idioma'] as String?) ?? 'Português';
             _pais = (prefs['pais'] as String?) ?? 'Brasil';
