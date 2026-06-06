@@ -6,6 +6,7 @@ import 'navbar.dart';
 import 'perfil_page.dart';
 import 'politica_privacidade_page.dart';
 import 'login_page.dart';
+import 'notificacoes_page.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class ConfiguracoesPage extends StatefulWidget {
@@ -45,7 +46,9 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
         final prefs = data['preferencias'] as Map<String, dynamic>?;
         if (prefs != null) {
           final noturno = (prefs['modoNoturno'] as bool?) ?? false;
-          ThemeNotifier.instance.setModoNoturno(noturno);
+          // Só sincroniza se for true (restaura dark mode salvo)
+          // Nunca chama setModoNoturno(false) ao abrir a tela para não resetar o tema
+          if (noturno) ThemeNotifier.instance.setModoNoturno(true);
           setState(() {
             _idioma = (prefs['idioma'] as String?) ?? 'Português';
             _pais = (prefs['pais'] as String?) ?? 'Brasil';
@@ -292,11 +295,13 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                         trailingIcon: _notificacoesAtivas
                             ? Icons.notifications_none
                             : Icons.notifications_off_outlined,
-                        onTap: () async {
-                          setState(
-                            () => _notificacoesAtivas = !_notificacoesAtivas,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const NotificacoesPage(),
+                            ),
                           );
-                          await _salvarPreferencias();
                         },
                       ),
                       Builder(
