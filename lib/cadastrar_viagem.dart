@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class CadastrarViagemPage extends StatefulWidget {
   const CadastrarViagemPage({super.key});
@@ -22,7 +25,39 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
   final TextEditingController _orcamentoController = TextEditingController();
   final TextEditingController _anotacoesController = TextEditingController();
 
+  Future<String> _buscarImagemDoDestino(String destino) async {
+    const apiKey = 'rBNcrwVXtidr63AzwXo13F5vqvI1OAS1s4b53pM7OUJqScRs3nPdDmOZ';
+
+    final destinoFormatado = Uri.encodeComponent('$destino turismo cidade');
+    final url = Uri.parse(
+      'https://api.pexels.com/v1/search?query=$destinoFormatado&per_page=1&locale=pt-BR',
+    );
+
+    final response = await http.get(url, headers: {'Authorization': apiKey});
+
+    if (response.statusCode == 200) {
+      final dados = jsonDecode(response.body);
+
+      if (dados['photos'] != null && dados['photos'].isNotEmpty) {
+        return dados['photos'][0]['src']['medium'];
+      }
+    }
+
+    return '';
+  }
+
   Future<void> _cadastrarViagem() async {
+    final usuario = FirebaseAuth.instance.currentUser;
+
+    if (usuario == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Você precisa estar logado para cadastrar uma viagem'),
+        ),
+      );
+      return;
+    }
+
     if (_destinoController.text.isEmpty ||
         _dataInicio == null ||
         _dataFim == null ||
@@ -33,6 +68,7 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
       return;
     }
 
+    final imagemUrl = await _buscarImagemDoDestino(_destinoController.text);
     await FirebaseFirestore.instance.collection('viagens').add({
       'destino': _destinoController.text,
       'dataInicio': Timestamp.fromDate(_dataInicio!),
@@ -40,8 +76,16 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
       'orcamento': _orcamentoController.text,
       'tipo': _selectedTipo,
       'anotacoes': _anotacoesController.text,
+      'imagemUrl': imagemUrl,
+
+      // Campos que vinculam a viagem ao usuário logado
+      'usuarioId': usuario.uid,
+      'criado_por': usuario.email ?? '',
+
       'criadoEm': FieldValue.serverTimestamp(),
     });
+
+    if (!mounted) return;
 
     showDialog(
       context: context,

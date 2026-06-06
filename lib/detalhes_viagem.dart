@@ -170,17 +170,17 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              viagens[viagemAtual]['imagem'] ?? 'assets/images/paris.png',
+            child: Image.network(
+              widget.viagem.imagemUrl,
               width: 90,
               height: 80,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
+              errorBuilder: (context, error, stackTrace) => Container(
                 width: 90,
                 height: 80,
                 color: const Color(0xFFE0F2FE),
                 child: const Icon(
-                  Icons.flight,
+                  Icons.image_not_supported_outlined,
                   color: Color(0xFF23D2B5),
                   size: 36,
                 ),

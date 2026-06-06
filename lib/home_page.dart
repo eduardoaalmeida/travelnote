@@ -162,6 +162,11 @@ class HomePage extends StatelessWidget {
                   StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('viagens')
+                        .where(
+                          'usuarioId',
+                          isEqualTo:
+                              FirebaseAuth.instance.currentUser?.uid ?? '',
+                        )
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -362,16 +367,19 @@ class _ViagemCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(14),
-              child: Image.asset(
-                'assets/images/paris.png',
+              child: Image.network(
+                viagem.imagemUrl,
                 width: 84,
                 height: 84,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Image.network(
-                  viagem.imagemUrl,
+                errorBuilder: (context, error, stackTrace) => Container(
                   width: 84,
                   height: 84,
-                  fit: BoxFit.cover,
+                  color: const Color(0xFFE0F2FE),
+                  child: const Icon(
+                    Icons.image_not_supported_outlined,
+                    color: Color(0xFF0284C7),
+                  ),
                 ),
               ),
             ),
