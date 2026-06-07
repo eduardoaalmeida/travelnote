@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'opcoes_firebase.dart';
@@ -12,15 +11,13 @@ import 'perfil_page.dart';
 import 'agenda_page.dart';
 import 'configuracoes_page.dart';
 import 'alterar_dados_page.dart';
-import 'editar_perfil_page.dart' hide HomePage;
 import 'politica_privacidade_page.dart';
 import 'roteiro_page.dart';
-import 'detalhes_viagem.dart';
-import 'cadastrar_viagem.dart';
 import 'viagens_page.dart';
 import 'notificacoes_page.dart';
 import 'historico_viagens_page.dart';
 import 'theme_notifier.dart';
+import 'viagem_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -152,7 +149,13 @@ class _MeuAppState extends State<MeuApp> {
         '/configuracoes': (_) => const ConfiguracoesPage(),
         '/alterar-dados': (_) => const AlterarDadosPage(),
         '/politica': (_) => const PoliticaPrivacidadePage(),
-        '/roteiro': (_) => const RoteiroPage(),
+        '/roteiro': (context) {
+          final viagem = ModalRoute.of(context)?.settings.arguments;
+          if (viagem is Viagem) {
+            return RoteiroPage(viagem: viagem);
+          }
+          return const ViagensPage();
+        },
 
         '/viagens': (_) => const ViagensPage(),
         '/notificacoes': (_) => const NotificacoesPage(),
