@@ -1,8 +1,15 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import 'navbar.dart';
+import 'viagem_model.dart';
 
 class LocalRoteiro {
-  String numero;
+  final String id;
+  final int ordem;
   String nome;
   String distancia;
   String data;
@@ -10,70 +17,101 @@ class LocalRoteiro {
   bool concluido;
 
   LocalRoteiro({
-    required this.numero,
+    required this.id,
+    required this.ordem,
     required this.nome,
     this.distancia = '',
     required this.data,
     required this.horario,
     this.concluido = false,
   });
+
+  factory LocalRoteiro.fromDoc(QueryDocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return LocalRoteiro(
+      id: doc.id,
+      ordem: data['ordem'] is int ? data['ordem'] as int : 0,
+      nome: (data['nome'] ?? data['titulo'] ?? '') as String,
+      distancia: (data['distancia'] ?? '') as String,
+      data: (data['data'] ?? '') as String,
+      horario: (data['horario'] ?? '') as String,
+      concluido: (data['concluido'] ?? false) as bool,
+    );
+  }
 }
 
 class RoteiroPage extends StatefulWidget {
-  const RoteiroPage({super.key});
+  final Viagem viagem;
+  final String? roteiroId;
+  final String? roteiroTitulo;
+  final String? roteiroSubtitulo;
+
+  const RoteiroPage({
+    super.key,
+    required this.viagem,
+    this.roteiroId,
+    this.roteiroTitulo,
+    this.roteiroSubtitulo,
+  });
 
   @override
   State<RoteiroPage> createState() => _RoteiroPageState();
 }
 
 class _RoteiroPageState extends State<RoteiroPage> {
-  final List<LocalRoteiro> _locais = [
-    LocalRoteiro(
-      numero: '01',
-      nome: 'Visita a Torre Eiffel',
-      distancia: '',
-      data: '10/06/2026',
-      horario: '09:30HRS',
-      concluido: true,
-    ),
-    LocalRoteiro(
-      numero: '02',
-      nome: 'Museu do Louvre',
-      distancia: '4 KM DE DISTANCIA',
-      data: '10/06/2026',
-      horario: '11:30HRS',
-      concluido: true,
-    ),
-    LocalRoteiro(
-      numero: '03',
-      nome: 'Catedral de Notre-Dame',
-      distancia: '2.3 KM DE DISTANCIA',
-      data: '10/06/2026',
-      horario: '13:30HRS',
-      concluido: true,
-    ),
-    LocalRoteiro(
-      numero: '04',
-      nome: 'Jardim de Luxemburgo',
-      distancia: '6 KM DE DISTANCIA',
-      data: '10/06/2026',
-      horario: '14:00HRS',
-      concluido: true,
-    ),
-    LocalRoteiro(
-      numero: '05',
-      nome: 'Arco do Triunfo',
-      distancia: '1.3 KM DE DISTANCIA',
-      data: '10/06/2026',
-      horario: '16:40HRS',
-      concluido: false,
-    ),
-  ];
+  final List<LocalRoteiro> _locais = [];
+  StreamSubscription<QuerySnapshot>? _subscription;
+  late final CollectionReference _locaisRef;
+  bool _carregando = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final viagemRef = FirebaseFirestore.instance
+        .collection('viagens')
+        .doc(widget.viagem.id);
+
+    _locaisRef = widget.roteiroId == null
+        ? viagemRef.collection('locais_roteiro')
+        : viagemRef
+              .collection('roteiro')
+              .doc(widget.roteiroId)
+              .collection('locais');
+
+    _subscription = _locaisRef.orderBy('ordem').snapshots().listen((snap) {
+      if (!mounted) return;
+      setState(() {
+        _locais
+          ..clear()
+          ..addAll(snap.docs.map(LocalRoteiro.fromDoc));
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
+  String get _tituloPagina {
+    final subtitulo = widget.roteiroSubtitulo?.trim();
+    if (subtitulo != null && subtitulo.isNotEmpty) {
+      return 'Visitas $subtitulo';
+    }
+
+    final titulo = widget.roteiroTitulo?.trim();
+    if (titulo != null && titulo.isNotEmpty) {
+      return 'Visitas $titulo';
+    }
+
+    return 'Visitas da viagem';
+  }
 
   void _abrirCadastro() {
     final tituloCtrl = TextEditingController();
     final distanciaCtrl = TextEditingController();
-    final dataCtrl = TextEditingController(text: '10/06/2026');
+    final dataCtrl = TextEditingController(text: widget.viagem.dataInicio);
     final horarioCtrl = TextEditingController(text: '09:30HRS');
 
     _mostrarModal(
@@ -83,21 +121,15 @@ class _RoteiroPageState extends State<RoteiroPage> {
       dataCtrl: dataCtrl,
       horarioCtrl: horarioCtrl,
       botaoLabel: 'Cadastrar Local',
-      onSalvar: () {
+      onSalvar: () async {
         if (tituloCtrl.text.trim().isEmpty) return;
-        setState(() {
-          final numero = (_locais.length + 1).toString().padLeft(2, '0');
-          _locais.add(
-            LocalRoteiro(
-              numero: numero,
-              nome: tituloCtrl.text.trim(),
-              distancia: distanciaCtrl.text.trim(),
-              data: dataCtrl.text.trim(),
-              horario: horarioCtrl.text.trim(),
-            ),
-          );
-        });
         Navigator.pop(context);
+        await _criarLocal(
+          nome: tituloCtrl.text.trim(),
+          distancia: distanciaCtrl.text.trim(),
+          data: dataCtrl.text.trim(),
+          horario: horarioCtrl.text.trim(),
+        );
       },
     );
   }
@@ -115,17 +147,113 @@ class _RoteiroPageState extends State<RoteiroPage> {
       distanciaCtrl: distanciaCtrl,
       dataCtrl: dataCtrl,
       horarioCtrl: horarioCtrl,
-      botaoLabel: 'Salvar Alterações',
-      onSalvar: () {
-        setState(() {
-          _locais[index]
-            ..nome = tituloCtrl.text.trim()
-            ..distancia = distanciaCtrl.text.trim()
-            ..data = dataCtrl.text.trim()
-            ..horario = horarioCtrl.text.trim();
-        });
+      botaoLabel: 'Salvar Alteracoes',
+      onSalvar: () async {
+        if (tituloCtrl.text.trim().isEmpty) return;
         Navigator.pop(context);
+        await _atualizarLocal(
+          docId: local.id,
+          nome: tituloCtrl.text.trim(),
+          distancia: distanciaCtrl.text.trim(),
+          data: dataCtrl.text.trim(),
+          horario: horarioCtrl.text.trim(),
+        );
       },
+      onExcluir: () async {
+        Navigator.pop(context);
+        await _excluirLocal(local.id);
+      },
+    );
+  }
+
+  Future<void> _criarLocal({
+    required String nome,
+    required String distancia,
+    required String data,
+    required String horario,
+  }) async {
+    setState(() => _carregando = true);
+    try {
+      final email = FirebaseAuth.instance.currentUser?.email ?? '';
+      await _locaisRef.add({
+        'nome': nome,
+        'distancia': distancia,
+        'data': data,
+        'horario': horario,
+        'concluido': false,
+        'ordem': _locais.length,
+        'criado_por': email,
+        'criado_em': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      _mostrarErro('Erro ao salvar local: $e');
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
+  }
+
+  Future<void> _atualizarLocal({
+    required String docId,
+    required String nome,
+    required String distancia,
+    required String data,
+    required String horario,
+  }) async {
+    setState(() => _carregando = true);
+    try {
+      await _locaisRef.doc(docId).update({
+        'nome': nome,
+        'distancia': distancia,
+        'data': data,
+        'horario': horario,
+        'atualizado_em': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      _mostrarErro('Erro ao atualizar local: $e');
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
+  }
+
+  Future<void> _alternarConcluido(LocalRoteiro local) async {
+    try {
+      await _locaisRef.doc(local.id).update({
+        'concluido': !local.concluido,
+        'atualizado_em': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      _mostrarErro('Erro ao atualizar status: $e');
+    }
+  }
+
+  Future<void> _excluirLocal(String docId) async {
+    setState(() => _carregando = true);
+    try {
+      await _locaisRef.doc(docId).delete();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Local excluido com sucesso!'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      _mostrarErro('Erro ao excluir local: $e');
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
+  }
+
+  void _mostrarErro(String mensagem) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensagem),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 
@@ -136,7 +264,8 @@ class _RoteiroPageState extends State<RoteiroPage> {
     required TextEditingController dataCtrl,
     required TextEditingController horarioCtrl,
     required String botaoLabel,
-    required VoidCallback onSalvar,
+    required Future<void> Function() onSalvar,
+    Future<void> Function()? onExcluir,
   }) {
     showDialog(
       context: context,
@@ -165,15 +294,15 @@ class _RoteiroPageState extends State<RoteiroPage> {
                 ),
                 const SizedBox(height: 20),
 
-                _labelModal('TÍTULO DA VISITA'),
+                _labelModal('TITULO DA VISITA'),
                 _campoModal(
                   controller: tituloCtrl,
-                  hint: 'Ex: Visita à Torre Eiffel',
+                  hint: 'Ex: Visita a Torre Eiffel',
                   icone: Icons.location_on_outlined,
                 ),
                 const SizedBox(height: 14),
 
-                _labelModal('DISTÂNCIA (opcional)'),
+                _labelModal('DISTANCIA (opcional)'),
                 _campoModal(
                   controller: distanciaCtrl,
                   hint: 'Ex: 2.3 KM DE DISTANCIA',
@@ -197,7 +326,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _labelModal('HORÁRIO'),
+                          _labelModal('HORARIO'),
                           _campoModal(
                             controller: horarioCtrl,
                             hint: '09:30HRS',
@@ -214,7 +343,11 @@ class _RoteiroPageState extends State<RoteiroPage> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: onSalvar,
+                    onPressed: _carregando
+                        ? null
+                        : () {
+                            onSalvar();
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF23D2B5),
                       foregroundColor: Colors.white,
@@ -232,6 +365,35 @@ class _RoteiroPageState extends State<RoteiroPage> {
                     ),
                   ),
                 ),
+
+                if (onExcluir != null) ...[
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: OutlinedButton(
+                      onPressed: _carregando
+                          ? null
+                          : () {
+                              onExcluir();
+                            },
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFFFCA5A5)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Excluir item',
+                        style: TextStyle(
+                          color: Color(0xFFEF4444),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+
                 const SizedBox(height: 10),
 
                 SizedBox(
@@ -262,9 +424,13 @@ class _RoteiroPageState extends State<RoteiroPage> {
   }
 
   Future<void> _selecionarData(TextEditingController ctrl) async {
+    final inicial =
+        _parseData(ctrl.text) ??
+        _parseData(widget.viagem.dataInicio) ??
+        DateTime.now();
     final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime(2026, 6, 10),
+      initialDate: inicial,
       firstDate: DateTime(2024),
       lastDate: DateTime(2030),
       builder: (context, child) => Theme(
@@ -278,6 +444,16 @@ class _RoteiroPageState extends State<RoteiroPage> {
       ctrl.text =
           '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
     }
+  }
+
+  DateTime? _parseData(String data) {
+    final partes = data.split('/');
+    if (partes.length != 3) return null;
+    final dia = int.tryParse(partes[0]);
+    final mes = int.tryParse(partes[1]);
+    final ano = int.tryParse(partes[2]);
+    if (dia == null || mes == null || ano == null) return null;
+    return DateTime(ano, mes, dia);
   }
 
   @override
@@ -295,7 +471,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
           'assets/images/logo_completa.png',
           height: 55,
           fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => RichText(
+          errorBuilder: (context, error, stackTrace) => RichText(
             text: const TextSpan(
               children: [
                 TextSpan(
@@ -325,15 +501,27 @@ class _RoteiroPageState extends State<RoteiroPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Visitas dia 10/06/26',
-              style: TextStyle(
+            Text(
+              _tituloPagina,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF101828),
               ),
             ),
             const SizedBox(height: 18),
+
+            if (_locais.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Text(
+                  'Nenhum local cadastrado.',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
 
             ...List.generate(_locais.length, (i) {
               final local = _locais[i];
@@ -364,7 +552,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
                         ),
                         alignment: Alignment.center,
                         child: Text(
-                          local.numero,
+                          (i + 1).toString().padLeft(2, '0'),
                           maxLines: 1,
                           softWrap: false,
                           textAlign: TextAlign.center,
@@ -417,11 +605,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
                       ),
 
                       GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            local.concluido = !local.concluido;
-                          });
-                        },
+                        onTap: () => _alternarConcluido(local),
                         child: Icon(
                           local.concluido
                               ? Icons.check_circle
@@ -451,7 +635,7 @@ class _RoteiroPageState extends State<RoteiroPage> {
             const SizedBox(height: 12),
 
             GestureDetector(
-              onTap: _abrirCadastro,
+              onTap: _carregando ? null : _abrirCadastro,
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -501,7 +685,8 @@ class _RoteiroPageState extends State<RoteiroPage> {
                 'assets/images/imagem_login.png',
                 height: 160,
                 fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                errorBuilder: (context, error, stackTrace) =>
+                    const SizedBox.shrink(),
               ),
             ),
 

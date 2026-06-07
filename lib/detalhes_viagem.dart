@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'navbar.dart';
 import 'roteiro_page.dart';
 import 'viagem_model.dart';
@@ -13,82 +16,222 @@ class DetalhesViagemPage extends StatefulWidget {
 }
 
 class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
+  // ── Abas ──────────────────────────────────────────────────────────────────
   int abaSelecionada = 0;
   final abas = ['Roteiro', 'Compromissos', 'Anotações'];
-  int viagemAtual = 0;
 
-  List<Map<String, dynamic>> viagens = [
-    {
-      'nome': 'Paris',
-      'dataInicio': '10',
-      'dataFim': '13',
-      'mes': 'Jun',
-      'imagem': 'assets/images/paris.png',
-      'roteiro': [
-        {'titulo': 'Dia 10', 'subtitulo': 'TORRE EIFFEL • 09:00'},
-        {'titulo': 'Dia 11', 'subtitulo': 'TORRE EIFFEL • 09:00'},
-        {'titulo': 'Dia 12', 'subtitulo': 'TORRE EIFFEL • 09:00'},
-        {'titulo': 'Dia 13', 'subtitulo': 'TORRE EIFFEL • 09:00'},
-      ],
-      'compromissos': [
-        {'titulo': 'Jantar com Amigos', 'subtitulo': '11/06/2026 • 19:30HRS'},
-        {'titulo': 'Reunião de Negócios', 'subtitulo': '11/06/2026 • 11:00HRS'},
-        {'titulo': 'Compromisso 3', 'subtitulo': '13/06/2026 • 09:00HRS'},
-      ],
-      'anotacoes': [
-        {
-          'titulo': 'Restaurante X',
-          'subtitulo':
-              'LOCALIZADO PRÓXIMO À TORRE\nEIFFEL. ÓTIMO RESTAURANTE E PREÇO\nBOM',
-        },
-        {
-          'titulo': 'Restaurante X',
-          'subtitulo':
-              'LOCALIZADO PRÓXIMO À TORRE\nEIFFEL. ÓTIMO RESTAURANTE E PREÇO\nBOM',
-        },
-      ],
-    },
-  ];
+  // ── Dados carregados do Firestore ─────────────────────────────────────────
+  List<Map<String, String>> roteiroItems = [];
+  List<Map<String, String>> compromissosItems = [];
+  List<Map<String, String>> anotacoesItems = [];
 
-  late List<Map<String, String>> roteiroItems;
-  late List<Map<String, String>> compromissosItems;
-  late List<Map<String, String>> anotacoesItems;
+  // ── Streams em tempo real (um por subcoleção) ─────────────────────────────
+  StreamSubscription<QuerySnapshot>? _subRoteiro;
+  StreamSubscription<QuerySnapshot>? _subCompromissos;
+  StreamSubscription<QuerySnapshot>? _subAnotacoes;
 
+  // ── Referência base: viagens/{id} ─────────────────────────────────────────
+  // Segue o padrão de viagens_page.dart — coleção raiz 'viagens' + doc.id
+  late final DocumentReference _viagemRef;
+
+  // ── Estado de carregamento global ─────────────────────────────────────────
+  bool _carregando = false;
+
+  // ── Getters de exibição (lidos do objeto Viagem recebido) ─────────────────
+  String get nomeViagem => widget.viagem.destino;
+  String get periodoViagem => widget.viagem.periodo;
+
+  // ─────────────────────────────────────────────────────────────────────────
   @override
   void initState() {
     super.initState();
-    _carregarViagem(0);
+
+    _viagemRef = FirebaseFirestore.instance
+        .collection('viagens')
+        .doc(widget.viagem.id);
+
+    _assinarRoteiro();
+    _assinarCompromissos();
+    _assinarAnotacoes();
   }
 
-  void _carregarViagem(int index) {
-    if (index >= 0 && index < viagens.length) {
-      viagemAtual = index;
-      roteiroItems = List<Map<String, String>>.from(
-        viagens[index]['roteiro'] as List<dynamic>,
+  @override
+  void dispose() {
+    _subRoteiro?.cancel();
+    _subCompromissos?.cancel();
+    _subAnotacoes?.cancel();
+    super.dispose();
+  }
+
+  // ── Streams em tempo real ─────────────────────────────────────────────────
+
+  void _assinarRoteiro() {
+    _subRoteiro = _viagemRef
+        .collection('roteiro')
+        .orderBy('ordem')
+        .snapshots()
+        .listen((snap) {
+          if (!mounted) return;
+          setState(() {
+            roteiroItems = snap.docs.map((d) {
+              final data = d.data();
+              return {
+                'id': d.id,
+                'titulo': (data['titulo'] ?? '') as String,
+                'subtitulo': (data['subtitulo'] ?? '') as String,
+              };
+            }).toList();
+          });
+        });
+  }
+
+  void _assinarCompromissos() {
+    _subCompromissos = _viagemRef
+        .collection('compromissos')
+        .orderBy('ordem')
+        .snapshots()
+        .listen((snap) {
+          if (!mounted) return;
+          setState(() {
+            compromissosItems = snap.docs.map((d) {
+              final data = d.data();
+              return {
+                'id': d.id,
+                'titulo': (data['titulo'] ?? '') as String,
+                'subtitulo': (data['subtitulo'] ?? '') as String,
+              };
+            }).toList();
+          });
+        });
+  }
+
+  void _assinarAnotacoes() {
+    _subAnotacoes = _viagemRef
+        .collection('anotacoes')
+        .orderBy('ordem')
+        .snapshots()
+        .listen((snap) {
+          if (!mounted) return;
+          setState(() {
+            anotacoesItems = snap.docs.map((d) {
+              final data = d.data();
+              return {
+                'id': d.id,
+                'titulo': (data['titulo'] ?? '') as String,
+                'subtitulo': (data['subtitulo'] ?? '') as String,
+              };
+            }).toList();
+          });
+        });
+  }
+
+  // ── CRUD genérico ─────────────────────────────────────────────────────────
+
+  String _nomeSubcolecao(int aba) {
+    if (aba == 0) return 'roteiro';
+    if (aba == 1) return 'compromissos';
+    return 'anotacoes';
+  }
+
+  List<Map<String, String>> _listaAtual(int aba) {
+    if (aba == 0) return roteiroItems;
+    if (aba == 1) return compromissosItems;
+    return anotacoesItems;
+  }
+
+  /// CREATE — adiciona documento na subcoleção correspondente
+  Future<void> _criarItem({
+    required int aba,
+    required String titulo,
+    required String subtitulo,
+  }) async {
+    if (titulo.isEmpty) return;
+    setState(() => _carregando = true);
+    try {
+      final colecao = _nomeSubcolecao(aba);
+      final lista = _listaAtual(aba);
+      final email = FirebaseAuth.instance.currentUser?.email ?? '';
+
+      await _viagemRef.collection(colecao).add({
+        'titulo': titulo,
+        'subtitulo': subtitulo,
+        'ordem': lista.length, // posição na lista
+        'criado_por': email,
+        'criado_em': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao salvar: $e'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
       );
-      compromissosItems = List<Map<String, String>>.from(
-        viagens[index]['compromissos'] as List<dynamic>,
-      );
-      anotacoesItems = List<Map<String, String>>.from(
-        viagens[index]['anotacoes'] as List<dynamic>,
-      );
+    } finally {
+      if (mounted) setState(() => _carregando = false);
     }
   }
 
-  String get nomeViagem => widget.viagem.destino;
-  String get dataInicio => widget.viagem.dataInicio;
-  String get dataFim => widget.viagem.dataFim;
-  String get mesAno => '';
-
-  void _atualizarViagem(String nome, String inicio, String fim, String mes) {
-    setState(() {
-      viagens[viagemAtual]['nome'] = nome;
-      viagens[viagemAtual]['dataInicio'] = inicio;
-      viagens[viagemAtual]['dataFim'] = fim;
-      viagens[viagemAtual]['mes'] = mes;
-    });
+  /// UPDATE — atualiza título e subtítulo pelo docId
+  Future<void> _atualizarItem({
+    required int aba,
+    required String docId,
+    required String titulo,
+    required String subtitulo,
+  }) async {
+    if (titulo.isEmpty) return;
+    setState(() => _carregando = true);
+    try {
+      await _viagemRef.collection(_nomeSubcolecao(aba)).doc(docId).update({
+        'titulo': titulo,
+        'subtitulo': subtitulo,
+        'atualizado_em': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao atualizar: $e'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
   }
 
+  /// DELETE — remove documento pelo docId
+  Future<void> _excluirItem({required int aba, required String docId}) async {
+    setState(() => _carregando = true);
+    try {
+      await _viagemRef.collection(_nomeSubcolecao(aba)).doc(docId).delete();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Item excluído com sucesso!'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao excluir: $e'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
+  }
+
+  // ── Build ─────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,6 +242,11 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             _cabecalho(),
             _cardViagem(),
             _abas(),
+            if (_carregando)
+              const LinearProgressIndicator(
+                color: Color(0xFF23D2B5),
+                minHeight: 2,
+              ),
             Expanded(child: _conteudo()),
             _botoes(),
           ],
@@ -108,6 +256,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Cabeçalho ─────────────────────────────────────────────────────────────
   Widget _cabecalho() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 20, 18, 10),
@@ -126,7 +275,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 'assets/images/logo_completa.png',
                 height: 55,
                 fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => RichText(
+                errorBuilder: (context, error, stackTrace) => RichText(
                   text: TextSpan(
                     children: [
                       TextSpan(
@@ -137,7 +286,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                           fontSize: 20,
                         ),
                       ),
-                      TextSpan(
+                      const TextSpan(
                         text: 'Note',
                         style: TextStyle(
                           color: Color(0xFF23D2B5),
@@ -157,8 +306,9 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Card da viagem ────────────────────────────────────────────────────────
   Widget _cardViagem() {
-    final content = Container(
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -202,7 +352,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  widget.viagem.periodo,
+                  periodoViagem,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                     fontSize: 14,
@@ -220,10 +370,9 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
         ],
       ),
     );
-
-    return content;
   }
 
+  // ── Abas ──────────────────────────────────────────────────────────────────
   Widget _abas() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -264,6 +413,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Conteúdo da aba ───────────────────────────────────────────────────────
   Widget _conteudo() {
     if (abaSelecionada == 0) return _roteiro();
     if (abaSelecionada == 1) return _compromissos();
@@ -303,11 +453,12 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             (i + 1).toString().padLeft(2, '0'),
             item['titulo'] ?? '',
             item['subtitulo'] ?? '',
-
             clicavel: true,
             index: i,
           );
         }),
+        const SizedBox(height: 10),
+        _botaoAdicionar('Adicionar Roteiro +'),
       ],
     );
   }
@@ -331,7 +482,6 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             (i + 1).toString().padLeft(2, '0'),
             item['titulo'] ?? '',
             item['subtitulo'] ?? '',
-
             clicavel: true,
             index: i,
           );
@@ -361,7 +511,6 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             (i + 1).toString().padLeft(2, '0'),
             item['titulo'] ?? '',
             item['subtitulo'] ?? '',
-
             clicavel: true,
             index: i,
           );
@@ -372,6 +521,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Item de lista ─────────────────────────────────────────────────────────
   Widget _item(
     String numero,
     String titulo,
@@ -383,9 +533,17 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
       onTap: clicavel
           ? () {
               if (abaSelecionada == 0) {
+                final item = index != null ? roteiroItems[index] : null;
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => RoteiroPage()),
+                  MaterialPageRoute(
+                    builder: (_) => RoteiroPage(
+                      viagem: widget.viagem,
+                      roteiroId: item?['id'],
+                      roteiroTitulo: item?['titulo'],
+                      roteiroSubtitulo: item?['subtitulo'],
+                    ),
+                  ),
                 );
               } else {
                 _openEditor(
@@ -462,6 +620,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Modal de edição / cadastro ────────────────────────────────────────────
   void _openEditor({
     required int aba,
     String? titulo,
@@ -469,6 +628,11 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     bool isNew = false,
     int? index,
   }) {
+    // docId só existe para itens já salvos no Firestore
+    final String? docId = (!isNew && index != null)
+        ? _listaAtual(aba)[index]['id']
+        : null;
+
     final titleController = TextEditingController(text: titulo ?? '');
     final subtitleController = TextEditingController(text: subtitulo ?? '');
     final horaController = TextEditingController();
@@ -603,10 +767,11 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       final savedTitle = titleController.text.trim();
                       String savedSub = subtitleController.text.trim();
 
+                      // Compromissos: concatena data + horário
                       if (aba == 1 && horaController.text.trim().isNotEmpty) {
                         savedSub = '$savedSub • ${horaController.text.trim()}';
                       }
@@ -615,32 +780,21 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
 
                       Navigator.of(ctx).pop();
 
-                      setState(() {
-                        final novoItem = {
-                          'titulo': savedTitle,
-                          'subtitulo': savedSub,
-                        };
-
-                        if (aba == 0) {
-                          if (isNew) {
-                            roteiroItems.add(novoItem);
-                          } else if (index != null) {
-                            roteiroItems[index] = novoItem;
-                          }
-                        } else if (aba == 1) {
-                          if (isNew) {
-                            compromissosItems.add(novoItem);
-                          } else if (index != null) {
-                            compromissosItems[index] = novoItem;
-                          }
-                        } else {
-                          if (isNew) {
-                            anotacoesItems.add(novoItem);
-                          } else if (index != null) {
-                            anotacoesItems[index] = novoItem;
-                          }
-                        }
-                      });
+                      // ── Persiste no Firestore ─────────────────────
+                      if (isNew) {
+                        await _criarItem(
+                          aba: aba,
+                          titulo: savedTitle,
+                          subtitulo: savedSub,
+                        );
+                      } else if (docId != null) {
+                        await _atualizarItem(
+                          aba: aba,
+                          docId: docId,
+                          titulo: savedTitle,
+                          subtitulo: savedSub,
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF23D2B5),
@@ -659,6 +813,34 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                     ),
                   ),
                 ),
+
+                // Botão excluir item — aparece só na edição
+                if (!isNew && docId != null) ...[
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: OutlinedButton(
+                      onPressed: () async {
+                        Navigator.of(ctx).pop();
+                        await _excluirItem(aba: aba, docId: docId);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFFFCA5A5)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Excluir item',
+                        style: TextStyle(
+                          color: Color(0xFFEF4444),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -667,6 +849,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Helpers de UI ─────────────────────────────────────────────────────────
   Widget _labelPopup(String texto) => Padding(
     padding: const EdgeInsets.only(bottom: 6),
     child: Text(
@@ -716,14 +899,12 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
 
   Widget _botaoAdicionar(String texto) {
     return InkWell(
-      onTap: () {
-        _openEditor(
-          aba: abaSelecionada,
-          titulo: '',
-          subtitulo: '',
-          isNew: true,
-        );
-      },
+      onTap: () => _openEditor(
+        aba: abaSelecionada,
+        titulo: '',
+        subtitulo: '',
+        isNew: true,
+      ),
       borderRadius: BorderRadius.circular(25),
       child: Container(
         height: 52,
@@ -745,6 +926,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Botões rodapé ─────────────────────────────────────────────────────────
   Widget _botoes() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(18, 5, 18, 20),
@@ -754,7 +936,9 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
             child: OutlinedButton(
               onPressed: () => Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => RoteiroPage()),
+                MaterialPageRoute(
+                  builder: (_) => RoteiroPage(viagem: widget.viagem),
+                ),
               ),
               style: OutlinedButton.styleFrom(
                 foregroundColor: const Color(0xFF0F172A),
@@ -773,7 +957,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                     size: 18,
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Text(
                     'Editar',
                     style: TextStyle(
@@ -789,7 +973,8 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
           const SizedBox(width: 16),
           Expanded(
             child: OutlinedButton(
-              onPressed: null,
+              // Excluir todos os itens da aba atual com confirmação
+              onPressed: () => _confirmarExcluirAba(),
               style: OutlinedButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.onSurface,
                 backgroundColor: Theme.of(context).brightness == Brightness.dark
@@ -812,7 +997,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Icon(
                     Icons.delete_outline,
                     size: 18,
@@ -821,6 +1006,89 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Confirma e exclui todos os itens da aba visível (comportamento original)
+  void _confirmarExcluirAba() {
+    final lista = _listaAtual(abaSelecionada);
+    if (lista.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Nenhum item para excluir.'),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    final tipo = abaSelecionada == 0
+        ? 'Roteiro'
+        : abaSelecionada == 1
+        ? 'Compromissos'
+        : 'Anotações';
+
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(context).cardColor,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Excluir $tipo'),
+        content: Text(
+          'Todos os itens de "$tipo" desta viagem serão excluídos. Continuar?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(ctx).pop();
+              setState(() => _carregando = true);
+              try {
+                // Exclui todos os docs da subcoleção em batch
+                final colecao = _nomeSubcolecao(abaSelecionada);
+                final snap = await _viagemRef.collection(colecao).get();
+                final batch = FirebaseFirestore.instance.batch();
+                for (final doc in snap.docs) {
+                  batch.delete(doc.reference);
+                }
+                await batch.commit();
+
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('$tipo excluído com sucesso!'),
+                    backgroundColor: Colors.redAccent,
+                    behavior: SnackBarBehavior.floating,
+                    duration: const Duration(seconds: 2),
+                  ),
+                );
+              } catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Erro ao excluir: $e'),
+                    backgroundColor: Colors.redAccent,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              } finally {
+                if (mounted) setState(() => _carregando = false);
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+              elevation: 0,
+            ),
+            child: const Text('Excluir tudo'),
           ),
         ],
       ),
