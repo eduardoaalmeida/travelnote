@@ -246,6 +246,183 @@ class _RoteiroPageState extends State<RoteiroPage> {
     }
   }
 
+  /// Exclui o roteiro inteiro (locais em batch + documento pai) e volta para
+  /// DetalhesViagemPage. Só disponível quando [widget.roteiroId] != null.
+  Future<void> _confirmarExcluirRoteiro() async {
+    final confirmar = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(context).cardColor,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Excluir Roteiro',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+        content: Text(
+          'Todos os locais de "${_tituloPagina}" serão excluídos permanentemente. Deseja continuar?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmar != true || !mounted) return;
+
+    setState(() => _carregando = true);
+    try {
+      // 1. Cancela o stream antes de deletar para evitar rebuilds desnecessários
+      await _subscription?.cancel();
+      _subscription = null;
+
+      // 2. Exclui todos os documentos da subcoleção de locais em batch
+      final locaisSnap = await _locaisRef.get();
+      if (locaisSnap.docs.isNotEmpty) {
+        final batch = FirebaseFirestore.instance.batch();
+        for (final doc in locaisSnap.docs) {
+          batch.delete(doc.reference);
+        }
+        await batch.commit();
+      }
+
+      // 3. Exclui o documento pai do roteiro (viagens/{id}/roteiro/{roteiroId})
+      await FirebaseFirestore.instance
+          .collection('viagens')
+          .doc(widget.viagem.id)
+          .collection('roteiro')
+          .doc(widget.roteiroId)
+          .delete();
+
+      if (!mounted) return;
+
+      // 4. Volta para DetalhesViagemPage com snackbar de confirmação
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Roteiro excluído com sucesso!'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (mounted) setState(() => _carregando = false);
+      _mostrarErro('Erro ao excluir roteiro: $e');
+    }
+  }
+
+  void _mostrarErro(String mensagem) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensagem),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  Future<void> _criarLocal({
+    required String nome,
+    required String distancia,
+    required String data,
+    required String horario,
+  }) async {
+    setState(() => _carregando = true);
+    try {
+      final email = FirebaseAuth.instance.currentUser?.email ?? '';
+      await _locaisRef.add({
+        'nome': nome,
+        'distancia': distancia,
+        'data': data,
+        'horario': horario,
+        'concluido': false,
+        'ordem': _locais.length,
+        'criado_por': email,
+        'criado_em': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      _mostrarErro('Erro ao salvar local: $e');
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
+  }
+
+  Future<void> _atualizarLocal({
+    required String docId,
+    required String nome,
+    required String distancia,
+    required String data,
+    required String horario,
+  }) async {
+    setState(() => _carregando = true);
+    try {
+      await _locaisRef.doc(docId).update({
+        'nome': nome,
+        'distancia': distancia,
+        'data': data,
+        'horario': horario,
+        'atualizado_em': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      _mostrarErro('Erro ao atualizar local: $e');
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
+  }
+
+  Future<void> _alternarConcluido(LocalRoteiro local) async {
+    try {
+      await _locaisRef.doc(local.id).update({
+        'concluido': !local.concluido,
+        'atualizado_em': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      _mostrarErro('Erro ao atualizar status: $e');
+    }
+  }
+
+  Future<void> _excluirLocal(String docId) async {
+    setState(() => _carregando = true);
+    try {
+      await _locaisRef.doc(docId).delete();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Local excluido com sucesso!'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      _mostrarErro('Erro ao excluir local: $e');
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
+  }
+
   void _mostrarErro(String mensagem) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -677,6 +854,52 @@ class _RoteiroPageState extends State<RoteiroPage> {
                 ),
               ),
             ),
+
+            // Botão visível apenas quando há um roteiroId (roteiro específico)
+            if (widget.roteiroId != null) ...[
+              const SizedBox(height: 12),
+              GestureDetector(
+                onTap: _carregando ? null : _confirmarExcluirRoteiro,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF3D1515)
+                        : const Color(0xFFFEE2E2),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: const Color(0xFFFCA5A5),
+                      width: 1.2,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.delete_outline,
+                        size: 18,
+                        color: _carregando
+                            ? Colors.grey
+                            : const Color(0xFFEF4444),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Excluir Roteiro',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                          color: _carregando
+                              ? Colors.grey
+                              : const Color(0xFFEF4444),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
 
             const SizedBox(height: 24),
 
