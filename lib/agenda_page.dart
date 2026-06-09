@@ -98,7 +98,7 @@ class _AgendaPageState extends State<AgendaPage> {
               .get();
 
           for (final localDoc in locaisSnap.docs) {
-            final dados = localDoc.data() as Map<String, dynamic>;
+            final dados = localDoc.data();
             final dataStr = (dados['data'] ?? '') as String;
             final dt = _parseData(dataStr);
             if (dt == null) continue;
@@ -156,7 +156,7 @@ class _AgendaPageState extends State<AgendaPage> {
         borderRadius: BorderRadius.circular(15),
         border: deRoteiro
             ? Border.all(
-                color: const Color(0xFF10B981).withOpacity(0.4),
+                color: const Color(0xFF10B981).withValues(alpha: 0.4),
                 width: 1.2,
               )
             : null,
@@ -196,7 +196,7 @@ class _AgendaPageState extends State<AgendaPage> {
                           vertical: 2,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF10B981).withOpacity(0.12),
+                          color: const Color(0xFF10B981).withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: const Text(

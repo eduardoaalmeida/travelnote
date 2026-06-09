@@ -462,10 +462,11 @@ class _CriarContaPageState extends State<CriarContaPage> {
                                               ),
                                             );
                                           } finally {
-                                            if (mounted)
+                                            if (mounted) {
                                               setState(
                                                 () => _carregando = false,
                                               );
+                                            }
                                           }
                                         },
                                   child: Center(
