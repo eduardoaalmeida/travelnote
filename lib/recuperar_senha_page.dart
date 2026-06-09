@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'auxiliar_firebase.dart';
 
@@ -255,10 +254,11 @@ class _RecuperarSenhaPageState extends State<RecuperarSenhaPage> {
                                               ),
                                             );
                                           } finally {
-                                            if (mounted)
+                                            if (mounted) {
                                               setState(
                                                 () => _carregando = false,
                                               );
+                                            }
                                           }
                                         },
                                   child: Center(

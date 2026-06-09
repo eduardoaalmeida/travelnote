@@ -133,7 +133,7 @@ class _PerfilPageState extends State<PerfilPage> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.015),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.015),
             blurRadius: 10,
             spreadRadius: 2,
             offset: const Offset(0, 4),
@@ -146,7 +146,7 @@ class _PerfilPageState extends State<PerfilPage> {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: leadingBgColor ?? iconColor.withOpacity(0.1),
+            color: leadingBgColor ?? iconColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(14),
           ),
           child: Icon(icon, color: iconColor, size: 24),

@@ -79,9 +79,7 @@ class _MeuAppState extends State<MeuApp> {
           onPrimary: Colors.white,
           surface: Color(0xFF111827), // fundo dos cards
           onSurface: Colors.white, // textos sobre fundo
-          onSurfaceVariant: Color(0xFFCBD5E1), // textos secundários
-          background: Color(0xFF0D1117), // fundo da tela (preto suave)
-          onBackground: Colors.white,
+          onSurfaceVariant: Color(0xFFCBD5E1),
           outline: Color(0xFF2D3748), // bordas/divisores
         ),
         scaffoldBackgroundColor: const Color(0xFF0D1117),
