@@ -56,7 +56,7 @@ class _ViagensPageState extends State<ViagensPage> {
           setState(() {
             viagensMock.clear();
             for (var doc in snapshot.docs) {
-              final data = doc.data() as Map<String, dynamic>;
+              final data = doc.data();
               viagensMock.add(
                 Viagem(
                   id: doc.id,
@@ -64,9 +64,9 @@ class _ViagensPageState extends State<ViagensPage> {
                   imagemUrl:
                       data['imagemUrl'] ??
                       'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
-                  dataInicio: data['dataInicio'] ?? '',
-                  dataFim: data['dataFim'] ?? '',
-                  orcamento: data['orcamento'] ?? '',
+                  dataInicio: _formatarCampoData(data['dataInicio']),
+                  dataFim: _formatarCampoData(data['dataFim']),
+                  orcamento: _limparOrcamento(data['orcamento'] ?? ''),
                   anotacoes: data['anotacoes'] ?? '',
                   tipo: data['tipo'] ?? 'Lazer',
                   confirmada: data['confirmada'] ?? true,
@@ -90,6 +90,22 @@ class _ViagensPageState extends State<ViagensPage> {
     super.dispose();
   }
 
+  String _formatarCampoData(dynamic valor) {
+    if (valor == null) return '';
+    if (valor is String) return valor;
+    if (valor is Timestamp) {
+      final d = valor.toDate();
+      return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+    }
+    return '';
+  }
+
+  String _limparOrcamento(dynamic valor) {
+    if (valor == null) return '';
+    if (valor is num) return valor.toStringAsFixed(2).replaceAll('.', ',');
+    return valor.toString();
+  }
+
   void _aplicarFiltros() {
     setState(() {
       _expandidoIndex = null;
@@ -101,8 +117,9 @@ class _ViagensPageState extends State<ViagensPage> {
           final busca = _buscaDestinoController.text.toLowerCase();
           return v.destino.toLowerCase().contains(busca);
         } else if (_filtroBotao == 2) {
-          if (_tipoSelecionado == null || _tipoSelecionado == 'Todos')
+          if (_tipoSelecionado == null || _tipoSelecionado == 'Todos') {
             return true;
+          }
           return v.tipo == _tipoSelecionado;
         }
         return true;
@@ -359,8 +376,9 @@ class _ViagensPageState extends State<ViagensPage> {
                             text: _periodoInicio,
                           );
                           await _selecionarData(ctrl);
-                          if (ctrl.text != _periodoInicio)
+                          if (ctrl.text != _periodoInicio) {
                             setState(() => _periodoInicio = ctrl.text);
+                          }
                         }),
                       ),
                       Padding(
@@ -377,8 +395,9 @@ class _ViagensPageState extends State<ViagensPage> {
                         child: _campoPeriodo(_periodoFim, () async {
                           final ctrl = TextEditingController(text: _periodoFim);
                           await _selecionarData(ctrl);
-                          if (ctrl.text != _periodoFim)
+                          if (ctrl.text != _periodoFim) {
                             setState(() => _periodoFim = ctrl.text);
+                          }
                         }),
                       ),
                     ],
@@ -519,7 +538,7 @@ class _ViagensPageState extends State<ViagensPage> {
                                   BoxShadow(
                                     color: Theme.of(
                                       context,
-                                    ).colorScheme.onSurface.withOpacity(0.05),
+                                    ).colorScheme.onSurface.withValues(alpha: 0.05),
                                     blurRadius: 6,
                                     offset: const Offset(0, 2),
                                   ),
@@ -553,7 +572,7 @@ class _ViagensPageState extends State<ViagensPage> {
                               BoxShadow(
                                 color: Theme.of(
                                   context,
-                                ).colorScheme.onSurface.withOpacity(0.06),
+                                ).colorScheme.onSurface.withValues(alpha: 0.06),
                                 blurRadius: 10,
                                 offset: const Offset(0, 3),
                               ),
@@ -588,7 +607,7 @@ class _ViagensPageState extends State<ViagensPage> {
                 width: 72,
                 height: 72,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   width: 72,
                   height: 72,
                   color: Colors.grey.shade200,
@@ -649,7 +668,7 @@ class _ViagensPageState extends State<ViagensPage> {
                   width: 64,
                   height: 64,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+                  errorBuilder: (_, _, _) => Container(
                     width: 64,
                     height: 64,
                     color: Colors.grey.shade200,
@@ -1045,7 +1064,7 @@ class _DuplicarViagemPageState extends State<DuplicarViagemPage> {
                   BoxShadow(
                     color: Theme.of(
                       context,
-                    ).colorScheme.onSurface.withOpacity(0.05),
+                    ).colorScheme.onSurface.withValues(alpha: 0.05),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -1060,7 +1079,7 @@ class _DuplicarViagemPageState extends State<DuplicarViagemPage> {
                       width: 64,
                       height: 64,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      errorBuilder: (_, _, _) => Container(
                         width: 64,
                         height: 64,
                         color: Colors.grey.shade200,

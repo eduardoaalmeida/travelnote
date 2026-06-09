@@ -1,68 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'notification_service.dart';
 import 'viagens_page.dart';
 import 'historico_viagens_page.dart';
-
-enum TipoNotificacao {
-  contagemRegressiva,
-  orcamentoExcedido,
-  eventoAgendado,
-  localMarcado,
-  viagemCompartilhada,
-}
-
-class Notificacao {
-  final TipoNotificacao tipo;
-  final String titulo;
-  final String descricao;
-  final String tempo;
-  bool lida;
-
-  Notificacao({
-    required this.tipo,
-    required this.titulo,
-    required this.descricao,
-    required this.tempo,
-    this.lida = false,
-  });
-}
-
-final List<Notificacao> _notificacoesMock = [
-  Notificacao(
-    tipo: TipoNotificacao.contagemRegressiva,
-    titulo: 'Contagem regressiva',
-    descricao: 'Paris começa em 5 dias',
-    tempo: 'Agora mesmo',
-    lida: false,
-  ),
-  Notificacao(
-    tipo: TipoNotificacao.orcamentoExcedido,
-    titulo: 'Orçamento excedido',
-    descricao: 'Passou R\$ 320 do previsto.',
-    tempo: 'Há 10 min',
-    lida: false,
-  ),
-  Notificacao(
-    tipo: TipoNotificacao.eventoAgendado,
-    titulo: 'Evento agendado',
-    descricao: 'Jantar com Amigos amanhã 18:30',
-    tempo: 'Há 1 hora',
-    lida: false,
-  ),
-  Notificacao(
-    tipo: TipoNotificacao.localMarcado,
-    titulo: 'Local marcado',
-    descricao: 'Torre Eiffel visitada!',
-    tempo: 'Há 2 horas',
-    lida: true,
-  ),
-  Notificacao(
-    tipo: TipoNotificacao.viagemCompartilhada,
-    titulo: 'Viagem compartilhada',
-    descricao: 'Maria aceitou o convite.',
-    tempo: 'Há 3 horas',
-    lida: true,
-  ),
-];
+import 'package:intl/intl.dart';
 
 class NotificacoesPage extends StatefulWidget {
   const NotificacoesPage({super.key});
@@ -72,49 +13,82 @@ class NotificacoesPage extends StatefulWidget {
 }
 
 class _NotificacoesPageState extends State<NotificacoesPage> {
-  final List<Notificacao> _notificacoes = List.from(_notificacoesMock);
+  List<NotificacaoModel> _notificacoes = [];
+  StreamSubscription<List<NotificacaoModel>>? _subscription;
+  bool _carregando = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _subscription = NotificacaoService.stream().listen((lista) {
+      if (!mounted) return;
+      setState(() {
+        _notificacoes = lista;
+        _carregando = false;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
 
   int get _novasCount => _notificacoes.where((n) => !n.lida).length;
+
+  String _formatarTempoNotificacao(String tempoOriginal) {
+    try {
+      final data = DateTime.parse(tempoOriginal);
+      return DateFormat('dd/MM/yyyy HH:mm').format(data);
+    } catch (_) {
+      return tempoOriginal;
+    }
+  }
 
   _ConfigNotificacao _config(TipoNotificacao tipo) {
     switch (tipo) {
       case TipoNotificacao.contagemRegressiva:
-        return _ConfigNotificacao(
+        return const _ConfigNotificacao(
           icone: Icons.timer_outlined,
-          corFundo: const Color(0xFFE0F7F0),
-          corIcone: const Color(0xFF1BCE8A),
+          corFundo: Color(0xFFE0F7F0),
+          corIcone: Color(0xFF1BCE8A),
         );
       case TipoNotificacao.orcamentoExcedido:
-        return _ConfigNotificacao(
+        return const _ConfigNotificacao(
           icone: Icons.warning_amber_rounded,
-          corFundo: const Color(0xFFFFF0F0),
-          corIcone: const Color(0xFFE53935),
+          corFundo: Color(0xFFFFF0F0),
+          corIcone: Color(0xFFE53935),
         );
       case TipoNotificacao.eventoAgendado:
-        return _ConfigNotificacao(
+        return const _ConfigNotificacao(
           icone: Icons.calendar_today_outlined,
-          corFundo: const Color(0xFFFFF8E1),
-          corIcone: const Color(0xFFFFA726),
+          corFundo: Color(0xFFFFF8E1),
+          corIcone: Color(0xFFFFA726),
         );
       case TipoNotificacao.localMarcado:
-        return _ConfigNotificacao(
+        return const _ConfigNotificacao(
           icone: Icons.check_circle_outline,
-          corFundo: const Color(0xFFF3F4F6),
-          corIcone: const Color(0xFF9E9E9E),
+          corFundo: Color(0xFFF3F4F6),
+          corIcone: Color(0xFF9E9E9E),
         );
       case TipoNotificacao.viagemCompartilhada:
-        return _ConfigNotificacao(
+        return const _ConfigNotificacao(
           icone: Icons.person_add_outlined,
-          corFundo: const Color(0xFFF3F4F6),
-          corIcone: const Color(0xFF9E9E9E),
+          corFundo: Color(0xFFF3F4F6),
+          corIcone: Color(0xFF9E9E9E),
         );
     }
   }
 
-  void _aoTocar(Notificacao notificacao) {
-    setState(() => notificacao.lida = true);
+  void _aoTocar(NotificacaoModel notif) async {
+    if (!notif.lida && notif.id != null) {
+      await NotificacaoService.marcarLida(notif.id!);
+    }
 
-    switch (notificacao.tipo) {
+    if (!mounted) return;
+
+    switch (notif.tipo) {
       case TipoNotificacao.contagemRegressiva:
       case TipoNotificacao.eventoAgendado:
       case TipoNotificacao.localMarcado:
@@ -127,18 +101,16 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
       case TipoNotificacao.orcamentoExcedido:
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const HistoricoViagensPage()),
+          MaterialPageRoute(
+            builder: (_) => HistoricoViagensPage(viagemIdInicial: notif.viagemId),
+          ),
         );
         break;
     }
   }
 
-  void _marcarTodasLidas() {
-    setState(() {
-      for (final n in _notificacoes) {
-        n.lida = true;
-      }
-    });
+  void _marcarTodasLidas() async {
+    await NotificacaoService.marcarTodasLidas();
   }
 
   @override
@@ -199,43 +171,48 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
             ),
         ],
       ),
-      body: _notificacoes.isEmpty
-          ? const Center(
-              child: Text(
-                'Nenhuma notificação.',
-                style: TextStyle(color: Colors.grey),
-              ),
-            )
-          : ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              itemCount: _notificacoes.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 10),
-              itemBuilder: (context, index) {
-                final notif = _notificacoes[index];
-                final config = _config(notif.tipo);
-                return _buildCardNotificacao(notif, config);
-              },
-            ),
+      body: _carregando
+          ? const Center(child: CircularProgressIndicator())
+          : _notificacoes.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.notifications_none, size: 56, color: Colors.grey.shade300),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Nenhuma notificação.',
+                        style: TextStyle(color: Colors.grey, fontSize: 15),
+                      ),
+                    ],
+                  ),
+                )
+              : ListView.separated(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  itemCount: _notificacoes.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    final notif = _notificacoes[index];
+                    final config = _config(notif.tipo);
+                    return _buildCard(notif, config);
+                  },
+                ),
     );
   }
 
-  Widget _buildCardNotificacao(Notificacao notif, _ConfigNotificacao config) {
+  Widget _buildCard(NotificacaoModel notif, _ConfigNotificacao config) {
     return GestureDetector(
       onTap: () => _aoTocar(notif),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: notif.lida ? Colors.white : const Color(0xFFF0FAF6),
+          color: notif.lida ? Theme.of(context).cardColor : const Color(0xFFF0FAF6),
           borderRadius: BorderRadius.circular(14),
-          border: notif.lida
-              ? null
-              : Border.all(color: const Color(0xFFD0F0E4), width: 1),
+          border: notif.lida ? null : Border.all(color: const Color(0xFFD0F0E4), width: 1),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(
-                context,
-              ).colorScheme.onSurface.withValues(alpha: 0.05),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -254,7 +231,6 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
               child: Icon(config.icone, color: config.corIcone, size: 22),
             ),
             const SizedBox(width: 12),
-
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,9 +238,7 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
                   Text(
                     notif.titulo,
                     style: TextStyle(
-                      fontWeight: notif.lida
-                          ? FontWeight.w500
-                          : FontWeight.w700,
+                      fontWeight: notif.lida ? FontWeight.w500 : FontWeight.w700,
                       fontSize: 14,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -276,13 +250,12 @@ class _NotificacoesPageState extends State<NotificacoesPage> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    notif.tempo,
+                    _formatarTempoNotificacao(notif.tempoRelativo),
                     style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
                   ),
                 ],
               ),
             ),
-
             if (!notif.lida)
               Container(
                 width: 8,

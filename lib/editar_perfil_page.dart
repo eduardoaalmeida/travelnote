@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'navbar.dart';
-import 'detalhes_viagem.dart';
 import 'viagem_model.dart';
 
 class HomePage extends StatelessWidget {
@@ -93,7 +92,7 @@ class HomePage extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(
@@ -155,7 +154,7 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 14),
                   ..._proximasViagens
                       .map((v) => _ViagemCard(viagem: v))
-                      .toList(),
+                      ,
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
@@ -218,7 +217,7 @@ class _ViagemCard extends StatelessWidget {
                 width: 72,
                 height: 72,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   width: 72,
                   height: 72,
                   color: Colors.grey.shade200,

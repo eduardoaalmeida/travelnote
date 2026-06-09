@@ -71,8 +71,8 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
     final imagemUrl = await _buscarImagemDoDestino(_destinoController.text);
     await FirebaseFirestore.instance.collection('viagens').add({
       'destino': _destinoController.text,
-      'dataInicio': Timestamp.fromDate(_dataInicio!),
-      'dataFim': Timestamp.fromDate(_dataFim!),
+      'dataInicio': _inicioController.text,   // String "dd/mm/aaaa"
+      'dataFim': _fimController.text,         // String "dd/mm/aaaa"
       'orcamento': _orcamentoController.text,
       'tipo': _selectedTipo,
       'anotacoes': _anotacoesController.text,
@@ -300,15 +300,21 @@ class _CadastrarViagemPageState extends State<CadastrarViagemPage> {
 
   String _formatarOrcamento(String valor) {
     final apenasNumeros = valor.replaceAll(RegExp(r'[^0-9]'), '');
-
-    if (apenasNumeros.isEmpty) {
-      return '';
-    }
+    if (apenasNumeros.isEmpty) return '';
 
     final valorInteiro = int.parse(apenasNumeros);
-    final valorFormatado = (valorInteiro / 100).toStringAsFixed(2);
+    final reais = valorInteiro ~/ 100;
+    final centavos = (valorInteiro % 100).toString().padLeft(2, '0');
 
-    return valorFormatado.replaceAll('.', ',');
+    // Formata os milhãres com ponto
+    final reaisStr = reais.toString();
+    final buffer = StringBuffer();
+    for (int i = 0; i < reaisStr.length; i++) {
+      if (i > 0 && (reaisStr.length - i) % 3 == 0) buffer.write('.');
+      buffer.write(reaisStr[i]);
+    }
+
+    return '${buffer.toString()},$centavos';
   }
 
   @override

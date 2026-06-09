@@ -179,7 +179,7 @@ class _AlterarSenhaPageState extends State<AlterarSenhaPage> {
                                     BoxShadow(
                                       color: Theme.of(
                                         context,
-                                      ).colorScheme.onSurface.withOpacity(0.03),
+                                      ).colorScheme.onSurface.withValues(alpha: 0.03),
                                       blurRadius: 10,
                                       offset: const Offset(0, 4),
                                     ),

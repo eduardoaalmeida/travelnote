@@ -7,9 +7,21 @@ import 'detalhes_viagem.dart';
 import 'cadastrar_viagem.dart';
 import 'notificacoes_page.dart';
 import 'viagens_page.dart';
+import 'notification_service.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    super.initState();
+    NotificacaoService.verificarContagensRegressivas();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +136,7 @@ class HomePage extends StatelessWidget {
                       backgroundColor: const Color(0xFF10B981),
                       foregroundColor: Colors.white,
                       elevation: 4,
-                      shadowColor: const Color(0xFF10B981).withOpacity(0.2),
+                      shadowColor: const Color(0xFF10B981).withValues(alpha: 0.2),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -163,9 +175,9 @@ class HomePage extends StatelessWidget {
                     stream: FirebaseFirestore.instance
                         .collection('viagens')
                         .where(
-                          'usuarioId',
+                          'criado_por',
                           isEqualTo:
-                              FirebaseAuth.instance.currentUser?.uid ?? '',
+                              FirebaseAuth.instance.currentUser?.email ?? '',
                         )
                         .snapshots(),
                     builder: (context, snapshot) {
@@ -356,7 +368,7 @@ class _ViagemCard extends StatelessWidget {
           border: Border.all(color: Theme.of(context).dividerColor, width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.015),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.015),
               blurRadius: 10,
               spreadRadius: 1,
               offset: const Offset(0, 4),

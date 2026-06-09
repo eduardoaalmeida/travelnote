@@ -3,8 +3,8 @@
 ## 📊 Project Information
 
 - **Project Name**: `travelnote`
-- **Generated On**: 2026-05-26 18:08:13 (America/Sao_Paulo / GMT-03:00)
-- **Total Files Processed**: 164
+- **Generated On**: 2026-06-09 17:27:43 (America/Sao_Paulo / GMT-03:00)
+- **Total Files Processed**: 172
 - **Export Tool**: Easy Whole Project to Single Text File for LLMs v1.1.0
 - **Tool Author**: Jota / José Guilherme Pandolfi
 
@@ -30,7 +30,7 @@
 │   │   │   │   │   └── 📁 io/
 │   │   │   │   │       └── 📁 flutter/
 │   │   │   │   │           └── 📁 plugins/
-│   │   │   │   │               └── 📄 GeneratedPluginRegistrant.java (1.72 KB)
+│   │   │   │   │               └── 📄 GeneratedPluginRegistrant.java (2.8 KB)
 │   │   │   │   ├── 📁 kotlin/
 │   │   │   │   │   └── 📁 com/
 │   │   │   │   │       └── 📁 example/
@@ -58,18 +58,19 @@
 │   │   │   │   └── 📄 AndroidManifest.xml (2.19 KB)
 │   │   │   └── 📁 profile/
 │   │   │       └── 📄 AndroidManifest.xml (385 B)
-│   │   └── 📄 build.gradle.kts (1.4 KB)
+│   │   ├── 📄 build.gradle.kts (1.44 KB)
+│   │   └── 📄 google-services.json (1.29 KB)
 │   ├── 📁 build/
 │   │   └── 📁 reports/
 │   │       └── 📁 problems/
-│   │           └── 📄 problems-report.html (127.82 KB)
+│   │           └── 📄 problems-report.html (127.18 KB)
 │   ├── 📁 gradle/
 │   │   └── 📁 wrapper/
 │   │       └── 📄 gradle-wrapper.properties (206 B)
 │   ├── 📄 build.gradle.kts (561 B)
 │   ├── 📄 gradle.properties (140 B)
 │   ├── 📄 local.properties (23 B)
-│   └── 📄 settings.gradle.kts (798 B)
+│   └── 📄 settings.gradle.kts (868 B)
 ├── 📁 assets/
 │   └── 📁 images/
 │       ├── 📄 carregamento.png (694.01 KB)
@@ -121,7 +122,8 @@
 │   │   │   └── 📄 Main.storyboard (1.59 KB)
 │   │   ├── 📄 AppDelegate.swift (555 B)
 │   │   ├── 📄 GeneratedPluginRegistrant.h (378 B)
-│   │   ├── 📄 GeneratedPluginRegistrant.m (1.3 KB)
+│   │   ├── 📄 GeneratedPluginRegistrant.m (2.31 KB)
+│   │   ├── 📄 GoogleService-Info.plist (915 B)
 │   │   ├── 📄 Info.plist (2.23 KB)
 │   │   ├── 📄 Runner-Bridging-Header.h (39 B)
 │   │   └── 📄 SceneDelegate.swift (82 B)
@@ -134,7 +136,7 @@
 │   │   ├── 📁 xcshareddata/
 │   │   │   └── 📁 xcschemes/
 │   │   │       └── 📄 Runner.xcscheme (3.84 KB)
-│   │   └── 📄 project.pbxproj (24.15 KB)
+│   │   └── 📄 project.pbxproj (24.68 KB)
 │   ├── 📁 Runner.xcworkspace/
 │   │   ├── 📁 xcshareddata/
 │   │   │   ├── 📄 IDEWorkspaceChecks.plist (246 B)
@@ -143,27 +145,32 @@
 │   └── 📁 RunnerTests/
 │       └── 📄 RunnerTests.swift (297 B)
 ├── 📁 lib/
-│   ├── 📄 agenda_page.dart (13.42 KB)
-│   ├── 📄 alterar_dados_page.dart (15.17 KB)
-│   ├── 📄 alterar_senha_page.dart (9.57 KB)
-│   ├── 📄 cadastrar_viagem.dart (20.3 KB)
-│   ├── 📄 carregamento_page.dart (1.23 KB)
-│   ├── 📄 configuracoes_page.dart (7.76 KB)
-│   ├── 📄 criar_conta_page.dart (15.73 KB)
-│   ├── 📄 detalhes_viagem.dart (37.55 KB)
-│   ├── 📄 editar_perfil_page.dart (10.29 KB)
-│   ├── 📄 historico_viagens_page.dart (16.3 KB)
-│   ├── 📄 home_page.dart (10.83 KB)
-│   ├── 📄 login_page.dart (11.83 KB)
-│   ├── 📄 main.dart (2.55 KB)
-│   ├── 📄 navbar.dart (2.05 KB)
-│   ├── 📄 notificacoes_page.dart (10.84 KB)
-│   ├── 📄 perfil_page.dart (8.11 KB)
-│   ├── 📄 politica_privacidade_page.dart (2.93 KB)
-│   ├── 📄 recuperar_senha_page.dart (9.82 KB)
-│   ├── 📄 roteiro_page.dart (20.54 KB)
-│   ├── 📄 viagem_model.dart (1.82 KB)
-│   └── 📄 viagens_page.dart (34.09 KB)
+│   ├── 📄 agenda_page.dart (23.38 KB)
+│   ├── 📄 alterar_dados_page.dart (23.79 KB)
+│   ├── 📄 alterar_senha_page.dart (23.48 KB)
+│   ├── 📄 auxiliar_firebase.dart (9.98 KB)
+│   ├── 📄 cadastrar_viagem.dart (22.21 KB)
+│   ├── 📄 carregamento_page.dart (1.95 KB)
+│   ├── 📄 configuracoes_page.dart (15.4 KB)
+│   ├── 📄 criar_conta_page.dart (24.63 KB)
+│   ├── 📄 detalhes_viagem.dart (41.06 KB)
+│   ├── 📄 editar_perfil_page.dart (9.8 KB)
+│   ├── 📄 gasto_model.dart (1.36 KB)
+│   ├── 📄 historico_viagens_page.dart (40.08 KB)
+│   ├── 📄 home_page.dart (17.23 KB)
+│   ├── 📄 login_page.dart (19.3 KB)
+│   ├── 📄 main.dart (6.09 KB)
+│   ├── 📄 navbar.dart (2.28 KB)
+│   ├── 📄 notificacoes_page.dart (9.11 KB)
+│   ├── 📄 notification_service.dart (9.9 KB)
+│   ├── 📄 opcoes_firebase.dart (1.54 KB)
+│   ├── 📄 perfil_page.dart (11.17 KB)
+│   ├── 📄 politica_privacidade_page.dart (3.13 KB)
+│   ├── 📄 recuperar_senha_page.dart (14.63 KB)
+│   ├── 📄 roteiro_page.dart (24.87 KB)
+│   ├── 📄 theme_notifier.dart (476 B)
+│   ├── 📄 viagem_model.dart (1.15 KB)
+│   └── 📄 viagens_page.dart (42.8 KB)
 ├── 📁 linux/
 │   ├── 📁 flutter/
 │   │   ├── 📁 ephemeral/
@@ -185,7 +192,7 @@
 │   │   │   └── 📄 Flutter-Generated.xcconfig (501 B)
 │   │   ├── 📄 Flutter-Debug.xcconfig (49 B)
 │   │   ├── 📄 Flutter-Release.xcconfig (49 B)
-│   │   └── 📄 GeneratedPluginRegistrant.swift (510 B)
+│   │   └── 📄 GeneratedPluginRegistrant.swift (991 B)
 │   ├── 📁 Runner/
 │   │   ├── 📁 Assets.xcassets/
 │   │   │   └── 📁 AppIcon.appiconset/
@@ -238,9 +245,9 @@
 │   ├── 📁 flutter/
 │   │   ├── 📁 ephemeral/
 │   │   ├── 📄 CMakeLists.txt (3.76 KB)
-│   │   ├── 📄 generated_plugin_registrant.cc (164 B)
+│   │   ├── 📄 generated_plugin_registrant.cc (673 B)
 │   │   ├── 📄 generated_plugin_registrant.h (302 B)
-│   │   └── 📄 generated_plugins.cmake (749 B)
+│   │   └── 📄 generated_plugins.cmake (799 B)
 │   ├── 📁 runner/
 │   │   ├── 📁 resources/
 │   │   │   └── 📄 app_icon.ico (32.98 KB)
@@ -257,10 +264,11 @@
 │   │   └── 📄 win32_window.h (3.54 KB)
 │   └── 📄 CMakeLists.txt (4.16 KB)
 ├── 📄 analysis_options.yaml (1.41 KB)
+├── 📄 devtools_options.yaml (187 B)
 ├── 📄 LICENSE (1.07 KB)
-├── 📄 pubspec.lock (22.06 KB)
-├── 📄 pubspec.yaml (3.91 KB)
-└── 📄 README.md (2.04 KB)
+├── 📄 pubspec.lock (26.17 KB)
+├── 📄 pubspec.yaml (4.04 KB)
+└── 📄 README.md (2.52 KB)
 ```
 
 ## 📑 Table of Contents
@@ -276,6 +284,7 @@
 - [📄 android/app/src/main/res/values-night/styles.xml](#📄-android-app-src-main-res-values-night-styles-xml)
 - [📄 android/app/src/main/AndroidManifest.xml](#📄-android-app-src-main-androidmanifest-xml)
 - [📄 android/app/src/profile/AndroidManifest.xml](#📄-android-app-src-profile-androidmanifest-xml)
+- [📄 android/app/google-services.json](#📄-android-app-google-services-json)
 - [📄 android/build/reports/problems/problems-report.html](#📄-android-build-reports-problems-problems-report-html)
 - [📄 android/gradle/wrapper/gradle-wrapper.properties](#📄-android-gradle-wrapper-gradle-wrapper-properties)
 - [📄 android/gradle.properties](#📄-android-gradle-properties)
@@ -322,6 +331,7 @@
 - [📄 windows/runner/win32_window.h](#📄-windows-runner-win32-window-h)
 - [📄 windows/CMakeLists.txt](#📄-windows-cmakelists-txt)
 - [📄 analysis_options.yaml](#📄-analysis-options-yaml)
+- [📄 devtools_options.yaml](#📄-devtools-options-yaml)
 - [📄 pubspec.lock](#📄-pubspec-lock)
 - [📄 pubspec.yaml](#📄-pubspec-yaml)
 - [📄 README.md](#📄-readme-md)
@@ -332,30 +342,31 @@
 
 | Metric | Count |
 |--------|-------|
-| Total Files | 164 |
+| Total Files | 172 |
 | Total Directories | 77 |
-| Text Files | 58 |
-| Binary Files | 106 |
-| Total Size | 6.93 MB |
+| Text Files | 60 |
+| Binary Files | 112 |
+| Total Size | 7.08 MB |
 
 ### 📄 File Types Distribution
 
 | Extension | Count |
 |-----------|-------|
 | `.png` | 42 |
-| `.dart` | 22 |
+| `.dart` | 27 |
 | `.xcconfig` | 10 |
 | `.h` | 9 |
+| `.plist` | 8 |
 | `.xml` | 7 |
-| `.plist` | 7 |
 | `.swift` | 7 |
 | `.txt` | 6 |
-| `.json` | 4 |
+| `.json` | 5 |
 | `.cc` | 4 |
 | `.cpp` | 4 |
 | `.kts` | 3 |
 | `.properties` | 3 |
 | `.xcworkspacedata` | 3 |
+| `.yaml` | 3 |
 | `.html` | 2 |
 | `no extension` | 2 |
 | `.env` | 2 |
@@ -367,7 +378,6 @@
 | `.pbxproj` | 2 |
 | `.cmake` | 2 |
 | `.entitlements` | 2 |
-| `.yaml` | 2 |
 | `.java` | 1 |
 | `.kt` | 1 |
 | `.py` | 1 |
@@ -412,15 +422,15 @@
 ### <a id="📄-android-app-src-main-java-io-flutter-plugins-generatedpluginregistrant-java"></a>📄 `android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java`
 
 **File Info:**
-- **Size**: 1.72 KB
+- **Size**: 2.8 KB
 - **Extension**: `.java`
 - **Language**: `java`
 - **Location**: `android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java`
 - **Relative Path**: `android/app/src/main/java/io/flutter/plugins`
 - **Created**: 2026-05-19 16:45:04 (America/Sao_Paulo / GMT-03:00)
-- **Modified**: 2026-05-19 18:07:04 (America/Sao_Paulo / GMT-03:00)
-- **MD5**: `123c3cc7e7dbcb78c4bd3efcef7f1191`
-- **SHA256**: `5274ccd6fb5cd78d6a036d2529706a71b526e8fbbcf00f770745674e7e3ac125`
+- **Modified**: 2026-06-09 02:01:58 (America/Sao_Paulo / GMT-03:00)
+- **MD5**: `6851bb93346418f197d0c029b03662a5`
+- **SHA256**: `8e4f67d2d1099e697e9908c468ac160f4696eb1c315d896492ab7d865ee6f820`
 - **Encoding**: ASCII
 
 **File code content:**
@@ -443,6 +453,26 @@ import io.flutter.embedding.engine.FlutterEngine;
 public final class GeneratedPluginRegistrant {
   private static final String TAG = "GeneratedPluginRegistrant";
   public static void registerWith(@NonNull FlutterEngine flutterEngine) {
+    try {
+      flutterEngine.getPlugins().add(new io.flutter.plugins.firebase.firestore.FlutterFirebaseFirestorePlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin cloud_firestore, io.flutter.plugins.firebase.firestore.FlutterFirebaseFirestorePlugin", e);
+    }
+    try {
+      flutterEngine.getPlugins().add(new io.flutter.plugins.firebase.auth.FlutterFirebaseAuthPlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin firebase_auth, io.flutter.plugins.firebase.auth.FlutterFirebaseAuthPlugin", e);
+    }
+    try {
+      flutterEngine.getPlugins().add(new io.flutter.plugins.firebase.core.FlutterFirebaseCorePlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin firebase_core, io.flutter.plugins.firebase.core.FlutterFirebaseCorePlugin", e);
+    }
+    try {
+      flutterEngine.getPlugins().add(new io.flutter.plugins.googlesignin.GoogleSignInPlugin());
+    } catch (Exception e) {
+      Log.e(TAG, "Error registering plugin google_sign_in_android, io.flutter.plugins.googlesignin.GoogleSignInPlugin", e);
+    }
     try {
       flutterEngine.getPlugins().add(new com.github.dart_lang.jni.JniPlugin());
     } catch (Exception e) {
@@ -776,6 +806,73 @@ The following files were not included in the text content:
 
 ---
 
+### <a id="📄-android-app-google-services-json"></a>📄 `android/app/google-services.json`
+
+**File Info:**
+- **Size**: 1.29 KB
+- **Extension**: `.json`
+- **Language**: `json`
+- **Location**: `android/app/google-services.json`
+- **Relative Path**: `android/app`
+- **Created**: 2026-06-09 02:01:32 (America/Sao_Paulo / GMT-03:00)
+- **Modified**: 2026-06-09 02:01:32 (America/Sao_Paulo / GMT-03:00)
+- **MD5**: `ef394d8258397e14bcfe97c26b3ab87a`
+- **SHA256**: `4a63489640231301870e7efd1754e608ba45ad0a5b536a8044f2b41d4afe1615`
+- **Encoding**: ASCII
+
+**File code content:**
+
+```json
+{
+  "project_info": {
+    "project_number": "646131190495",
+    "project_id": "travelnote-79d32",
+    "storage_bucket": "travelnote-79d32.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:646131190495:android:6afed9bf7bfa5570b6776a",
+        "android_client_info": {
+          "package_name": "com.example.travelnote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "646131190495-f7pend804pig1mr7rtqotkmcus5n90er.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyADtlTcU2OxYHLAXaulG6nOXwpnB5O21-I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "646131190495-f7pend804pig1mr7rtqotkmcus5n90er.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "646131190495-4ou5uq4qdje933eq4u5o1n0u2m94mk96.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.travelnote"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
+```
+
+---
+
 ## 🚫 Binary/Excluded Files
 
 The following files were not included in the text content:
@@ -785,15 +882,15 @@ The following files were not included in the text content:
 ### <a id="📄-android-build-reports-problems-problems-report-html"></a>📄 `android/build/reports/problems/problems-report.html`
 
 **File Info:**
-- **Size**: 127.82 KB
+- **Size**: 127.18 KB
 - **Extension**: `.html`
 - **Language**: `html`
 - **Location**: `android/build/reports/problems/problems-report.html`
 - **Relative Path**: `android/build/reports/problems`
 - **Created**: 2026-05-19 20:36:32 (America/Sao_Paulo / GMT-03:00)
-- **Modified**: 2026-05-26 17:25:04 (America/Sao_Paulo / GMT-03:00)
-- **MD5**: `34b1356bf93503c411cf835d809ddca0`
-- **SHA256**: `b250c500f828fcddfae37d70f91c97e7e8863dc6af4222a07758232dd2563afa`
+- **Modified**: 2026-06-09 14:39:55 (America/Sao_Paulo / GMT-03:00)
+- **MD5**: `41edf24ec78e08692b100897b02fb7bd`
+- **SHA256**: `531920b98f02ed82239a68e31fbde66a8dd01332419c0c79c0273fe3b30e0a1f`
 - **Encoding**: ASCII
 
 **File code content:**
@@ -2030,15 +2127,15 @@ NS_ASSUME_NONNULL_END
 ### <a id="📄-ios-runner-generatedpluginregistrant-m"></a>📄 `ios/Runner/GeneratedPluginRegistrant.m`
 
 **File Info:**
-- **Size**: 1.3 KB
+- **Size**: 2.31 KB
 - **Extension**: `.m`
 - **Language**: `text`
 - **Location**: `ios/Runner/GeneratedPluginRegistrant.m`
 - **Relative Path**: `ios/Runner`
 - **Created**: 2026-05-19 16:45:04 (America/Sao_Paulo / GMT-03:00)
-- **Modified**: 2026-05-19 18:07:04 (America/Sao_Paulo / GMT-03:00)
-- **MD5**: `85681ac8072a1e0c51ff43065a1a36f9`
-- **SHA256**: `254dcd03881b7ef9306e5ef7c511783a0b34d2e0b640f0ee9e2dc1c73d631e86`
+- **Modified**: 2026-06-09 02:01:58 (America/Sao_Paulo / GMT-03:00)
+- **MD5**: `e430080dcbba0cfc346545554c942517`
+- **SHA256**: `3b46801d8dad534f2a77749c7ea3c9505b88d2497cbc5f1f06d90b2323f451ce`
 - **Encoding**: ASCII
 
 **File code content:**
@@ -2051,6 +2148,30 @@ NS_ASSUME_NONNULL_END
 // clang-format off
 
 #import "GeneratedPluginRegistrant.h"
+
+#if __has_include(<cloud_firestore/FLTFirebaseFirestorePlugin.h>)
+#import <cloud_firestore/FLTFirebaseFirestorePlugin.h>
+#else
+@import cloud_firestore;
+#endif
+
+#if __has_include(<firebase_auth/FLTFirebaseAuthPlugin.h>)
+#import <firebase_auth/FLTFirebaseAuthPlugin.h>
+#else
+@import firebase_auth;
+#endif
+
+#if __has_include(<firebase_core/FLTFirebaseCorePlugin.h>)
+#import <firebase_core/FLTFirebaseCorePlugin.h>
+#else
+@import firebase_core;
+#endif
+
+#if __has_include(<google_sign_in_ios/FLTGoogleSignInPlugin.h>)
+#import <google_sign_in_ios/FLTGoogleSignInPlugin.h>
+#else
+@import google_sign_in_ios;
+#endif
 
 #if __has_include(<pointer_interceptor_ios/PointerInterceptorIosPlugin.h>)
 #import <pointer_interceptor_ios/PointerInterceptorIosPlugin.h>
@@ -2079,6 +2200,10 @@ NS_ASSUME_NONNULL_END
 @implementation GeneratedPluginRegistrant
 
 + (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {
+  [FLTFirebaseFirestorePlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseFirestorePlugin"]];
+  [FLTFirebaseAuthPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseAuthPlugin"]];
+  [FLTFirebaseCorePlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseCorePlugin"]];
+  [FLTGoogleSignInPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTGoogleSignInPlugin"]];
   [PointerInterceptorIosPlugin registerWithRegistrar:[registry registrarForPlugin:@"PointerInterceptorIosPlugin"]];
   [SharedPreferencesPlugin registerWithRegistrar:[registry registrarForPlugin:@"SharedPreferencesPlugin"]];
   [SqflitePlugin registerWithRegistrar:[registry registrarForPlugin:@"SqflitePlugin"]];
@@ -2146,6 +2271,7 @@ class SceneDelegate: FlutterSceneDelegate {
 
 The following files were not included in the text content:
 
+- `ios/Runner/GoogleService-Info.plist`
 - `ios/Runner/Info.plist`
 
 ## 🚫 Binary/Excluded Files
@@ -2227,22 +2353,27 @@ The following files were not included in the text content:
 - `lib/agenda_page.dart`
 - `lib/alterar_dados_page.dart`
 - `lib/alterar_senha_page.dart`
+- `lib/auxiliar_firebase.dart`
 - `lib/cadastrar_viagem.dart`
 - `lib/carregamento_page.dart`
 - `lib/configuracoes_page.dart`
 - `lib/criar_conta_page.dart`
 - `lib/detalhes_viagem.dart`
 - `lib/editar_perfil_page.dart`
+- `lib/gasto_model.dart`
 - `lib/historico_viagens_page.dart`
 - `lib/home_page.dart`
 - `lib/login_page.dart`
 - `lib/main.dart`
 - `lib/navbar.dart`
 - `lib/notificacoes_page.dart`
+- `lib/notification_service.dart`
+- `lib/opcoes_firebase.dart`
 - `lib/perfil_page.dart`
 - `lib/politica_privacidade_page.dart`
 - `lib/recuperar_senha_page.dart`
 - `lib/roteiro_page.dart`
+- `lib/theme_notifier.dart`
 - `lib/viagem_model.dart`
 - `lib/viagens_page.dart`
 
@@ -2770,15 +2901,15 @@ The following files were not included in the text content:
 ### <a id="📄-macos-flutter-generatedpluginregistrant-swift"></a>📄 `macos/Flutter/GeneratedPluginRegistrant.swift`
 
 **File Info:**
-- **Size**: 510 B
+- **Size**: 991 B
 - **Extension**: `.swift`
 - **Language**: `swift`
 - **Location**: `macos/Flutter/GeneratedPluginRegistrant.swift`
 - **Relative Path**: `macos/Flutter`
 - **Created**: 2026-05-19 16:26:13 (America/Sao_Paulo / GMT-03:00)
-- **Modified**: 2026-05-26 17:25:28 (America/Sao_Paulo / GMT-03:00)
-- **MD5**: `f87ae2ddd44278bddfaacb09600cdcb8`
-- **SHA256**: `3459ed437ae31a8d2f02073f4ee090970b45371cba32ef203e6eb0f7ae93cfb2`
+- **Modified**: 2026-06-09 02:01:58 (America/Sao_Paulo / GMT-03:00)
+- **MD5**: `54470883ee2b9e57fd572f67f866d696`
+- **SHA256**: `c42b69e985310fc7926cb38ea678e92c5a301ae558181d445bc80369db4058f3`
 - **Encoding**: ASCII
 
 **File code content:**
@@ -2791,11 +2922,19 @@ The following files were not included in the text content:
 import FlutterMacOS
 import Foundation
 
+import cloud_firestore
+import firebase_auth
+import firebase_core
+import google_sign_in_ios
 import shared_preferences_foundation
 import sqflite_darwin
 import webview_flutter_wkwebview
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+  FLTFirebaseFirestorePlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseFirestorePlugin"))
+  FLTFirebaseAuthPlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseAuthPlugin"))
+  FLTFirebaseCorePlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseCorePlugin"))
+  FLTGoogleSignInPlugin.register(with: registry.registrar(forPlugin: "FLTGoogleSignInPlugin"))
   SharedPreferencesPlugin.register(with: registry.registrar(forPlugin: "SharedPreferencesPlugin"))
   SqflitePlugin.register(with: registry.registrar(forPlugin: "SqflitePlugin"))
   WebViewFlutterPlugin.register(with: registry.registrar(forPlugin: "WebViewFlutterPlugin"))
@@ -3390,15 +3529,15 @@ void RegisterPlugins(flutter::PluginRegistry* registry);
 ### <a id="📄-windows-flutter-generated-plugins-cmake"></a>📄 `windows/flutter/generated_plugins.cmake`
 
 **File Info:**
-- **Size**: 749 B
+- **Size**: 799 B
 - **Extension**: `.cmake`
 - **Language**: `text`
 - **Location**: `windows/flutter/generated_plugins.cmake`
 - **Relative Path**: `windows/flutter`
 - **Created**: 2026-05-19 16:26:14 (America/Sao_Paulo / GMT-03:00)
-- **Modified**: 2026-05-26 17:25:28 (America/Sao_Paulo / GMT-03:00)
-- **MD5**: `baae95d861698457b3c9534c79fad4eb`
-- **SHA256**: `3f02c11f2d7c72d742dd5b3871def3dc815f3ab70615d4a3293e15e7b45eb0e7`
+- **Modified**: 2026-06-09 02:01:58 (America/Sao_Paulo / GMT-03:00)
+- **MD5**: `c25757ce77f72eaf23b23c7a996ec8eb`
+- **SHA256**: `2ad1e547a56536b128fe671df07075a6368435df3ecb165a0823460c90388087`
 - **Encoding**: ASCII
 
 **File code content:**
@@ -3409,6 +3548,9 @@ void RegisterPlugins(flutter::PluginRegistry* registry);
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  cloud_firestore
+  firebase_auth
+  firebase_core
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
@@ -4542,18 +4684,43 @@ linter:
 
 ---
 
+### <a id="📄-devtools-options-yaml"></a>📄 `devtools_options.yaml`
+
+**File Info:**
+- **Size**: 187 B
+- **Extension**: `.yaml`
+- **Language**: `yaml`
+- **Location**: `devtools_options.yaml`
+- **Relative Path**: `root`
+- **Created**: 2026-06-09 02:01:32 (America/Sao_Paulo / GMT-03:00)
+- **Modified**: 2026-06-09 02:01:32 (America/Sao_Paulo / GMT-03:00)
+- **MD5**: `1b16e156b9f8b9f43ca52a78a6f72e80`
+- **SHA256**: `99119330d774616e9e8f151014c3b3cf90a5e858fe4b8e459544eeda2acbc0e8`
+- **Encoding**: ASCII
+
+**File code content:**
+
+```yaml
+description: This file stores settings for Dart & Flutter DevTools.
+documentation: https://docs.flutter.dev/tools/devtools/extensions#configure-extension-enablement-states
+extensions:
+
+```
+
+---
+
 ### <a id="📄-pubspec-lock"></a>📄 `pubspec.lock`
 
 **File Info:**
-- **Size**: 22.06 KB
+- **Size**: 26.17 KB
 - **Extension**: `.lock`
 - **Language**: `text`
 - **Location**: `pubspec.lock`
 - **Relative Path**: `root`
 - **Created**: 2026-05-19 16:26:13 (America/Sao_Paulo / GMT-03:00)
-- **Modified**: 2026-05-26 17:25:04 (America/Sao_Paulo / GMT-03:00)
-- **MD5**: `6d6aa6c235c05ca232b7fd8bbf623f6f`
-- **SHA256**: `3cf19babbdb0b217ec3969e9d4866038f71cab5302f387022e7ef5c7edf1856d`
+- **Modified**: 2026-06-09 15:38:19 (America/Sao_Paulo / GMT-03:00)
+- **MD5**: `edee4ad983a1ba765626644d274b98c5`
+- **SHA256**: `ae6197f388b5711b41d553abcb42e26227234ec5d4e09bab32a0031790e50e50`
 - **Encoding**: ASCII
 
 **File code content:**
@@ -4562,6 +4729,14 @@ linter:
 # Generated by pub
 # See https://dart.dev/tools/pub/glossary#lockfile
 packages:
+  _flutterfire_internals:
+    dependency: transitive
+    description:
+      name: _flutterfire_internals
+      sha256: "0d1f0adfabbab9f46a1a80ce84a4d8b852b6e4dbf53ce413b30e0cf7d3631b71"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.3.72"
   args:
     dependency: transitive
     description:
@@ -4626,6 +4801,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.2"
+  cloud_firestore:
+    dependency: "direct main"
+    description:
+      name: cloud_firestore
+      sha256: df9a5377365860699a96b1810a5bb37ef56db43f8e250e9f758a520f8bf8625a
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.5.0"
+  cloud_firestore_platform_interface:
+    dependency: transitive
+    description:
+      name: cloud_firestore_platform_interface
+      sha256: "26e3c7f192c6b58d95d69d006f5abb722a7df11835568473438a8631041b7468"
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.0.2"
+  cloud_firestore_web:
+    dependency: transitive
+    description:
+      name: cloud_firestore_web
+      sha256: "0cdc8205feb73a779730782f885aaa8c23fa2e02ab57caec6076bbdcef473a41"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.5.0"
   code_assets:
     dependency: transitive
     description:
@@ -4682,6 +4881,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.1"
+  firebase_auth:
+    dependency: "direct main"
+    description:
+      name: firebase_auth
+      sha256: "9905a315f1235a649e29df19b246adde7350a11234837cd605254b8e25144711"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.5.2"
+  firebase_auth_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_auth_platform_interface
+      sha256: f757dc5636ce2b204a82383f7246ef0d9c925f9e96c8c9a4a6c315d673d662bb
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.0.2"
+  firebase_auth_web:
+    dependency: transitive
+    description:
+      name: firebase_auth_web
+      sha256: "1c44330eef3c82068e0c2919b6b015897d49211dcccdf64f90a2ed73ce216ecb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.2.2"
+  firebase_core:
+    dependency: "direct main"
+    description:
+      name: firebase_core
+      sha256: ec46a100a560d3bd5f97f2d89ba7492cb09b6dd0a4a28753d1258f360d6bd9f9
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.10.0"
+  firebase_core_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_core_platform_interface
+      sha256: "4a120366dbf7d5a8ee9438978530b664b855728fb8dcc3a201017660817e555b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.1"
+  firebase_core_web:
+    dependency: transitive
+    description:
+      name: firebase_core_web
+      sha256: "5ad1be848692ec148f2d6a8ad2a3838cb852ea5f3c9e6479a7afce479e1854f8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.8.0"
   fixnum:
     dependency: transitive
     description:
@@ -4734,6 +4981,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.3"
+  google_identity_services_web:
+    dependency: transitive
+    description:
+      name: google_identity_services_web
+      sha256: "5d187c46dc59e02646e10fe82665fc3884a9b71bc1c90c2b8b749316d33ee454"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.3+1"
+  google_sign_in:
+    dependency: "direct main"
+    description:
+      name: google_sign_in
+      sha256: d0a2c3bcb06e607bb11e4daca48bd4b6120f0bbc4015ccebbe757d24ea60ed2a
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.3.0"
+  google_sign_in_android:
+    dependency: transitive
+    description:
+      name: google_sign_in_android
+      sha256: d5e23c56a4b84b6427552f1cf3f98f716db3b1d1a647f16b96dbb5b93afa2805
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.2.1"
+  google_sign_in_ios:
+    dependency: transitive
+    description:
+      name: google_sign_in_ios
+      sha256: "102005f498ce18442e7158f6791033bbc15ad2dcc0afa4cf4752e2722a516c96"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.9.0"
+  google_sign_in_platform_interface:
+    dependency: transitive
+    description:
+      name: google_sign_in_platform_interface
+      sha256: "5f6f79cf139c197261adb6ac024577518ae48fdff8e53205c5373b5f6430a8aa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.5.0"
+  google_sign_in_web:
+    dependency: transitive
+    description:
+      name: google_sign_in_web
+      sha256: "460547beb4962b7623ac0fb8122d6b8268c951cf0b646dd150d60498430e4ded"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.12.4+4"
   hooks:
     dependency: transitive
     description:
@@ -4743,7 +5038,7 @@ packages:
     source: hosted
     version: "1.0.3"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
@@ -4767,7 +5062,7 @@ packages:
     source: hosted
     version: "2.6.0"
   intl:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: intl
       sha256: "3df61194eb431efc39c4ceba583b95633a403f46c9fd341e550ce0bfa50e9aa5"
@@ -4858,10 +5153,10 @@ packages:
     dependency: transitive
     description:
       name: meta
-      sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
+      sha256: "1741988757a65eb6b36abe716829688cf01910bbf91c34354ff7ec1c3de2b349"
       url: "https://pub.dev"
     source: hosted
-    version: "1.17.0"
+    version: "1.18.0"
   native_toolchain_c:
     dependency: transitive
     description:
@@ -5191,10 +5486,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "8161c84903fd860b26bfdefb7963b3f0b68fee7adea0f59ef805ecca346f0c7a"
+      sha256: "949a932224383300f01be9221c39180316445ecb8e7547f70a41a35bf421fb9e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.10"
+    version: "0.7.11"
   typed_data:
     dependency: transitive
     description:
@@ -5302,15 +5597,15 @@ sdks:
 ### <a id="📄-pubspec-yaml"></a>📄 `pubspec.yaml`
 
 **File Info:**
-- **Size**: 3.91 KB
+- **Size**: 4.04 KB
 - **Extension**: `.yaml`
 - **Language**: `yaml`
 - **Location**: `pubspec.yaml`
 - **Relative Path**: `root`
 - **Created**: 2026-05-19 16:26:13 (America/Sao_Paulo / GMT-03:00)
-- **Modified**: 2026-05-19 20:36:32 (America/Sao_Paulo / GMT-03:00)
-- **MD5**: `1fe168e1ea64a5a2dfa46e5b8adb6e16`
-- **SHA256**: `94cb1415517cb2ab258856442008b999262c1120e455bff8a83caa77955ba6e4`
+- **Modified**: 2026-06-09 15:38:15 (America/Sao_Paulo / GMT-03:00)
+- **MD5**: `528254a89d11bc3e698bdcd11e56b0f0`
+- **SHA256**: `35cbf19ddfe819fb956b65c22687566a7f0b0b9644fbba03830daeb34c9f6948`
 - **Encoding**: ASCII
 
 **File code content:**
@@ -5359,6 +5654,12 @@ dependencies:
   shared_preferences: ^2.5.5
   cached_network_image: ^3.4.1
   image_network: ^2.6.0
+  firebase_core: ^4.10.0
+  cloud_firestore: ^6.5.0
+  firebase_auth: ^6.5.2
+  google_sign_in: 6.3.0
+  http: ^1.6.0
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
@@ -5417,15 +5718,15 @@ flutter:
 ### <a id="📄-readme-md"></a>📄 `README.md`
 
 **File Info:**
-- **Size**: 2.04 KB
+- **Size**: 2.52 KB
 - **Extension**: `.md`
 - **Language**: `text`
 - **Location**: `README.md`
 - **Relative Path**: `root`
 - **Created**: 2026-05-19 16:26:13 (America/Sao_Paulo / GMT-03:00)
-- **Modified**: 2026-05-19 16:26:13 (America/Sao_Paulo / GMT-03:00)
-- **MD5**: `b40708d445226e38e4dd439a89dd6965`
-- **SHA256**: `ddfa329b14b22b107948ba40007337a9071de0ed2a511e60ec438937dfc6977d`
+- **Modified**: 2026-06-09 02:01:32 (America/Sao_Paulo / GMT-03:00)
+- **MD5**: `fcea2b659869562bf479bb9a1bcd6e1c`
+- **SHA256**: `d12f42d2ee8efa0d2af46405f176172f819c9f0c0573615b51a5a5dd6e301684`
 - **Encoding**: UTF-8
 
 **File code content:**
@@ -5435,14 +5736,25 @@ flutter:
 
 Aplicativo da Matéria de Dispositivos Móveis
 
-| Integrante | Telas Desenvolvidas | Funcionalidades |
-|---|---|---|
-| **Eduardo Andrade** | • Tela de carregamento <br> • Tela de Login <br> • Tela de Cadastro <br> • Termos de Privacidade <br> <br> • Recuperar Senha | • Aplicativo abrir corretamente <br> • Realizar login <br> • Realizar cadastro <br> • Visualizar termos de privacidade <br> • Solicitar recuperação de senha | <br>
+| Integrante | Telas Desenvolvidas | Funcionalidades | Link Video |
+|---|---|---|---|
+| **Eduardo Andrade** | • Tela de carregamento <br> • Tela de Login <br> • Tela de Cadastro <br> • Termos de Privacidade <br> <br> • Recuperar Senha | • Aplicativo abrir corretamente <br> • Realizar login <br> • Realizar cadastro <br> • Visualizar termos de privacidade <br> • Solicitar recuperação de senha | https://youtu.be/op0e3SbCI3k <br>
 | **Gabriel Carvalho** | • Cadastro de Nova Viagem <br> • Detalhes do Roteiro <br> • Detalhes dos Compromissos <br> • Detalhes de Anotacoes | • Conseguir cadastrar uma nova viagem <br> • listar detalhes do roteiro da viagem <br> • listar detalhes dos compromissos da viagem <br> • listar detalhes dos anotacoes da viagem <br>
-| **Isaac Meneses** | • Dashboard <br> • Detalhes de viagem <br> • Roteiro | • Exibir informações gerais sobre viagens <br> • listar detalhes da viagem <br> • Elaboração e visualização de roteiros de viagem |
+| **Isaac Meneses** | • Dashboard <br> • Detalhes de viagem <br> • Roteiro | • Exibir informações gerais sobre viagens <br> • listar detalhes da viagem <br> • Elaboração e visualização de roteiros de viagem | https://www.youtube.com/watch?v=AgcO_K3z1nI
 | **Adriano Fonseca** | • Alterar Dados e Senha <br> • Meu Perfil <br> • Tela de Configurações <br> • Agenda | • Alterar dados pessoais <br> • Mudar Idioma, País, Moeda <br> • Gerenciar conta <br> • Acessar notificações <br> • Trocar para modo noturno <br> • Sair da conta <br> • Visualizar termos e condições <br>
 | **Adham Ariel** | • Criar nova tela <br> • Detalhes da Viagem 4 <br> • Duplicar <br> • Detalhes da Viagem 7 | • Cadastrar visita, com título, endereço, data e hora <br> • Cadastrar anotação com título e descrição e Editar <br> • Duplicar viagem, alterar nome, data e seleção do que duplicar entre roteiro de dias e locais <br> 
 | **João Gabriel Costa Pinto de Mendonça** | •Modal editar e arquiva viagem <br> • historico de Viagem  <br> • controle de gastos <br> • notificações | • editar e arquivar viagem por meio de um formulario <br> • Ver historico de viagens <br> • Controlar os gastos do usuario por viagem <br> • visualizar notificações <br>
+
+---
+
+## Como Executar o Web com Porta Fixa (Google Sign-In)
+
+Para que a autenticação com o **Google Sign-In** funcione corretamente no navegador, o app precisa rodar em uma porta fixa (configurada como origem autorizada no Google Cloud Console). Definimos a porta **5001** como padrão.
+
+### Para funcionar sempre rodar com o comando abaixo:
+
+flutter run -d chrome --web-port=5001
+
 
 ````
 

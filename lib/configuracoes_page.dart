@@ -338,7 +338,7 @@ class _ConfiguracoesPageState extends State<ConfiguracoesPage> {
                                     : const Color(0xFF94A3B8),
                               ),
                               value: _modoNoturno,
-                              activeColor: const Color(0xFF10B981),
+                              activeThumbColor: const Color(0xFF10B981),
                               onChanged: (val) async {
                                 setState(() => _modoNoturno = val);
                                 ThemeNotifier.instance.setModoNoturno(val);

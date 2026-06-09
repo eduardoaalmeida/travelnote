@@ -16,6 +16,7 @@ class DetalhesViagemPage extends StatefulWidget {
 }
 
 class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
+  // ── Abas ──────────────────────────────────────────────────────────────────
   int abaSelecionada = 0;
   final abas = ['Roteiro', 'Compromissos', 'Anotações'];
 
@@ -35,6 +36,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
   late String _periodoViagem;
   late Viagem _viagem;
 
+  // ─────────────────────────────────────────────────────────────────────────
   @override
   void initState() {
     super.initState();
@@ -320,6 +322,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Build ─────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -344,6 +347,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Cabeçalho ─────────────────────────────────────────────────────────────
   Widget _cabecalho() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 20, 18, 10),
@@ -387,12 +391,17 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
               ),
             ),
           ),
-          const SizedBox(width: 48),
+          IconButton(
+            onPressed: _excluirViagemCompleta,
+            icon: const Icon(Icons.delete_outline, color: Color(0xFFEF4444)),
+            tooltip: 'Excluir viagem',
+          ),
         ],
       ),
     );
   }
 
+  // ── Card da viagem ────────────────────────────────────────────────────────
   Widget _cardViagem() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
@@ -458,6 +467,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Abas ──────────────────────────────────────────────────────────────────
   Widget _abas() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -498,6 +508,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Conteúdo da aba ───────────────────────────────────────────────────────
   Widget _conteudo() {
     if (abaSelecionada == 0) return _roteiro();
     if (abaSelecionada == 1) return _compromissos();
@@ -605,6 +616,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Item de lista ─────────────────────────────────────────────────────────
   Widget _item(
     String numero,
     String titulo,
@@ -703,6 +715,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Modal de edição / cadastro ────────────────────────────────────────────
   void _openEditor({
     required int aba,
     String? titulo,
@@ -852,6 +865,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
                       final savedTitle = titleController.text.trim();
                       String savedSub = subtitleController.text.trim();
 
+                      // Compromissos: concatena data + horário
                       if (aba == 1 && horaController.text.trim().isNotEmpty) {
                         savedSub = '$savedSub • ${horaController.text.trim()}';
                       }
@@ -927,6 +941,7 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     );
   }
 
+  // ── Helpers de UI ─────────────────────────────────────────────────────────
   Widget _labelPopup(String texto) => Padding(
     padding: const EdgeInsets.only(bottom: 6),
     child: Text(

@@ -287,8 +287,8 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
                                         shape: BoxShape.circle,
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black.withOpacity(
-                                              0.12,
+                                            color: Colors.black.withValues(
+                                              alpha: 0.12,
                                             ),
                                             blurRadius: 4,
                                             offset: Offset(0, 2),
@@ -435,7 +435,7 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
                                     BoxShadow(
                                       color: const Color(
                                         0xFF2DD4BF,
-                                      ).withOpacity(0.2),
+                                      ).withValues(alpha: 0.2),
                                       blurRadius: 8,
                                       offset: const Offset(0, 4),
                                     ),
@@ -483,7 +483,7 @@ class _AlterarDadosPageState extends State<AlterarDadosPage> {
                                     BoxShadow(
                                       color: Theme.of(
                                         context,
-                                      ).colorScheme.onSurface.withOpacity(0.03),
+                                      ).colorScheme.onSurface.withValues(alpha: 0.03),
                                       blurRadius: 12,
                                       spreadRadius: 2,
                                       offset: const Offset(0, 4),

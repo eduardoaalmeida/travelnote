@@ -254,8 +254,9 @@ class _LoginPageState extends State<LoginPage> {
                                             ),
                                           );
                                         } finally {
-                                          if (mounted)
+                                          if (mounted) {
                                             setState(() => _carregando = false);
+                                          }
                                         }
                                       },
                                 child: _carregando
@@ -328,7 +329,7 @@ class _LoginPageState extends State<LoginPage> {
                                   'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/480px-Google_%22G%22_logo.svg.png',
                                   height: 22,
                                   width: 22,
-                                  errorBuilder: (_, __, ___) => const Icon(
+                                  errorBuilder: (_, _, _) => const Icon(
                                     Icons.g_mobiledata,
                                     color: Colors.red,
                                   ),
