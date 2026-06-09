@@ -45,11 +45,11 @@ class _ViagensPageState extends State<ViagensPage> {
   @override
   void initState() {
     super.initState();
-    final email = FirebaseAuth.instance.currentUser?.email ?? '';
+    final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
 
     _subscription = FirebaseFirestore.instance
         .collection('viagens')
-        .where('criado_por', isEqualTo: email)
+        .where('usuarioId', isEqualTo: uid)
         .snapshots()
         .listen((snapshot) {
           if (!mounted) return;
@@ -57,6 +57,14 @@ class _ViagensPageState extends State<ViagensPage> {
             viagensMock.clear();
             for (var doc in snapshot.docs) {
               final data = doc.data() as Map<String, dynamic>;
+              String converterData(dynamic valor) {
+                if (valor is Timestamp) {
+                  final d = valor.toDate();
+                  return '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}/${d.year}';
+                }
+                return valor?.toString() ?? '';
+              }
+
               viagensMock.add(
                 Viagem(
                   id: doc.id,
@@ -64,8 +72,8 @@ class _ViagensPageState extends State<ViagensPage> {
                   imagemUrl:
                       data['imagemUrl'] ??
                       'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400',
-                  dataInicio: data['dataInicio'] ?? '',
-                  dataFim: data['dataFim'] ?? '',
+                  dataInicio: converterData(data['dataInicio']),
+                  dataFim: converterData(data['dataFim']),
                   orcamento: data['orcamento'] ?? '',
                   anotacoes: data['anotacoes'] ?? '',
                   tipo: data['tipo'] ?? 'Lazer',
@@ -219,7 +227,6 @@ class _ViagensPageState extends State<ViagensPage> {
         builder: (_) => DuplicarViagemPage(
           viagem: viagem,
           onDuplicar: (novaViagem) async {
-            final email = FirebaseAuth.instance.currentUser?.email ?? '';
             try {
               await FirebaseFirestore.instance.collection('viagens').add({
                 'destino': novaViagem.destino,
@@ -230,7 +237,8 @@ class _ViagensPageState extends State<ViagensPage> {
                 'anotacoes': novaViagem.anotacoes,
                 'tipo': novaViagem.tipo,
                 'confirmada': true,
-                'criado_por': email,
+                'usuarioId': FirebaseAuth.instance.currentUser?.uid ?? '',
+                'criado_por': FirebaseAuth.instance.currentUser?.email ?? '',
                 'criado_em': FieldValue.serverTimestamp(),
               });
             } catch (e) {
@@ -986,25 +994,106 @@ class _DuplicarViagemPageState extends State<DuplicarViagemPage> {
     }
   }
 
-  void _criarCopia() {
-    final novaViagem = Viagem(
-      destino: _nomeController.text.trim(),
-      imagemUrl: widget.viagem.imagemUrl,
-      dataInicio: _dataController.text,
-      dataFim: _dataController.text,
-      orcamento: widget.viagem.orcamento,
-      anotacoes: _duplicarRoteiro ? widget.viagem.anotacoes : '',
-      tipo: widget.viagem.tipo,
-    );
-    widget.onDuplicar(novaViagem);
-    Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Cópia "${novaViagem.destino}" criada!'),
-        backgroundColor: const Color(0xFF1BCE8A),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+  Future<void> _criarCopia() async {
+    final nome = _nomeController.text.trim();
+    if (nome.isEmpty) return;
+
+    final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+    final email = FirebaseAuth.instance.currentUser?.email ?? '';
+    final origemId = widget.viagem.id;
+
+    // Calcula dataFim da cópia mantendo a mesma duração da original
+    DateTime? novaInicio;
+    DateTime? novaFim;
+    try {
+      final p = _dataController.text.split('/');
+      novaInicio = DateTime(int.parse(p[2]), int.parse(p[1]), int.parse(p[0]));
+      final pi = widget.viagem.dataInicio.split('/');
+      final pf = widget.viagem.dataFim.split('/');
+      final inicioOrig = DateTime(
+        int.parse(pi[2]),
+        int.parse(pi[1]),
+        int.parse(pi[0]),
+      );
+      final fimOrig = DateTime(
+        int.parse(pf[2]),
+        int.parse(pf[1]),
+        int.parse(pf[0]),
+      );
+      final duracao = fimOrig.difference(inicioOrig);
+      novaFim = novaInicio.add(duracao);
+    } catch (_) {
+      novaInicio = DateTime.now();
+      novaFim = DateTime.now();
+    }
+
+    final db = FirebaseFirestore.instance;
+
+    try {
+      // 1. Cria o documento raiz da nova viagem
+      final novoDocRef = await db.collection('viagens').add({
+        'destino': nome,
+        'imagemUrl': widget.viagem.imagemUrl,
+        'dataInicio': Timestamp.fromDate(novaInicio),
+        'dataFim': Timestamp.fromDate(novaFim),
+        'orcamento': widget.viagem.orcamento,
+        'anotacoes': widget.viagem.anotacoes,
+        'tipo': widget.viagem.tipo,
+        'confirmada': true,
+        'usuarioId': uid,
+        'criado_por': email,
+        'criadoEm': FieldValue.serverTimestamp(),
+      });
+
+      // 2. Copia subcoleções conforme checkboxes
+      if (origemId != null) {
+        final origemRef = db.collection('viagens').doc(origemId);
+
+        if (_duplicarCompromissos) {
+          final snap = await origemRef.collection('compromissos').get();
+          for (final doc in snap.docs) {
+            await novoDocRef.collection('compromissos').add(doc.data());
+          }
+        }
+
+        if (_duplicarRoteiro) {
+          final roteiroSnap = await origemRef.collection('roteiro').get();
+          for (final roteiroDoc in roteiroSnap.docs) {
+            final novoRoteiroRef = await novoDocRef
+                .collection('roteiro')
+                .add(roteiroDoc.data());
+
+            if (_duplicarLocais) {
+              final locaisSnap = await roteiroDoc.reference
+                  .collection('locais')
+                  .get();
+              for (final local in locaisSnap.docs) {
+                await novoRoteiroRef.collection('locais').add(local.data());
+              }
+            }
+          }
+        }
+      }
+
+      if (!mounted) return;
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cópia "$nome" criada com sucesso!'),
+          backgroundColor: const Color(0xFF1BCE8A),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao duplicar viagem: $e'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   @override
@@ -1160,7 +1249,7 @@ class _DuplicarViagemPageState extends State<DuplicarViagemPage> {
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed: _criarCopia,
+                onPressed: () async => await _criarCopia(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1BCE8A),
                   foregroundColor: Colors.white,
