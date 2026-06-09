@@ -231,6 +231,90 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
     }
   }
 
+  Future<void> _excluirColecaoEmLote(CollectionReference colecao) async {
+    while (true) {
+      final snap = await colecao.limit(450).get();
+      if (snap.docs.isEmpty) break;
+
+      final batch = FirebaseFirestore.instance.batch();
+      for (final doc in snap.docs) {
+        batch.delete(doc.reference);
+      }
+      await batch.commit();
+    }
+  }
+
+  Future<void> _excluirViagemCompleta() async {
+    final confirmado = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Theme.of(context).cardColor,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Excluir viagem'),
+        content: const Text(
+          'Esta ação vai apagar a viagem . Deseja continuar?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+              elevation: 0,
+            ),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmado != true) return;
+
+    setState(() => _carregando = true);
+    try {
+      await _excluirColecaoEmLote(_viagemRef.collection('compromissos'));
+      await _excluirColecaoEmLote(_viagemRef.collection('anotacoes'));
+      await _excluirColecaoEmLote(_viagemRef.collection('locais_roteiro'));
+
+      final roteiroSnap = await _viagemRef.collection('roteiro').get();
+      for (final roteiroDoc in roteiroSnap.docs) {
+        await _excluirColecaoEmLote(roteiroDoc.reference.collection('locais'));
+      }
+      await _excluirColecaoEmLote(_viagemRef.collection('roteiro'));
+
+      await _viagemRef.delete();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Viagem excluída com sucesso!'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao excluir viagem: $e'),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _carregando = false);
+    }
+  }
+
   // ── Build ─────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
@@ -300,7 +384,11 @@ class _DetalhesViagemPageState extends State<DetalhesViagemPage> {
               ),
             ),
           ),
-          const SizedBox(width: 48),
+          IconButton(
+            onPressed: _excluirViagemCompleta,
+            icon: const Icon(Icons.delete_outline, color: Color(0xFFEF4444)),
+            tooltip: 'Excluir viagem',
+          ),
         ],
       ),
     );
